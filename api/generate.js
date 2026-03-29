@@ -1,12 +1,21 @@
 export default async function handler(req, res) {
+
+  // 🔥 ADD CORS HEADERS
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // Handle preflight request
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Only POST allowed" });
   }
 
   try {
     const { topic, level } = req.body;
-
-    console.log("Request received:", topic, level);
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -23,7 +32,7 @@ export default async function handler(req, res) {
           },
           {
             role: "user",
-            content: `Generate 5 ${level || ""} questions on ${topic}.`
+            content: `Generate 5 ${level || ""} level JEE questions on ${topic} with answers.`
           }
         ]
       })
@@ -31,12 +40,15 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    console.log("OpenAI response:", data);
+    if (!data.choices) {
+      return res.status(500).json({ error: data });
+    }
 
-    return res.status(200).json(data);
+    return res.status(200).json({
+      result: data.choices[0].message.content
+    });
 
   } catch (error) {
-    console.log("Error:", error);
     return res.status(500).json({ error: error.message });
   }
 }
