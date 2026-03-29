@@ -30,11 +30,21 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    res.status(200).json({
+    // 🔴 HANDLE ERROR PROPERLY
+    if (!data.choices) {
+      return res.status(500).json({
+        error: "OpenAI error",
+        details: data
+      });
+    }
+
+    return res.status(200).json({
       result: data.choices[0].message.content
     });
 
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    return res.status(500).json({
+      error: error.message
+    });
   }
 }
