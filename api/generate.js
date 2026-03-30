@@ -6,24 +6,26 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   if (req.method === "OPTIONS") return res.status(200).end();
-  if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
+  if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
 
   try {
     const { topic } = req.body;
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) throw new Error("API Key is missing in Vercel settings.");
+    if (!topic) throw new Error("Topic/Prompt is required.");
 
     const genAI = new GoogleGenerativeAI(apiKey);
+    // Use the latest stable model
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const result = await model.generateContent(topic);
-    const response = await result.response; // Improved line
-    const text = response.text();
+    // Correct way to get text in the latest SDK
+    const text = result.response.text();
 
     res.status(200).json({ result: text });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "AI Error: " + err.message });
+    console.error("Server Error:", err);
+    res.status(500).json({ error: "[GoogleGenerativeAI Error]: " + err.message });
   }
 }
