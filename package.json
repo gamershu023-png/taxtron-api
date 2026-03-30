@@ -1,13 +1,13 @@
 {
   "name": "taxtron-api",
   "version": "1.0.0",
-  "description": "Blogger API backend for Gemini",
-  "main": "generate.js",
+  "description": "Gemini AI backend for Blogger",
+  "main": "api/generate.js",
   "type": "module",
-  "scripts": {
-    "start": "node generate.js"
-  },
   "dependencies": {
     "@google/generative-ai": "^0.21.0"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
