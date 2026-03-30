@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     if (!apiKey) throw new Error("API Key is missing in Vercel settings.");
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const result = await model.generateContent(topic);
     const response = await result.response; // Improved line
