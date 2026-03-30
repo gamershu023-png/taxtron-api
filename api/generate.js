@@ -14,17 +14,15 @@ export default async function handler(req, res) {
     const apiKey = process.env.GEMINI_API_KEY;
 
     const response = await fetch(
-      "https://generativeai.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent",
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           contents: [
             {
-              role: "user",
               parts: [{ text: topic }]
             }
           ]
@@ -32,7 +30,18 @@ export default async function handler(req, res) {
       }
     );
 
-    const data = await response.json();
+    const textRaw = await response.text();
+
+    // 🔥 prevent JSON crash
+    let data;
+    try {
+      data = JSON.parse(textRaw);
+    } catch {
+      return res.status(500).json({
+        error: "Non-JSON response",
+        raw: textRaw
+      });
+    }
 
     if (!response.ok) {
       return res.status(500).json({ error: data });
