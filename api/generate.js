@@ -1,6 +1,8 @@
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
 export default async function handler(req, res) {
 
-  // CORS
+  // CORS (for Blogger)
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -11,52 +13,29 @@ export default async function handler(req, res) {
 
   try {
     const { topic } = req.body;
+    if (!topic) {
+      return res.status(400).json({ error: "No topic provided" });
+    }
+
     const apiKey = process.env.GEMINI_API_KEY;
-
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [{ text: topic }]
-            }
-          ]
-        })
-      }
-    );
-
-    const textRaw = await response.text();
-
-    // 🔥 prevent JSON crash
-    let data;
-    try {
-      data = JSON.parse(textRaw);
-    } catch {
-      return res.status(500).json({
-        error: "Non-JSON response",
-        raw: textRaw
-      });
+    if (!apiKey) {
+      return res.status(500).json({ error: "API key missing" });
     }
 
-    if (!response.ok) {
-      return res.status(500).json({ error: data });
-    }
+    const genAI = new GoogleGenerativeAI(apiKey);
 
-    let text = "No response";
+    // Use a stable model alias
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
-    if (data?.candidates?.length > 0) {
-      const parts = data.candidates[0].content.parts;
-      text = parts.map(p => p.text).join(" ");
-    }
+    const result = await model.generateContent(topic);
+    const text = result.response.text();
 
-    res.status(200).json({ result: text });
+    return res.status(200).json({ result: text });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({
+      error: "Server error",
+      message: err.message
+    });
   }
 }
