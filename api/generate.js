@@ -48,9 +48,20 @@ export default async function handler(req, res) {
       });
     }
 
-    const text =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    let text = "No response";
 
+// 🔥 Try multiple formats (Gemini varies)
+if (data?.candidates?.length > 0) {
+  const parts = data.candidates[0].content.parts;
+
+  text = parts.map(p => p.text).join(" ");
+}
+
+// fallback debug
+if (!text || text === "No response") {
+  text = JSON.stringify(data);
+}
     if (!text) {
       return res.status(500).json({
         error: "No text returned",
