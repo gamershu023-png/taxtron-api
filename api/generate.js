@@ -15,17 +15,15 @@ export default async function handler(req, res) {
     const apiKey = process.env.GEMINI_API_KEY;
 
     const response = await fetch(
-      "https://generativeai.googleapis.com/v1/models/gemini-1.5-flash:generateContent",
+      "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + apiKey,
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           contents: [
             {
-              role: "user",
               parts: [{ text: topic }]
             }
           ]
