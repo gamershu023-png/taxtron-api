@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     const { topic } = req.body;
 
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + process.env.GEMINI_API_KEY,
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + process.env.GEMINI_API_KEY,
       {
         method: "POST",
         headers: {
@@ -12,9 +12,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           contents: [
             {
-              parts: [
-                { text: topic }
-              ]
+              parts: [{ text: topic }]
             }
           ]
         })
@@ -23,13 +21,16 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
+    // 🔥 DEBUG LOG (important)
+    console.log(data);
+
     const result =
       data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "No response";
+      JSON.stringify(data);
 
     res.status(200).json({ result });
 
   } catch (error) {
-    res.status(500).json({ error: "Error generating response" });
+    res.status(500).json({ error: error.message });
   }
 }
