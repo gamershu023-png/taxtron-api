@@ -1,5 +1,6 @@
 export default async function handler(req, res) {
 
+  // 🔥 CORS (important for Blogger)
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -21,6 +22,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "API key missing" });
     }
 
+    // 🔥 Gemini API call
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
       {
@@ -31,6 +33,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           contents: [
             {
+              role: "user",
               parts: [{ text: topic }]
             }
           ]
@@ -40,7 +43,7 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // 🔥 RETURN FULL ERROR IF ANY
+    // 🔥 If Gemini gives error
     if (!response.ok) {
       return res.status(500).json({
         error: "Gemini API error",
@@ -48,27 +51,20 @@ export default async function handler(req, res) {
       });
     }
 
-    
+    // 🔥 SAFE PARSING
     let text = "No response";
 
-// 🔥 Try multiple formats (Gemini varies)
-if (data?.candidates?.length > 0) {
-  const parts = data.candidates[0].content.parts;
-
-  text = parts.map(p => p.text).join(" ");
-}
-
-// fallback debug
-if (!text || text === "No response") {
-  text = JSON.stringify(data);
-}
-    if (!text) {
-      return res.status(500).json({
-        error: "No text returned",
-        raw: data
-      });
+    if (data?.candidates?.length > 0) {
+      const parts = data.candidates[0].content.parts;
+      text = parts.map(p => p.text).join(" ");
     }
 
+    // 🔥 fallback debug
+    if (!text || text === "No response") {
+      text = JSON.stringify(data);
+    }
+
+    // ✅ final response
     res.status(200).json({ result: text });
 
   } catch (err) {
