@@ -2,120 +2,140 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taxtron AI</title>
+<title>Taxtron</title>
 
 <style>
 body{
   margin:0;
-  font-family:Arial;
+  font-family:system-ui;
   background:#020617;
   color:white;
 }
 
-.start{
-  height:100vh;
+/* NAVBAR */
+.nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 40px;
+}
+
+.nav .logo{
+  font-weight:600;
+  font-size:18px;
+}
+
+.nav a{
+  color:#94a3b8;
+  text-decoration:none;
+  margin-left:20px;
+}
+
+/* HERO */
+.hero{
+  height:85vh;
   display:flex;
   justify-content:center;
   align-items:center;
   flex-direction:column;
+  text-align:center;
 }
 
-button{
-  padding:12px 20px;
-  background:#38bdf8;
+.hero h1{
+  font-size:42px;
+}
+
+.hero p{
+  color:#94a3b8;
+  margin-top:10px;
+}
+
+/* SEARCH */
+.search-box{
+  margin-top:25px;
+  display:flex;
+  width:600px;
+  max-width:90%;
+}
+
+.search-box input{
+  flex:1;
+  padding:16px;
+  border-radius:12px;
   border:none;
+  outline:none;
+}
+
+.search-box button{
+  margin-left:10px;
+  padding:16px 22px;
+  border:none;
+  border-radius:12px;
+  background:#38bdf8;
+  cursor:pointer;
+  font-weight:600;
+}
+
+/* SUGGESTIONS */
+.suggestions{
+  margin-top:20px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.suggestions button{
+  background:#0f172a;
+  border:1px solid #1e293b;
+  color:#94a3b8;
+  padding:8px 14px;
   border-radius:8px;
   cursor:pointer;
-}
-
-#chatBox{
-  display:none;
-  padding:20px;
-}
-
-.chat{
-  max-width:800px;
-  margin:auto;
-}
-
-.message{
-  margin:10px;
-  padding:10px;
-  border-radius:8px;
-}
-
-.user{background:#38bdf8;color:black;text-align:right;}
-.bot{background:#1e293b;}
-
-.input-box{
-  display:flex;
-  margin-top:20px;
-}
-
-input{
-  flex:1;
-  padding:10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="start">
-  <h1>Taxtron AI</h1>
-  <button onclick="start()">Start</button>
+<div class="nav">
+  <div class="logo">Taxtron</div>
+
+  <div>
+    <a href="#">Home</a>
+    <a href="#">About</a>
+    <a href="#">Tools</a>
+  </div>
 </div>
 
-<div id="chatBox">
-  <div id="chat" class="chat"></div>
+<div class="hero">
+  <h1>Ask Taxtron AI</h1>
+  <p>JEE • Concepts • Questions • AI Tools</p>
 
-  <div class="input-box">
-    <input id="input" placeholder="Ask something...">
-    <button onclick="send()">Send</button>
+  <div class="search-box">
+    <input id="q" placeholder="Ask anything...">
+    <button onclick="go()">Ask</button>
+  </div>
+
+  <div class="suggestions">
+    <button onclick="quick('Explain rotational motion')">Physics</button>
+    <button onclick="quick('Generate JEE questions')">JEE</button>
+    <button onclick="quick('Explain bonding')">Chemistry</button>
+    <button onclick="quick('Make math test')">Math</button>
   </div>
 </div>
 
 <script>
 
-function start(){
-  document.querySelector(".start").style.display="none";
-  document.getElementById("chatBox").style.display="block";
+function go(){
+  const q=document.getElementById("q").value;
+  if(!q) return;
+
+  window.location.href = "/ai.html?q=" + encodeURIComponent(q);
 }
 
-function addMessage(text,type){
-  const div=document.createElement("div");
-  div.className="message "+type;
-  div.innerText=text;
-  document.getElementById("chat").appendChild(div);
-}
-
-async function send(){
-  const input=document.getElementById("input");
-  const text=input.value;
-
-  if(!text) return;
-
-  addMessage(text,"user");
-  input.value="";
-
-  const bot=document.createElement("div");
-  bot.className="message bot";
-  bot.innerText="Thinking...";
-  document.getElementById("chat").appendChild(bot);
-
-  try{
-    const res=await fetch("/api/generate",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({topic:text})
-    });
-
-    const data=await res.json();
-    bot.innerText=data.result || "No response";
-
-  }catch(e){
-    bot.innerText="Error connecting AI";
-  }
+function quick(text){
+  window.location.href = "/ai.html?q=" + encodeURIComponent(text);
 }
 
 </script>
