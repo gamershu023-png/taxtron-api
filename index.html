@@ -20,15 +20,29 @@ body{
   padding:20px 40px;
 }
 
-.nav .logo{
+.logo{
   font-weight:600;
   font-size:18px;
+}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:20px;
 }
 
 .nav a{
   color:#94a3b8;
   text-decoration:none;
-  margin-left:20px;
+}
+
+/* USER BUTTON */
+.user-btn{
+  background:#0f172a;
+  border:1px solid #1e293b;
+  padding:8px 14px;
+  border-radius:8px;
+  cursor:pointer;
 }
 
 /* HERO */
@@ -45,12 +59,6 @@ body{
   font-size:42px;
 }
 
-.hero p{
-  color:#94a3b8;
-  margin-top:10px;
-}
-
-/* SEARCH */
 .search-box{
   margin-top:25px;
   display:flex;
@@ -63,34 +71,14 @@ body{
   padding:16px;
   border-radius:12px;
   border:none;
-  outline:none;
 }
 
 .search-box button{
   margin-left:10px;
-  padding:16px 22px;
+  padding:16px;
   border:none;
   border-radius:12px;
   background:#38bdf8;
-  cursor:pointer;
-  font-weight:600;
-}
-
-/* SUGGESTIONS */
-.suggestions{
-  margin-top:20px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  justify-content:center;
-}
-
-.suggestions button{
-  background:#0f172a;
-  border:1px solid #1e293b;
-  color:#94a3b8;
-  padding:8px 14px;
-  border-radius:8px;
   cursor:pointer;
 }
 </style>
@@ -98,44 +86,80 @@ body{
 
 <body>
 
+<!-- NAVBAR -->
 <div class="nav">
   <div class="logo">Taxtron</div>
 
-  <div>
+  <div class="nav-right">
     <a href="#">Home</a>
     <a href="#">About</a>
-    <a href="#">Tools</a>
+
+    <!-- DYNAMIC USER -->
+    <div id="userArea"></div>
   </div>
 </div>
 
+<!-- HERO -->
 <div class="hero">
   <h1>Ask Taxtron AI</h1>
-  <p>JEE • Concepts • Questions • AI Tools</p>
 
   <div class="search-box">
     <input id="q" placeholder="Ask anything...">
     <button onclick="go()">Ask</button>
   </div>
-
-  <div class="suggestions">
-    <button onclick="quick('Explain rotational motion')">Physics</button>
-    <button onclick="quick('Generate JEE questions')">JEE</button>
-    <button onclick="quick('Explain bonding')">Chemistry</button>
-    <button onclick="quick('Make math test')">Math</button>
-  </div>
 </div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
 
+// 🔥 FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
+  authDomain: "taxtron-ai.firebaseapp.com",
+  projectId: "taxtron-ai",
+  appId: "1:1009675616284:web:27c8e67f2107d9a4255fd9"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+// 🔥 CHECK USER
+firebase.auth().onAuthStateChanged(user => {
+
+  const box = document.getElementById("userArea");
+
+  if(user){
+    box.innerHTML = `
+      <div class="user-btn" onclick="goProfile()">
+        👤 ${user.displayName}
+      </div>
+    `;
+  } else {
+    box.innerHTML = `
+      <div class="user-btn" onclick="goLogin()">
+        Sign In
+      </div>
+    `;
+  }
+
+});
+
+// 🔥 NAVIGATION
 function go(){
-  const q=document.getElementById("q").value;
+  const q = document.getElementById("q").value;
   if(!q) return;
 
   window.location.href = "/ai.html?q=" + encodeURIComponent(q);
 }
 
-function quick(text){
-  window.location.href = "/ai.html?q=" + encodeURIComponent(text);
+function goLogin(){
+  window.location.href = "/login.html";
+}
+
+function goProfile(){
+  window.location.href = "/profile.html";
 }
 
 </script>
