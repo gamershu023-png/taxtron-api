@@ -2,24 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taxtron</title>
-  <!-- BASIC SEO -->
-<meta name="description" content="Taxtron AI helps students with JEE preparation, concepts, questions, and AI-powered tools.">
-<meta name="keywords" content="JEE, AI, physics, chemistry, math, study, Taxtron">
-<meta name="author" content="Taxtron">
-
-<!-- OPEN GRAPH (for sharing) -->
-<meta property="og:title" content="Taxtron AI">
-<meta property="og:description" content="AI platform for JEE preparation and learning">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://taxtron.in">
-<meta property="og:image" content="https://taxtron.in/∫.png">
-
-<!-- FAVICON -->
-<link rel="icon" type="image/png" href="/∫.png">
-
-<!-- MOBILE THEME -->
-<meta name="theme-color" content="#020617">
+<title>Taxtron AI</title>
 
 <style>
 body{
@@ -29,100 +12,174 @@ body{
   color:white;
 }
 
-/* NAVBAR */
+/* NAV */
 .nav{
   display:flex;
   justify-content:space-between;
-  align-items:center;
   padding:20px 40px;
 }
 
-.logo{
-  font-weight:600;
-  font-size:18px;
-}
+.logo{font-weight:600;}
+.nav-right{display:flex;gap:20px;}
 
-.nav-right{
-  display:flex;
-  align-items:center;
-  gap:20px;
-}
-
-.nav a{
-  color:#94a3b8;
-  text-decoration:none;
-}
-
-/* USER BUTTON */
 .user-btn{
   background:#0f172a;
-  border:1px solid #1e293b;
   padding:8px 14px;
   border-radius:8px;
   cursor:pointer;
 }
 
-/* HERO */
+/* HERO (SEARCH ALWAYS TOP) */
 .hero{
-  height:85vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
+  padding:60px 20px 40px;
   text-align:center;
 }
 
-.hero h1{
-  font-size:42px;
-}
-
 .search-box{
-  margin-top:25px;
+  margin:auto;
   display:flex;
-  width:600px;
+  width:650px;
   max-width:90%;
+  background:#0f172a;
+  border:1px solid #1e293b;
+  border-radius:14px;
+  padding:10px;
 }
 
 .search-box input{
   flex:1;
-  padding:16px;
-  border-radius:12px;
+  background:none;
   border:none;
+  color:white;
+  font-size:16px;
+  outline:none;
 }
 
 .search-box button{
-  margin-left:10px;
-  padding:16px;
-  border:none;
-  border-radius:12px;
   background:#38bdf8;
+  border:none;
+  border-radius:10px;
+  padding:10px 16px;
   cursor:pointer;
 }
+
+/* SECTIONS */
+.section{
+  padding:40px 20px;
+  max-width:1000px;
+  margin:auto;
+}
+
+.section h2{
+  margin-bottom:20px;
+}
+
+/* CARDS */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+}
+
+.card{
+  background:#0f172a;
+  padding:20px;
+  border-radius:12px;
+  border:1px solid #1e293b;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+  border-color:#38bdf8;
+}
+
+.card h3{
+  margin-bottom:10px;
+}
+
+.card p{
+  color:#94a3b8;
+  font-size:14px;
+}
+
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
+<!-- NAV -->
 <div class="nav">
   <div class="logo">Taxtron</div>
 
   <div class="nav-right">
-    <a href="#">Home</a>
-    <a href="#">About</a>
-
-    <!-- DYNAMIC USER -->
     <div id="userArea"></div>
   </div>
 </div>
 
 <!-- HERO -->
 <div class="hero">
+
   <h1>Ask Taxtron AI</h1>
 
   <div class="search-box">
     <input id="q" placeholder="Ask anything...">
     <button onclick="go()">Ask</button>
+  </div>
+
+</div>
+
+<!-- FEATURE SECTION -->
+<div class="section">
+  <h2>Popular Tools</h2>
+
+  <div class="cards">
+
+    <div class="card" onclick="quick('Explain rotational motion')">
+      <h3>Physics Help</h3>
+      <p>Concept explanations & problem solving</p>
+    </div>
+
+    <div class="card" onclick="quick('Generate JEE questions')">
+      <h3>JEE Questions</h3>
+      <p>Practice problems instantly</p>
+    </div>
+
+    <div class="card" onclick="quick('Explain chemical bonding')">
+      <h3>Chemistry AI</h3>
+      <p>Clear concepts fast</p>
+    </div>
+
+    <div class="card" onclick="quick('Create math test')">
+      <h3>Math Test</h3>
+      <p>Generate custom tests</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- MORE SECTION -->
+<div class="section">
+  <h2>Why Taxtron?</h2>
+
+  <div class="cards">
+
+    <div class="card">
+      <h3>AI Powered</h3>
+      <p>Smart answers instantly</p>
+    </div>
+
+    <div class="card">
+      <h3>JEE Focused</h3>
+      <p>Built for serious preparation</p>
+    </div>
+
+    <div class="card">
+      <h3>Fast & Clean</h3>
+      <p>No distractions, pure learning</p>
+    </div>
+
   </div>
 </div>
 
@@ -132,51 +189,38 @@ body{
 
 <script>
 
-// 🔥 FIREBASE CONFIG
-const firebaseConfig = {
+// FIREBASE
+firebase.initializeApp({
   apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
   authDomain: "taxtron-ai.firebaseapp.com",
-  projectId: "taxtron-ai",
-  appId: "1:1009675616284:web:27c8e67f2107d9a4255fd9"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-// 🔥 CHECK USER
-firebase.auth().onAuthStateChanged(user => {
-
-  const box = document.getElementById("userArea");
-
-  if(user){
-    box.innerHTML = `
-      <div class="user-btn" onclick="goProfile()">
-        👤 ${user.displayName}
-      </div>
-    `;
-  } else {
-    box.innerHTML = `
-      <div class="user-btn" onclick="goLogin()">
-        Sign In
-      </div>
-    `;
-  }
-
+  projectId: "taxtron-ai"
 });
 
-// 🔥 NAVIGATION
+// USER UI
+firebase.auth().onAuthStateChanged(user=>{
+  const box=document.getElementById("userArea");
+
+  if(user){
+    box.innerHTML=`<div class="user-btn" onclick="location.href='/profile.html'">
+      👤 ${user.displayName}
+    </div>`;
+  } else {
+    box.innerHTML=`<div class="user-btn" onclick="location.href='/login.html'">
+      Sign In
+    </div>`;
+  }
+});
+
+// SEARCH
 function go(){
-  const q = document.getElementById("q").value;
+  const q=document.getElementById("q").value;
   if(!q) return;
 
-  window.location.href = "/ai.html?q=" + encodeURIComponent(q);
+  window.location.href="/ai.html?q="+encodeURIComponent(q);
 }
 
-function goLogin(){
-  window.location.href = "/login.html";
-}
-
-function goProfile(){
-  window.location.href = "/profile.html";
+function quick(text){
+  window.location.href="/ai.html?q="+encodeURIComponent(text);
 }
 
 </script>
