@@ -1,0 +1,450 @@
+
+<html>
+<head>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"></meta>
+<title>Taxtron AI</title>
+
+<style>
+
+/* 🔥 FORCE FULLSCREEN (same as your working one) */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  background: #020617 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+}
+
+/* REMOVE BLOGGER LIMIT */
+.post, .post-body, .post-outer, .content, .main {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+header, footer {
+  display: none !important;
+}
+
+/* APP */
+#app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  background: #020617;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  background: #020617;
+  border-right: 1px solid #1e293b;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 16px;
+  color: #e2e8f0;
+}
+
+.logo img {
+  width: 30px;
+  height: 30px;
+}
+
+.new-btn {
+  margin-top: 20px;
+  padding: 12px;
+  width: 100%;
+  background: #38bdf8;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.new-btn:hover {
+  background: #0ea5e9;
+}
+
+/* MAIN */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* CHAT */
+.chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* MESSAGE */
+.message {
+  max-width: 700px;
+  padding: 14px 16px;
+  margin: 8px 0;
+  border-radius: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  animation: fadeIn 0.2s ease;
+}
+
+.user {
+  background: #38bdf8;
+  color: black;
+  align-self: flex-end;
+}
+
+.bot {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  color: #e2e8f0;
+  align-self: flex-start;
+}
+
+/* INPUT */
+.input-box {
+  padding: 15px;
+  border-top: 1px solid #1e293b;
+  display: flex;
+  gap: 10px;
+  background: #020617;
+}
+
+input {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #1e293b;
+  background: #0f172a;
+  color: white;
+  outline: none;
+}
+
+.send {
+  padding: 14px 22px;
+  background: #38bdf8;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.send:hover {
+  background: #0ea5e9;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo">
+      <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiaIKOpIop-X1KlYib0Cu0uNhrTZK-sq07nVtiLcTMAf8GeeZIVwJWAsAWEPHQGlS8NAwAjHXDiDSPC_1OjGWX2z7cqsdCZA_nQDpR_Mv_iNT-uGJ1HgYccVk-GbdqRsiup6wAdyP9rJZmy-98F7qjIa7cQYmPNQzbs7Qaf10qCgLJH8UTfDcEepKQwkaA" />
+      Taxtron AI
+    </div>
+
+    <button class="new-btn" onclick="newChat()">+ New Chat</button>
+    <select id="aiSelect" style="
+  margin-top:10px;
+  padding:10px;
+  width:100%;
+  border-radius:8px;
+  background:#0f172a;
+  color:white;
+  border:1px solid #1e293b;
+">
+  <option value="gemini">Gemini AI</option>
+  <option value="sarvam">Sarvam AI</option>
+</select>
+    <div id="userBox" style="margin-top:20px; font-size:14px;"></div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <div class="chat" id="chat"></div>
+
+    <div class="input-box">
+      <input autocomplete="off" id="input" placeholder="Ask anything..." />
+      <button class="send" onclick="send()">Send</button>
+    </div>
+
+  </div>
+
+</div>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+let currentChatId = null;
+const firebaseConfig = {
+  apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
+  authDomain: "taxtron-ai.firebaseapp.com",
+  projectId: "taxtron-ai",
+  appId: "1:1009675616284:web:27c8e67f2107d9a4255fd9"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+firebase.auth().onAuthStateChanged(user => {
+
+  
+  const box = document.getElementById("userBox");
+
+  if (user) {
+    loadChatList(user);
+    box.innerHTML = `
+      👤 ${user.displayName}
+      <br><br>
+      <button onclick="logout()" style="padding:6px 10px; border:none; border-radius:6px; cursor:pointer;">
+        Logout
+      </button>
+    `;
+  } else {
+    box.innerHTML = `
+      <a href="/p/login.html" style="color:#38bdf8;">Sign In</a>
+    `;
+  }
+
+});
+
+
+/* LOGOUT */
+function logout() {
+  firebase.auth().signOut();
+  location.reload();
+}
+
+/* SAVE MESSAGE (MOVE OUTSIDE) */
+
+
+
+/* ADD MESSAGE */
+
+
+/* SEND */
+async function send(prefill = null) {
+
+  const input = document.getElementById("input");
+  const text = prefill || input.value;
+  const aiType = document.getElementById("aiSelect").value;
+
+  if (!text.trim()) return;
+
+  if (!currentChatId) {
+    currentChatId = Date.now().toString();
+    saveChatMeta(aiType);
+
+    const user = firebase.auth().currentUser;
+    if (user) loadChatList(user);
+  }
+
+  addMessage(text, "user");
+  saveMessage("user", text, aiType);
+  input.value = "";
+
+  const botDiv = addMessage("Typing...", "bot");
+
+  try {
+
+    let responseText = "";
+
+    if (aiType === "gemini") {
+
+      const res = await fetch("https://project-0wxuy.vercel.app/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: text })
+      });
+
+      const data = await res.json();
+      responseText = data.result;
+
+    } else if (aiType === "sarvam") {
+
+      const res = await fetch("/api/sarvam", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ message: text })
+});
+
+const data = await res.json();
+responseText = data.result;
+
+      
+      responseText = data.choices?.[0]?.message?.content || "No response";
+
+    }
+
+    botDiv.innerText = responseText;
+    saveMessage("bot", responseText, aiType);
+
+  } catch (err) {
+    botDiv.innerText = "⚠️ Error connecting AI";
+    botDiv.style.color = "#f87171";
+  }
+}
+
+/* NEW CHAT */
+function newChat() {
+  document.getElementById("chat").innerHTML = "";
+  currentChatId = null;
+}
+/* ENTER KEY */
+document.getElementById("input").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") send();
+});
+
+/* 🔥 KEEP SEARCH BAR CONNECTION */
+window.onload = function() {
+  const params = new URLSearchParams(window.location.search);
+  const q = params.get("q");
+
+  if (q) {
+    setTimeout(() => send(q), 300);
+  }
+};
+function loadChats(user) {
+  if (!currentChatId) return;
+
+  db.collection("chats")
+    .doc(user.uid)
+    .collection("sessions")
+    .doc(currentChatId)
+    .collection("messages")
+    .orderBy("time")
+    .get()
+    .then(snapshot => {
+
+      const chat = document.getElementById("chat");
+      chat.innerHTML = "";
+
+      snapshot.forEach(doc => {
+        const msg = doc.data();
+        addMessage(msg.text, msg.role);
+      });
+
+    });
+}
+function loadChatList(user) {
+
+  const sidebar = document.querySelector(".sidebar");
+
+  // remove old chats
+  const old = sidebar.querySelectorAll(".chat-item");
+  old.forEach(e => e.remove());
+
+  db.collection("chats")
+    .doc(user.uid)
+    .collection("sessions")
+    .orderBy("created", "desc")
+    .get()
+    .then(snapshot => {
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+
+        const div = document.createElement("div");
+        div.className = "chat-item";
+        div.innerText = data.title || "Chat";
+        div.style.marginTop = "10px";
+        div.style.cursor = "pointer";
+        div.style.color = "#94a3b8";
+
+        div.onclick = () => openChat(doc.id);
+
+        sidebar.appendChild(div);
+      });
+
+    });
+}
+function openChat(chatId) {
+  currentChatId = chatId;
+
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+
+  loadChats(user);
+}
+function saveMessage(role, text, aiType) {
+  const user = firebase.auth().currentUser;
+  if (!user || !currentChatId) return;
+
+  db.collection("chats")
+    .doc(user.uid)
+    .collection("sessions")
+    .doc(currentChatId)
+    .collection("messages")
+    .add({
+      role: role,
+      text: text,
+      ai: aiType,
+      time: Date.now()
+    });
+}
+function saveChatMeta(aiType) {
+  const user = firebase.auth().currentUser;
+  if (!user || !currentChatId) return;
+
+  db.collection("chats")
+    .doc(user.uid)
+    .collection("sessions")
+    .doc(currentChatId)
+    .set({
+      title: aiType.toUpperCase() + " Chat",
+      ai: aiType,
+      created: Date.now()
+    });
+}
+function addMessage(text, type, aiType = "") {
+  const chat = document.getElementById("chat");
+  const div = document.createElement("div");
+
+  div.className = "message " + type;
+  div.innerText = aiType ? `[${aiType.toUpperCase()}]\n` + text : text;
+
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+
+  return div;
+}
+</script>
+
+</body>
+</html>
