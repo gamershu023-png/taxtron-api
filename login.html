@@ -1,0 +1,131 @@
+
+<html>
+<head>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"></meta>
+<title>Login - Taxtron</title>
+
+<style>
+
+/* 🔥 FORCE FULLSCREEN */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  background: #020617 !important;
+}
+
+/* REMOVE BLOGGER */
+.post, .post-body, .post-outer, .content, .main {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+header, footer {
+  display: none !important;
+}
+
+/* 🔥 ROOT APP (CRITICAL FIX) */
+#app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at 20% 20%, #0ea5e9, transparent),
+              radial-gradient(circle at 80% 80%, #9333ea, transparent),
+              #020617;
+}
+
+/* BOX */
+.box {
+  background: rgba(15,23,42,0.95);
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+  width: 340px;
+  border: 1px solid #1e293b;
+  z-index: 10;
+}
+
+/* LOGO */
+.box img {
+  width: 45px;
+  margin-bottom: 15px;
+}
+
+/* TEXT */
+h2 {
+  color: white;
+  margin-bottom: 20px;
+}
+
+/* BUTTON */
+button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+  <div class="box">
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEi9m_FGenJWWg1Kuf8sH4BySWALhIbtkA87001WpAdWZ6NSNPlayJHh9tOVjFHozemE8xQJI-aWGAvjtzb8mlyDUKZin5fLt57NVVl_VucJk0X2mUQxiBeM3t3vVw0wUte8lgD50wVOSOCMXMLxZ6wyH4wiosk6JraZYEznHUsjsGw2CCfzNzrA3M5AXFNo" />
+    <h2>Sign in to Taxtron</h2>
+    <button onclick="login()">Continue with Google</button>
+  </div>
+
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<script>
+
+window.onload = function() {
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
+    authDomain: "taxtron-ai.firebaseapp.com",
+    projectId: "taxtron-ai",
+    appId: "1:1009675616284:web:27c8e67f2107d9a4255fd9"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  window.login = function() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    firebase.auth().signInWithPopup(provider)
+      .then((result) => {
+        alert("Welcome " + result.user.displayName);
+
+        window.location.href = "/p/taxtronai.html";
+      })
+      .catch(err => alert(err.message));
+  };
+
+};
+
+</script>
+
+</body>
+</html>
