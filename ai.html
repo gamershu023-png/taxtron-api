@@ -231,12 +231,25 @@ firebase.auth().onAuthStateChanged(user => {
     loadChatList(user);
     loadLastChat(user);
     box.innerHTML = `
-      👤 ${user.displayName}
-      <br><br>
-      <button onclick="logout()" style="padding:6px 10px; border:none; border-radius:6px; cursor:pointer;">
-        Logout
-      </button>
-    `;
+  <div style="display:flex; align-items:center; gap:8px; color:#e2e8f0; font-weight:500;">
+    <img src="${user.photoURL || 'https://i.pravatar.cc/40'}" 
+         style="width:26px;height:26px;border-radius:50%;object-fit:cover;">
+    ${user.displayName || user.email}
+  </div>
+
+  <br>
+
+  <button onclick="logout()" style="
+    padding:6px 10px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    background:#ef4444;
+    color:white;
+  ">
+    Logout
+  </button>
+`;
   } else {
     box.innerHTML = `
       <a href="/login.html" style="color:#38bdf8;">Sign In</a>
