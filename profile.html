@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taxtron</title>
+<title>My Profile - Taxtron</title>
 
 <style>
 body{
@@ -12,100 +12,82 @@ body{
   color:white;
 }
 
-/* NAVBAR */
-.nav{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:20px 40px;
-}
-
-.logo{
-  font-weight:600;
-  font-size:18px;
-}
-
-.nav-right{
-  display:flex;
-  align-items:center;
-  gap:20px;
-}
-
-.nav a{
-  color:#94a3b8;
-  text-decoration:none;
-}
-
-/* USER BUTTON */
-.user-btn{
-  background:#0f172a;
-  border:1px solid #1e293b;
-  padding:8px 14px;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-/* HERO */
-.hero{
-  height:85vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
+.container{
+  max-width:600px;
+  margin:60px auto;
   text-align:center;
 }
 
-.hero h1{
-  font-size:42px;
+/* CARD */
+.card{
+  background:#0f172a;
+  border:1px solid #1e293b;
+  padding:30px;
+  border-radius:16px;
 }
 
-.search-box{
-  margin-top:25px;
-  display:flex;
-  width:600px;
-  max-width:90%;
+/* AVATAR */
+.avatar{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  margin-bottom:15px;
 }
 
-.search-box input{
-  flex:1;
-  padding:16px;
-  border-radius:12px;
+/* TEXT */
+h2{
+  margin:5px 0;
+}
+
+p{
+  color:#94a3b8;
+  font-size:14px;
+}
+
+/* INPUT */
+input{
+  width:100%;
+  padding:12px;
+  margin-top:15px;
+  border-radius:10px;
   border:none;
 }
 
-.search-box button{
-  margin-left:10px;
-  padding:16px;
+/* BUTTON */
+button{
+  margin-top:15px;
+  padding:12px 20px;
   border:none;
-  border-radius:12px;
+  border-radius:10px;
   background:#38bdf8;
   cursor:pointer;
+}
+
+/* LOGOUT */
+.logout{
+  background:#ef4444;
 }
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<div class="nav">
-  <div class="logo">Taxtron</div>
+<div class="container">
+  <div class="card">
 
-  <div class="nav-right">
-    <a href="#">Home</a>
-    <a href="#">About</a>
+    <img id="avatar" class="avatar" src="https://i.pravatar.cc/100">
 
-    <!-- DYNAMIC USER -->
-    <div id="userArea"></div>
-  </div>
-</div>
+    <h2 id="name">Loading...</h2>
+    <p id="email"></p>
+    <p id="uid"></p>
 
-<!-- HERO -->
-<div class="hero">
-  <h1>Ask Taxtron AI</h1>
+    <!-- EDIT NAME -->
+    <input id="newName" placeholder="Update your name">
 
-  <div class="search-box">
-    <input id="q" placeholder="Ask anything...">
-    <button onclick="go()">Ask</button>
+    <button onclick="updateName()">Update Name</button>
+
+    <button class="logout" onclick="logout()">Logout</button>
+
   </div>
 </div>
 
@@ -114,54 +96,59 @@ body{
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
-
-// 🔥 FIREBASE CONFIG
 const firebaseConfig = {
-  apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
+  apiKey: "YOUR_KEY",
   authDomain: "taxtron-ai.firebaseapp.com",
   projectId: "taxtron-ai",
-  appId: "1:1009675616284:web:27c8e67f2107d9a4255fd9"
+  appId: "YOUR_APP_ID"
 };
 
 firebase.initializeApp(firebaseConfig);
 
-// 🔥 CHECK USER
+// LOAD USER
 firebase.auth().onAuthStateChanged(user => {
 
-  const box = document.getElementById("userArea");
+  if(!user){
+    window.location.href = "login.html";
+    return;
+  }
 
-  if(user){
-    box.innerHTML = `
-      <div class="user-btn" onclick="goProfile()">
-        👤 ${user.displayName}
-      </div>
-    `;
-  } else {
-    box.innerHTML = `
-      <div class="user-btn" onclick="goLogin()">
-        Sign In
-      </div>
-    `;
+  document.getElementById("name").innerText =
+    user.displayName || "No Name";
+
+  document.getElementById("email").innerText =
+    user.email;
+
+  document.getElementById("uid").innerText =
+    "UID: " + user.uid;
+
+  if(user.photoURL){
+    document.getElementById("avatar").src = user.photoURL;
   }
 
 });
 
-// 🔥 NAVIGATION
-function go(){
-  const q = document.getElementById("q").value;
-  if(!q) return;
+// UPDATE NAME
+function updateName(){
+  const user = firebase.auth().currentUser;
+  const name = document.getElementById("newName").value;
 
-  window.location.href = "/ai.html?q=" + encodeURIComponent(q);
+  if(!name) return;
+
+  user.updateProfile({
+    displayName: name
+  }).then(()=>{
+    alert("Name updated!");
+    location.reload();
+  });
 }
 
-function goLogin(){
-  window.location.href = "/login.html";
+// LOGOUT
+function logout(){
+  firebase.auth().signOut().then(()=>{
+    window.location.href = "index.html";
+  });
 }
-
-function goProfile(){
-  window.location.href = "/profile.html";
-}
-
 </script>
 
 </body>
