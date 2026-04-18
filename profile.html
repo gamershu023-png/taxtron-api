@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Profile - Taxtron</title>
+<title>Profile - Taxtron</title>
 
 <style>
 body{
@@ -13,57 +13,43 @@ body{
 }
 
 .container{
-  max-width:600px;
+  max-width:500px;
   margin:60px auto;
-  text-align:center;
 }
 
-/* CARD */
 .card{
   background:#0f172a;
   border:1px solid #1e293b;
-  padding:30px;
+  padding:25px;
   border-radius:16px;
+  text-align:center;
 }
 
-/* AVATAR */
 .avatar{
   width:80px;
   height:80px;
   border-radius:50%;
-  margin-bottom:15px;
+  margin-bottom:10px;
 }
 
-/* TEXT */
-h2{
-  margin:5px 0;
-}
-
-p{
-  color:#94a3b8;
-  font-size:14px;
-}
-
-/* INPUT */
 input{
   width:100%;
   padding:12px;
   margin-top:15px;
-  border-radius:10px;
+  border-radius:8px;
   border:none;
 }
 
-/* BUTTON */
 button{
-  margin-top:15px;
-  padding:12px 20px;
+  width:100%;
+  padding:12px;
+  margin-top:10px;
   border:none;
-  border-radius:10px;
+  border-radius:8px;
   background:#38bdf8;
   cursor:pointer;
 }
 
-/* LOGOUT */
 .logout{
   background:#ef4444;
 }
@@ -81,46 +67,45 @@ button{
     <p id="email"></p>
     <p id="uid"></p>
 
-    <!-- EDIT NAME -->
-    <input id="newName" placeholder="Update your name">
+    <input id="newName" placeholder="Enter new name">
 
     <button onclick="updateName()">Update Name</button>
-
     <button class="logout" onclick="logout()">Logout</button>
 
   </div>
 </div>
 
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
+// 🔥 SAME CONFIG
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
+  apiKey: "YOUR_API_KEY",
   authDomain: "taxtron-ai.firebaseapp.com",
   projectId: "taxtron-ai",
   appId: "YOUR_APP_ID"
 };
 
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
-// LOAD USER
-firebase.auth().onAuthStateChanged(user => {
+const auth = firebase.auth();
+
+// 🔥 LOAD USER (THIS IS CRITICAL)
+auth.onAuthStateChanged(user => {
 
   if(!user){
-    window.location.href = "login2.html";
+    window.location.href = "login.html";
     return;
   }
 
-  document.getElementById("name").innerText =
-    user.displayName || "No Name";
+  const name = user.displayName || user.email.split("@")[0];
 
-  document.getElementById("email").innerText =
-    user.email;
-
-  document.getElementById("uid").innerText =
-    "UID: " + user.uid;
+  document.getElementById("name").innerText = name;
+  document.getElementById("email").innerText = user.email;
+  document.getElementById("uid").innerText = "UID: " + user.uid;
 
   if(user.photoURL){
     document.getElementById("avatar").src = user.photoURL;
@@ -128,24 +113,29 @@ firebase.auth().onAuthStateChanged(user => {
 
 });
 
-// UPDATE NAME
+// 🔥 UPDATE NAME (FIXED)
 function updateName(){
-  const user = firebase.auth().currentUser;
-  const name = document.getElementById("newName").value;
+  const user = auth.currentUser;
+  const newName = document.getElementById("newName").value.trim();
 
-  if(!name) return;
+  if(!newName){
+    alert("Enter name first");
+    return;
+  }
 
   user.updateProfile({
-    displayName: name
+    displayName: newName
   }).then(()=>{
-    alert("Name updated!");
+    alert("Updated ✅");
     location.reload();
+  }).catch(err=>{
+    alert("Error: " + err.message);
   });
 }
 
-// LOGOUT
+// 🔥 LOGOUT
 function logout(){
-  firebase.auth().signOut().then(()=>{
+  auth.signOut().then(()=>{
     window.location.href = "index.html";
   });
 }
