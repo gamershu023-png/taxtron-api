@@ -269,7 +269,7 @@ async function send(prefill = null) {
 
   if (!currentChatId) {
     currentChatId = Date.now().toString();
-    saveChatMeta(aiType);
+    saveChatMeta(aiType, text);
 
     const user = firebase.auth().currentUser;
     if (user) loadChatList(user);
@@ -418,7 +418,7 @@ function saveMessage(role, text, aiType) {
       time: Date.now()
     });
 }
-function saveChatMeta(aiType) {
+function saveChatMeta(aiType, firstMessage) {
   const user = firebase.auth().currentUser;
   if (!user || !currentChatId) return;
 
@@ -427,7 +427,7 @@ function saveChatMeta(aiType) {
     .collection("sessions")
     .doc(currentChatId)
     .set({
-      title: aiType.toUpperCase() + " Chat",
+      title: firstMessage.substring(0, 30), // 🔥 real title
       ai: aiType,
       created: Date.now()
     });
