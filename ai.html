@@ -229,6 +229,7 @@ firebase.auth().onAuthStateChanged(user => {
 
   if (user) {
     loadChatList(user);
+    loadLastChat(user);
     box.innerHTML = `
       👤 ${user.displayName}
       <br><br>
@@ -340,17 +341,21 @@ window.onload = function() {
     setTimeout(() => send(q), 300);
   }
 };
+let unsubscribe = null;
+
 function loadChats(user) {
   if (!currentChatId) return;
 
-  db.collection("chats")
+  // 🔥 stop old listener
+  if (unsubscribe) unsubscribe();
+
+  unsubscribe = db.collection("chats")
     .doc(user.uid)
     .collection("sessions")
     .doc(currentChatId)
     .collection("messages")
     .orderBy("time")
-    .get()
-    .then(snapshot => {
+    .onSnapshot(snapshot => {
 
       const chat = document.getElementById("chat");
       chat.innerHTML = "";
@@ -443,6 +448,21 @@ function addMessage(text, type, aiType = "") {
   chat.scrollTop = chat.scrollHeight;
 
   return div;
+}
+function loadLastChat(user) {
+  db.collection("chats")
+    .doc(user.uid)
+    .collection("sessions")
+    .orderBy("created", "desc")
+    .limit(1)
+    .get()
+    .then(snapshot => {
+      if (!snapshot.empty) {
+        const doc = snapshot.docs[0];
+        currentChatId = doc.id;
+        loadChats(user);
+      }
+    });
 }
 </script>
 
