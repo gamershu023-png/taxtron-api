@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taxtron AI Pro</title>
+<title>Taxtron AI</title>
 
 <style>
 html, body {
@@ -14,10 +14,7 @@ html, body {
 }
 
 /* LAYOUT */
-#app {
-  display: flex;
-  height: 100%;
-}
+#app { display: flex; height: 100%; }
 
 /* SIDEBAR */
 .sidebar {
@@ -27,6 +24,7 @@ html, body {
   padding: 12px;
   display: flex;
   flex-direction: column;
+  transition: 0.3s;
 }
 
 .chat-item {
@@ -35,23 +33,22 @@ html, body {
   cursor: pointer;
   color: #94a3b8;
   margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.chat-item:hover {
-  background: #0f172a;
-}
+.chat-item:hover { background: #0f172a; }
+.chat-item.active { background: #1e293b; color: white; }
 
-.chat-item.active {
-  background: #1e293b;
-  color: white;
+.delete-btn {
+  font-size: 12px;
+  color: #f87171;
+  cursor: pointer;
 }
 
 /* MAIN */
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
+.main { flex: 1; display: flex; flex-direction: column; }
 
 .chat {
   flex: 1;
@@ -59,14 +56,14 @@ html, body {
   padding: 20px;
 }
 
-/* MESSAGES */
+/* MESSAGE */
 .message {
   max-width: 750px;
   padding: 14px;
   margin: 8px 0;
   border-radius: 12px;
   line-height: 1.6;
-  white-space: pre-wrap;
+  position: relative;
 }
 
 .user {
@@ -78,6 +75,16 @@ html, body {
 .bot {
   background: #0f172a;
   color: #e2e8f0;
+}
+
+/* COPY BTN */
+.copy-btn {
+  position: absolute;
+  right: 8px;
+  bottom: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #94a3b8;
 }
 
 /* INPUT */
@@ -104,6 +111,18 @@ button {
   border-radius: 10px;
   cursor: pointer;
 }
+
+/* MOBILE */
+@media (max-width:768px){
+  .sidebar {
+    position: absolute;
+    left: -260px;
+    top: 0;
+    height: 100%;
+    z-index: 999;
+  }
+  .sidebar.open { left: 0; }
+}
 </style>
 </head>
 
@@ -112,21 +131,38 @@ button {
 <div id="app">
 
 <div class="sidebar">
-  <button onclick="newChat()">+ New Chat</button>
-  <div id="chatList"></div>
+
+<!-- LOGO -->
+<div style="display:flex;align-items:center;gap:8px;">
+  <img src="/logo.png" style="width:28px;">
+  <b style="color:white;">Taxtron</b>
+</div>
+
+<a href="/" style="color:#38bdf8;margin-top:10px;">🏠 Home</a>
+<a href="/profile.html" style="color:#38bdf8;">👤 Profile</a>
+
+<button onclick="newChat()">+ New Chat</button>
+
+<div id="chatList"></div>
+
 </div>
 
 <div class="main">
-  <div id="chat" class="chat"></div>
 
-  <div class="input-box">
-    <input id="input" placeholder="Ask anything..." />
-    <button onclick="send()">Send</button>
-  </div>
+<button onclick="toggleSidebar()" style="position:absolute;top:10px;left:10px;">☰</button>
+
+<div id="chat" class="chat"></div>
+
+<div class="input-box">
+  <input id="input" placeholder="Ask anything..." />
+  <button onclick="send()">Send</button>
 </div>
 
 </div>
 
+</div>
+
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -135,6 +171,7 @@ button {
 let currentChatId = null;
 let unsubscribe = null;
 let sending = false;
+let pendingQuery = null;
 
 const firebaseConfig = {
    apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
@@ -146,12 +183,39 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+/* SIDEBAR */
+function toggleSidebar() {
+  document.querySelector(".sidebar").classList.toggle("open");
+}
+
+/* URL QUERY */
+window.onload = () => {
+  const params = new URLSearchParams(window.location.search);
+  pendingQuery = params.get("q");
+};
+
+/* AUTH */
+firebase.auth().onAuthStateChanged(user => {
+  if (user) {
+    loadChatList();
+    loadLastChat(user);
+
+    if (pendingQuery) {
+      setTimeout(() => {
+        newChat();
+        send(pendingQuery);
+        pendingQuery = null;
+      }, 800);
+    }
+  }
+});
+
 /* SEND */
-async function send() {
+async function send(prefill=null) {
   if (sending) return;
 
   const input = document.getElementById("input");
-  const text = input.value.trim();
+  const text = prefill || input.value.trim();
   if (!text) return;
 
   sending = true;
@@ -164,15 +228,14 @@ async function send() {
 
   addMessage(text, "user");
   saveMessage("user", text);
-
   input.value = "";
 
-  const botDiv = addMessage("...", "bot");
+  const botDiv = addMessage("", "bot");
 
   try {
     const res = await fetch("https://project-0wxuy.vercel.app/api/generate", {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
+      headers: {"Content-Type":"application/json"},
       body: JSON.stringify({ topic: text })
     });
 
@@ -188,20 +251,26 @@ async function send() {
   sending = false;
 }
 
-/* STREAM EFFECT */
+/* STREAM */
 async function streamText(el, text) {
-  el.innerText = "";
-  for (let i = 0; i < text.length; i++) {
+  for (let i=0;i<text.length;i++) {
     el.innerText += text[i];
-    await new Promise(r => setTimeout(r, 8));
+    await new Promise(r=>setTimeout(r,5));
   }
 }
 
-/* UI */
+/* MESSAGE */
 function addMessage(text, type) {
   const div = document.createElement("div");
   div.className = "message " + type;
   div.innerText = text;
+
+  const copy = document.createElement("div");
+  copy.className = "copy-btn";
+  copy.innerText = "Copy";
+  copy.onclick = () => navigator.clipboard.writeText(text);
+
+  div.appendChild(copy);
 
   document.getElementById("chat").appendChild(div);
   document.getElementById("chat").scrollTop = 999999;
@@ -209,7 +278,7 @@ function addMessage(text, type) {
   return div;
 }
 
-/* CHAT CONTROL */
+/* CHAT */
 function newChat() {
   currentChatId = null;
   document.getElementById("chat").innerHTML = "";
@@ -220,31 +289,22 @@ function saveMessage(role, text) {
   const user = firebase.auth().currentUser;
   if (!user) return;
 
-  db.collection("chats")
-    .doc(user.uid)
-    .collection("sessions")
-    .doc(currentChatId)
+  db.collection("chats").doc(user.uid)
+    .collection("sessions").doc(currentChatId)
     .collection("messages")
-    .add({
-      role, text, time: Date.now()
-    });
+    .add({ role, text, time: Date.now() });
 }
 
-function saveChatMeta(firstMessage) {
+function saveChatMeta(text) {
   const user = firebase.auth().currentUser;
   if (!user) return;
 
-  return db.collection("chats")
-    .doc(user.uid)
-    .collection("sessions")
-    .doc(currentChatId)
-    .set({
-      title: firstMessage.substring(0, 25),
-      created: Date.now()
-    });
+  return db.collection("chats").doc(user.uid)
+    .collection("sessions").doc(currentChatId)
+    .set({ title: text.substring(0,25), created: Date.now() });
 }
 
-/* CHAT LIST */
+/* LOAD LIST */
 function loadChatList() {
   const user = firebase.auth().currentUser;
   if (!user) return;
@@ -252,20 +312,37 @@ function loadChatList() {
   const list = document.getElementById("chatList");
   list.innerHTML = "";
 
-  db.collection("chats")
-    .doc(user.uid)
+  db.collection("chats").doc(user.uid)
     .collection("sessions")
-    .orderBy("created", "desc")
+    .orderBy("created","desc")
     .get()
-    .then(snap => {
-      snap.forEach(doc => {
+    .then(snap=>{
+      snap.forEach(doc=>{
         const div = document.createElement("div");
         div.className = "chat-item";
-        div.innerText = doc.data().title;
+
+        const span = document.createElement("span");
+        span.innerText = doc.data().title;
+        span.contentEditable = true;
+
+        span.onblur = () => {
+          db.collection("chats").doc(user.uid)
+            .collection("sessions").doc(doc.id)
+            .update({ title: span.innerText });
+        };
+
+        const del = document.createElement("span");
+        del.innerText = "🗑️";
+        del.className = "delete-btn";
+        del.onclick = (e) => {
+          e.stopPropagation();
+          deleteChat(doc.id);
+        };
+
+        div.appendChild(span);
+        div.appendChild(del);
 
         div.onclick = () => openChat(doc.id, div);
-
-        div.ondblclick = () => renameChat(doc.id, div);
 
         list.appendChild(div);
       });
@@ -277,8 +354,8 @@ function openChat(id, el) {
   currentChatId = id;
   document.getElementById("chat").innerHTML = "";
 
-  document.querySelectorAll(".chat-item").forEach(e => e.classList.remove("active"));
-  el.classList.add("active");
+  document.querySelectorAll(".chat-item").forEach(e=>e.classList.remove("active"));
+  if (el) el.classList.add("active");
 
   const user = firebase.auth().currentUser;
 
@@ -290,57 +367,47 @@ function openChat(id, el) {
     .doc(id)
     .collection("messages")
     .orderBy("time")
-    .onSnapshot(snap => {
-
+    .onSnapshot(snap=>{
       const chat = document.getElementById("chat");
       chat.innerHTML = "";
 
-      snap.forEach(d => {
+      snap.forEach(d=>{
         const m = d.data();
         addMessage(m.text, m.role);
       });
     });
-}
 
-/* RENAME */
-function renameChat(id, el) {
-  const name = prompt("Rename chat:");
-  if (!name) return;
-
-  const user = firebase.auth().currentUser;
-
-  db.collection("chats")
-    .doc(user.uid)
-    .collection("sessions")
-    .doc(id)
-    .update({ title: name });
-
-  el.innerText = name;
+  document.querySelector(".sidebar").classList.remove("open");
 }
 
 /* DELETE */
 function deleteChat(id) {
   const user = firebase.auth().currentUser;
 
-  db.collection("chats")
-    .doc(user.uid)
-    .collection("sessions")
-    .doc(id)
-    .delete();
+  db.collection("chats").doc(user.uid)
+    .collection("sessions").doc(id).delete();
 
+  newChat();
   loadChatList();
 }
 
-/* ENTER */
-document.getElementById("input").addEventListener("keypress", e => {
-  if (e.key === "Enter") send();
-});
+/* LOAD LAST */
+function loadLastChat(user) {
+  db.collection("chats").doc(user.uid)
+    .collection("sessions")
+    .orderBy("created","desc")
+    .limit(1)
+    .get()
+    .then(snap=>{
+      if (!snap.empty) {
+        openChat(snap.docs[0].id);
+      }
+    });
+}
 
-/* AUTH */
-firebase.auth().onAuthStateChanged(user => {
-  if (user) {
-    loadChatList();
-  }
+/* ENTER */
+document.getElementById("input").addEventListener("keypress", e=>{
+  if (e.key==="Enter") send();
 });
 </script>
 
