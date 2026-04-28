@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mantra Jaap Counter</title>
+    <style>
+        /* Makes the entire page take up the full screen */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fdf6e3;
+            color: #d33682;
+            cursor: pointer; /* Shows the user they can click anywhere */
+            user-select: none; /* Prevents text from being highlighted when clicking fast */
+        }
+
+        /* Styles for the main number */
+        #counter {
+            font-size: 15vw;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Subtext styling */
+        .instruction {
+            position: absolute;
+            bottom: 20px;
+            font-size: 1.2rem;
+            color: #586e75;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* Reset button styling */
+        #resetBtn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #eee8d5;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        #resetBtn:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="resetBtn">Reset Count</button>
+
+    <div id="counter">0</div>
+
+    <div class="instruction">Click anywhere on the screen to count.</div>
+
+    <script>
+        // 1. Get the elements
+        const counterDisplay = document.getElementById('counter');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // 2. Initialize the count from localStorage, or start at 0
+        let count = localStorage.getItem('jaapCount') ? parseInt(localStorage.getItem('jaapCount')) : 0;
+        
+        // Update the screen immediately on load
+        counterDisplay.textContent = count;
+
+        // 3. Listen for clicks on the entire document
+        document.body.addEventListener('click', function(event) {
+            // Prevent the count from going up if the user clicks the Reset button
+            if (event.target.id === 'resetBtn') return;
+
+            count++;
+            counterDisplay.textContent = count;
+            // Save the new count to the browser's memory
+            localStorage.setItem('jaapCount', count);
+        });
+
+        // 4. Handle the Reset button
+        resetBtn.addEventListener('click', function(event) {
+            // Stop the click from registering on the background
+            event.stopPropagation(); 
+            
+            // Ask for confirmation so the Jaap isn't lost by accident
+            if(confirm("Are you sure you want to reset your Jaap count to 0?")) {
+                count = 0;
+                counterDisplay.textContent = count;
+                localStorage.setItem('jaapCount', count);
+            }
+        });
+
+        // 5. Sync the count across different tabs of this same webpage
+        window.addEventListener('storage', function(event) {
+            if (event.key === 'jaapCount') {
+                count = parseInt(event.newValue);
+                counterDisplay.textContent = count;
+            }
+        });
+    </script>
+</body>
+</html>
