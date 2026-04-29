@@ -1,241 +1,351 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taxtron AI</title>
-<!-- SEO -->
-<meta name="description" content="Taxtron AI helps students with JEE preparation, concepts, questions, and AI tools.">
-<meta name="robots" content="index, follow">
-
-<!-- CANONICAL (IMPORTANT FOR HTTPS) -->
-<link rel="canonical" href="https://taxtron.in">
-
-<!-- FORCE HTTPS -->
-<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-
-<!-- OPEN GRAPH (for sharing) -->
-<meta property="og:title" content="Taxtron AI">
-<meta property="og:description" content="AI platform for JEE preparation and learning">
-<meta property="og:url" content="https://taxtron.in">
-<meta property="og:type" content="website">
-<meta property="og:image" content="https://taxtron.in/∫ (1).png">
-
-<!-- FAVICON -->
-<link rel="icon" href="/∫ (1).png">
-<style>
-body{
-  margin:0;
-  font-family:system-ui;
-  background:#020617;
-  color:white;
-}
-
-/* NAV */
-.nav{
-  display:flex;
-  justify-content:space-between;
-  padding:20px 40px;
-}
-
-.logo{font-weight:600;}
-.nav-right{display:flex;gap:20px;}
-
-.user-btn{
-  background:#0f172a;
-  padding:8px 14px;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-/* HERO (SEARCH ALWAYS TOP) */
-.hero{
-  padding:60px 20px 40px;
-  text-align:center;
-}
-
-.search-box{
-  margin:auto;
-  display:flex;
-  width:650px;
-  max-width:90%;
-  background:#0f172a;
-  border:1px solid #1e293b;
-  border-radius:14px;
-  padding:10px;
-}
-
-.search-box input{
-  flex:1;
-  background:none;
-  border:none;
-  color:white;
-  font-size:16px;
-  outline:none;
-}
-
-.search-box button{
-  background:#38bdf8;
-  border:none;
-  border-radius:10px;
-  padding:10px 16px;
-  cursor:pointer;
-}
-
-/* SECTIONS */
-.section{
-  padding:40px 20px;
-  max-width:1000px;
-  margin:auto;
-}
-
-.section h2{
-  margin-bottom:20px;
-}
-
-/* CARDS */
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:15px;
-}
-
-.card{
-  background:#0f172a;
-  padding:20px;
-  border-radius:12px;
-  border:1px solid #1e293b;
-  cursor:pointer;
-  transition:0.2s;
-}
-
-.card:hover{
-  transform:translateY(-5px);
-  border-color:#38bdf8;
-}
-
-.card h3{
-  margin-bottom:10px;
-}
-
-.card p{
-  color:#94a3b8;
-  font-size:14px;
-}
-.nav a{
-  color:#94a3b8;
-  text-decoration:none;
-  font-size:14px;
-}
-
-.nav a:hover{
-  color:white;
-}
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taxtron AI</title>
   
+  <meta name="description" content="Taxtron AI helps students with JEE preparation, concepts, questions, and AI tools.">
+  <meta name="robots" content="index, follow">
 
-</style>
+  <link rel="canonical" href="https://taxtron.in">
+
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+  <meta property="og:title" content="Taxtron AI">
+  <meta property="og:description" content="AI platform for JEE preparation and learning">
+  <meta property="og:url" content="https://taxtron.in">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://taxtron.in/∫ (1).png">
+
+  <link rel="icon" href="/∫ (1).png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* VARIABLES */
+    :root {
+      --bg-color: #020617;
+      --card-bg: #0f172a;
+      --border-color: #1e293b;
+      --primary: #38bdf8;
+      --primary-hover: #0ea5e9;
+      --text-main: #ffffff;
+      --text-muted: #94a3b8;
+    }
+
+    /* GLOBAL */
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-main);
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* KEYFRAME ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+    }
+
+    /* BACKGROUND GLOW EFFECT */
+    .bg-glow {
+      position: absolute;
+      top: -10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(56,189,248,0.15) 0%, rgba(2,6,23,0) 70%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* NAV (Glassmorphism & Sticky) */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      background: rgba(2, 6, 23, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: -0.5px;
+      transition: transform 0.2s ease;
+    }
+    .logo:hover {
+      transform: scale(1.05);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+    .nav a:hover {
+      color: var(--text-main);
+    }
+
+    .user-btn {
+      background: var(--card-bg);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .user-btn:hover {
+      background: #1e293b;
+      border-color: var(--primary);
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      padding: 100px 20px 60px;
+      text-align: center;
+      animation: fadeUp 0.8s ease-out forwards;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin-bottom: 30px;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #ffffff 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .search-box {
+      margin: auto;
+      display: flex;
+      width: 650px;
+      max-width: 90%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 8px;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+
+    .search-box:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .search-box input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      padding: 0 15px;
+      outline: none;
+    }
+    .search-box input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-box button {
+      background: var(--primary);
+      color: #020617;
+      font-weight: 600;
+      font-size: 15px;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 24px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .search-box button:hover {
+      background: var(--primary-hover);
+      transform: scale(1.05);
+      animation: pulseGlow 1.5s infinite;
+    }
+
+    /* SECTIONS */
+    .section {
+      padding: 60px 20px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .section h2 {
+      font-size: 1.8rem;
+      margin-bottom: 30px;
+      font-weight: 600;
+      text-align: center;
+      color: var(--text-main);
+    }
+
+    /* CARDS */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: linear-gradient(145deg, var(--card-bg), #0b1120);
+      padding: 25px;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      opacity: 0;
+      animation: fadeUp 0.6s ease-out forwards;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Staggered animation delays for cards */
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(4) { animation-delay: 0.4s; }
+
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(56, 189, 248, 0.5);
+      box-shadow: 0 10px 30px -10px rgba(56, 189, 248, 0.2);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 14.5px;
+      line-height: 1.6;
+    }
+
+    /* RESPONSIVE DESIGN */
+    @media (max-width: 768px) {
+      .nav { padding: 15px 20px; flex-direction: column; gap: 15px; }
+      .nav-right { flex-wrap: wrap; justify-content: center; gap: 15px; }
+      .hero h1 { font-size: 2.5rem; }
+      .hero { padding: 60px 15px 30px; }
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- NAV -->
-<div class="nav">
+<div class="bg-glow"></div>
 
-  <!-- LEFT: LOGO -->
-  <div class="logo" onclick="location.href='/'" style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-    <img src="/∫.png" style="height:28px;">
+<div class="nav">
+  <div class="logo" onclick="location.href='/'" style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+    <img src="/∫.png" style="height:28px;" alt="Taxtron Logo">
     <span>Taxtron</span>
   </div>
 
-  <!-- RIGHT -->
   <div class="nav-right">
-    
     <a href="https://content.taxtron.in" target="_blank">Get JEE NOTES !!</a>
     <a href="https://music.taxtron.in" target="_blank">Music ♪</a>
     <a href="https://content.taxtron.in/p/notification.html" target="_blank">Notifications</a>
     <a href="/aboutus">About us</a>
     <a href="/contact">Contact</a>
-    <a href="/privacy">privacy policy</a>
+    <a href="/privacy">Privacy Policy</a>
     
-
-    <!-- USER -->
     <div id="userArea"></div>
-
   </div>
 </div>
 
-<!-- HERO -->
 <div class="hero">
-
   <h1>Try Taxtron AI</h1>
-
   <div class="search-box">
-    <input id="q" placeholder="Ask anything...">
-    <button onclick="go()">Ask</button>
+    <input id="q" placeholder="Ask anything about JEE, Physics, Chemistry..." onkeydown="if(event.key === 'Enter') go()">
+    <button onclick="go()">Ask AI</button>
   </div>
-
 </div>
 
-<!-- FEATURE SECTION -->
 <div class="section">
-  <h2>Popular Tools </h2>
-
+  <h2>Popular Tools</h2>
   <div class="cards">
-
     <div class="card" onclick="quick('Explain rotational motion')">
       <h3>Physics Help</h3>
-      <p>Concept explanations & problem solving</p>
+      <p>Instant concept explanations & step-by-step problem solving.</p>
     </div>
-
     <div class="card" onclick="quick('Generate JEE questions')">
       <h3>JEE Questions</h3>
-      <p>Practice problems instantly</p>
+      <p>Generate fresh, pattern-matching practice problems instantly.</p>
     </div>
-
     <div class="card" onclick="quick('Explain chemical bonding')">
       <h3>Chemistry AI</h3>
-      <p>Clear concepts fast</p>
+      <p>Clear up complex organic and inorganic concepts fast.</p>
     </div>
-
     <div class="card" onclick="quick('Create math test')">
       <h3>Math Test</h3>
-      <p>Generate custom tests</p>
+      <p>Create highly customized mock tests for specific chapters.</p>
     </div>
-
   </div>
 </div>
 
-<!-- MORE SECTION -->
 <div class="section">
   <h2>Why Taxtron?</h2>
-
   <div class="cards">
-
     <div class="card">
       <h3>AI Powered</h3>
-      <p>Smart answers instantly</p>
+      <p>Trained to give smart, accurate answers instantly without hallucinating formulas.</p>
     </div>
-
     <div class="card">
       <h3>JEE Focused</h3>
-      <p>Built for serious preparation</p>
+      <p>Built strictly for serious engineering aspirants and highly competitive exams.</p>
     </div>
-
     <div class="card">
       <h3>Fast & Clean</h3>
-      <p>No distractions, pure learning</p>
+      <p>A minimalist interface. No distractions, no ads—just pure learning.</p>
     </div>
-
   </div>
 </div>
 
-<!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
-
-// FIREBASE
+// FIREBASE CONFIG
 firebase.initializeApp({
   apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
   authDomain: "taxtron-ai.firebaseapp.com",
@@ -243,32 +353,30 @@ firebase.initializeApp({
 });
 
 // USER UI
-firebase.auth().onAuthStateChanged(user=>{
-  const box=document.getElementById("userArea");
+firebase.auth().onAuthStateChanged(user => {
+  const box = document.getElementById("userArea");
 
-  if(user){
-    box.innerHTML=`<div class="user-btn" onclick="location.href='/profile.html'">
+  if(user) {
+    box.innerHTML = `<div class="user-btn" onclick="location.href='/profile.html'">
       👤 ${user.displayName}
     </div>`;
   } else {
-    box.innerHTML=`<div class="user-btn" onclick="location.href='/login2.html'">
+    box.innerHTML = `<div class="user-btn" onclick="location.href='/login2.html'">
       Sign In
     </div>`;
   }
 });
 
-// SEARCH
-function go(){
-  const q=document.getElementById("q").value;
+// SEARCH FUNCTIONS
+function go() {
+  const q = document.getElementById("q").value.trim();
   if(!q) return;
-
-  window.location.href="/ai?q="+encodeURIComponent(q);
+  window.location.href = "/ai?q=" + encodeURIComponent(q);
 }
 
-function quick(text){
-  window.location.href="/ai?q="+encodeURIComponent(text);
+function quick(text) {
+  window.location.href = "/ai?q=" + encodeURIComponent(text);
 }
-
 </script>
 
 </body>
