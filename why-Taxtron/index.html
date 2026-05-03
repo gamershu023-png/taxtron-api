@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Taxtron?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base Reset and Variables */
+        :root {
+            --bg-color: #080c16;
+            --card-bg: #111826;
+            --card-border: #1f2937;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --accent-blue: #38bdf8;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Mock Navbar */
+        header {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem 3rem;
+            background-color: var(--bg-color);
+            border-bottom: 1px solid var(--card-border);
+            animation: fadeInDown 0.8s ease forwards;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo-container img {
+            height: 35px;
+            border-radius: 50%; /* Adjust if the gif has a background */
+        }
+
+        /* Main Section */
+        .why-taxtron-section {
+            padding: 6rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 4rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards 0.2s;
+        }
+
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* Individual Card Styling */
+        .feature-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 320px;
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            opacity: 0;
+            /* Staggered animation delays handled below */
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 10px 25px -5px rgba(56, 189, 248, 0.15), 
+                        0 8px 10px -6px rgba(56, 189, 248, 0.1);
+        }
+
+        .feature-title {
+            color: var(--accent-blue);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .feature-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Footer */
+        footer {
+            padding: 2rem 3rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            border-top: 1px solid var(--card-border);
+        }
+
+        /* Animations */
+        .delay-1 { animation: fadeInUp 0.8s ease forwards 0.4s; }
+        .delay-2 { animation: fadeInUp 0.8s ease forwards 0.6s; }
+        .delay-3 { animation: fadeInUp 0.8s ease forwards 0.8s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cards-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header containing the provided logo -->
+    <header>
+        <div class="logo-container">
+            <img src="https://taxtron.in/logo1526tx.gif" alt="Taxtron Logo">
+            <span>Taxtron</span>
+        </div>
+    </header>
+
+    <!-- Why Taxtron Section -->
+    <section class="why-taxtron-section">
+        <h2 class="section-title">Why Taxtron?</h2>
+        
+        <div class="cards-container">
+            <!-- Card 1 -->
+            <div class="feature-card delay-1">
+                <h3 class="feature-title">AI Powered</h3>
+                <p class="feature-desc">Trained to give smart, accurate answers instantly without hallucinating formulas.</p>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="feature-card delay-2">
+                <h3 class="feature-title">JEE Focused</h3>
+                <p class="feature-desc">Built strictly for serious engineering aspirants and highly competitive exams.</p>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="feature-card delay-3">
+                <h3 class="feature-title">Fast & Clean</h3>
+                <p class="feature-desc">A minimalist interface. No distractions, no ads—just pure learning.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        © 2026 Taxtron.in
+    </footer>
+
+</body>
+</html>
