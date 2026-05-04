@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxtron Smart Search</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #004aad;
+            --secondary-blue: #007bff;
+            --light-blue: #e6f2ff;
+            --dark-blue: #00214d;
+            --text-main: #333;
+            --text-muted: #666;
+            --bg-gradient: linear-gradient(135deg, #f0f8ff 0%, #cce5ff 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px 20px;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background Elements */
+        .bg-shape {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            animation: float 10s infinite alternate ease-in-out;
+        }
+        .shape1 {
+            width: 400px; height: 400px;
+            background: rgba(0, 123, 255, 0.2);
+            top: -100px; left: -100px;
+        }
+        .shape2 {
+            width: 500px; height: 500px;
+            background: rgba(0, 74, 173, 0.15);
+            bottom: -150px; right: -100px;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 50px) scale(1.1); }
+        }
+
+        /* Logo Animation */
+        .logo-container {
+            margin-bottom: 40px;
+            animation: slideDown 0.8s ease-out forwards;
+        }
+        .logo-container img {
+            max-width: 250px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 74, 173, 0.2);
+            transition: transform 0.3s;
+        }
+        .logo-container img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Search Bar */
+        .search-wrapper {
+            width: 100%;
+            max-width: 700px;
+            position: relative;
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 20px 25px 20px 60px;
+            font-size: 1.1rem;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid transparent;
+            border-radius: 50px;
+            box-shadow: 0 15px 35px rgba(0, 74, 173, 0.1);
+            transition: all 0.4s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+            box-shadow: 0 15px 35px rgba(0, 74, 173, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-blue);
+            font-size: 1.3rem;
+        }
+
+        /* Results Container */
+        .results-container {
+            width: 100%;
+            max-width: 700px;
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: var(--text-main);
+            border-left: 5px solid var(--primary-blue);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.4s ease-out forwards;
+        }
+
+        .result-card:hover {
+            transform: translateX(10px) translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 74, 173, 0.15);
+            border-left-color: var(--secondary-blue);
+            background: #fff;
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-blue);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-url {
+            font-size: 0.85rem;
+            color: var(--secondary-blue);
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .result-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .no-results {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 30px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 15px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Background Elements -->
+    <div class="bg-shape shape1"></div>
+    <div class="bg-shape shape2"></div>
+
+    <!-- Logo -->
+    <div class="logo-container">
+        <a href="https://taxtron.in/"><img src="https://taxtron.in/logo1526tx.gif" alt="Taxtron Logo"></a>
+    </div>
+
+    <!-- Search Area -->
+    <div class="search-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" class="search-box" placeholder="Search Taxtron pages, AI, Music, Universe..." autocomplete="off">
+    </div>
+
+    <!-- Results Area -->
+    <div class="results-container" id="resultsContainer">
+        <!-- Results inject via JS -->
+    </div>
+
+    <script>
+        // Taxtron Site Data (Enriched with Titles, Descriptions, and Keywords for 'Smart' searching)
+        const siteData = [
+            { url: "https://taxtron.in/", title: "Taxtron Home", desc: "Welcome to the main Taxtron portal. Explore our ecosystem.", type: "Main", keywords: ["index", "home", "homepage", "start"] },
+            { url: "https://taxtron.in/ai", title: "Taxtron AI", desc: "Experience the power of Taxtron Artificial Intelligence.", type: "AI", keywords: ["artificial intelligence", "bot", "chat", "smart", "machine learning"] },
+            { url: "https://taxtron.in/login.html", title: "User Login", desc: "Access your Taxtron account securely.", type: "Auth", keywords: ["sign in", "auth", "account", "login"] },
+            { url: "https://taxtron.in/login2.html", title: "Alternative Login", desc: "Secondary portal access for Taxtron users.", type: "Auth", keywords: ["sign in", "auth", "account", "backup login"] },
+            { url: "https://taxtron.in/universe", title: "Taxtron Universe", desc: "Discover the interconnected Taxtron ecosystem and platforms.", type: "Explore", keywords: ["ecosystem", "world", "services", "all"] },
+            { url: "https://taxtron.in/aboutus", title: "About Us", desc: "Learn about Taxtron's mission, vision, and team.", type: "Company", keywords: ["company", "team", "who we are", "history"] },
+            { url: "https://taxtron.in/notifications", title: "Notifications", desc: "View your recent alerts, updates, and messages.", type: "User", keywords: ["alerts", "updates", "messages", "inbox"] },
+            { url: "https://taxtron.in/contact", title: "Contact Us", desc: "Get in touch with Taxtron support and administration.", type: "Company", keywords: ["support", "help", "email", "phone", "reach out"] },
+            { url: "https://taxtron.in/privacy", title: "Privacy Policy", desc: "Read our terms regarding data security and user privacy.", type: "Legal", keywords: ["terms", "conditions", "data", "security", "gdpr"] },
+            { url: "https://taxtron.in/profile.html", title: "User Profile", desc: "Manage your personal Taxtron profile and settings.", type: "User", keywords: ["settings", "account", "personal", "dashboard"] },
+            { url: "https://taxtron.in/why-Taxtron", title: "Why Taxtron?", desc: "Find out what makes Taxtron the premier choice for you.", type: "Info", keywords: ["benefits", "features", "advantages", "reasons"] },
+            { url: "https://content.taxtron.in", title: "Taxtron Content Delivery", desc: "Access media, blogs, and central content repositories.", type: "Subdomain", keywords: ["blog", "media", "articles", "news", "cdn"] },
+            { url: "https://music.taxtron.in", title: "Taxtron Music", desc: "Explore the official audio and music platform of Taxtron.", type: "Subdomain", keywords: ["audio", "songs", "tracks", "streaming", "listen"] },
+            { url: "https://music.taxtron.in/2026/03/our-releases-eternal-shankar-music.html", title: "Eternal Shankar - Music Releases", desc: "Latest March 2026 releases featuring Eternal Shankar Music.", type: "Release", keywords: ["song", "album", "eternal shankar", "new release", "2026"] },
+            { url: "https://legendaryplayz.weebly.com", title: "Legendary Playz (Partner)", desc: "Taxtron's official partner site / external project.", type: "External", keywords: ["gaming", "playz", "partner", "weebly", "affiliate"] }
+        ];
+
+        const searchInput = document.getElementById('searchInput');
+        const resultsContainer = document.getElementById('resultsContainer');
+
+        // Initial render (Show all or a welcome message)
+        renderResults(siteData);
+
+        // Smart Search Event Listener
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            
+            if (query === '') {
+                renderResults(siteData); // Show all if empty
+                return;
+            }
+
+            // Smart filtering logic
+            const filteredData = siteData.filter(item => {
+                const titleMatch = item.title.toLowerCase().includes(query);
+                const urlMatch = item.url.toLowerCase().includes(query);
+                const descMatch = item.desc.toLowerCase().includes(query);
+                const keywordMatch = item.keywords.some(kw => kw.toLowerCase().includes(query));
+
+                return titleMatch || urlMatch || descMatch || keywordMatch;
+            });
+
+            renderResults(filteredData);
+        });
+
+        // Function to render HTML elements based on data array
+        function renderResults(data) {
+            resultsContainer.innerHTML = ''; // Clear current results
+
+            if (data.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search-minus" style="font-size: 2rem; color: var(--primary-blue); margin-bottom: 10px;"></i>
+                        <h3>No matching pages found</h3>
+                        <p>Try searching for different keywords, like "AI", "Music", or "Login".</p>
+                    </div>
+                `;
+                return;
+            }
+
+            data.forEach((item, index) => {
+                const a = document.createElement('a');
+                a.href = item.url;
+                a.className = 'result-card';
+                // Add staggered animation delay
+                a.style.animationDelay = `${index * 0.05}s`;
+
+                a.innerHTML = `
+                    <div class="result-title">
+                        ${item.title} <span class="badge">${item.type}</span>
+                    </div>
+                    <div class="result-url">${item.url.replace('https://', '')}</div>
+                    <div class="result-desc">${item.desc}</div>
+                `;
+
+                resultsContainer.appendChild(a);
+            });
+        }
+    </script>
+</body>
+</html>
