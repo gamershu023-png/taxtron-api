@@ -1,14 +1,14 @@
 <!doctype html>
 <html class="h-full">
- <head>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Naam Jaap</title>
+  <title>Naam Jaap - Divine Counter</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="/_sdk/data_sdk.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&amp;family=Noto+Sans+Devanagari:wght@400;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
   <style>
     @keyframes pulse-glow {
       0%, 100% { box-shadow: 0 0 20px rgba(255,183,77,0.3); }
@@ -31,250 +31,230 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
     .tab-toast.show { display: flex; align-items: center; gap: 8px; animation: fadeIn 0.3s ease; }
+    body { box-sizing: border-box; }
   </style>
-  <style>body { box-sizing: border-box; }</style>
- </head>
- <body class="h-full">
+</head>
+<body class="h-full">
   <div id="app" class="h-full w-full overflow-auto" style="background: linear-gradient(160deg, #0d0221 0%, #1a0533 40%, #2d1b69 100%); font-family: 'Philosopher', serif;">
-   <!-- Tab Switch Toast -->
-   <div id="tab-toast" class="tab-toast">
-    <span>🙏</span> <span>Welcome back! Continue your Jaap</span>
-   </div><!-- Main Content -->
-   <div class="flex flex-col items-center justify-center min-h-full px-4 py-8">
-    <!-- Header -->
-    <h1 id="page-title" class="text-4xl md:text-5xl font-bold text-amber-300 mb-1 text-center" style="text-shadow: 0 0 20px rgba(255,183,77,0.4);">Naam Jaap</h1>
-    <p id="subtitle" class="text-amber-100/60 text-lg mb-8">Divine Chanting Counter</p><!-- Counter Display -->
-    <div class="glow-ring rounded-full w-56 h-56 md:w-64 md:h-64 flex flex-col items-center justify-center border-2 border-amber-400/40 bg-gradient-to-br from-purple-900/50 to-indigo-900/50 mb-6">
-     <span id="count-display" class="text-6xl md:text-7xl font-bold text-amber-200">0</span> <span id="target-display" class="text-amber-100/50 text-sm mt-1"></span>
-    </div><!-- Jaap Button --> <button id="jaap-btn" class="jaap-btn w-32 h-32 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 text-white text-xl font-bold shadow-lg hover:from-amber-400 hover:to-orange-500 transition-all mb-6 flex items-center justify-center" style="font-family:'Noto Sans Devanagari',sans-serif;"> 🙏 जप </button> <!-- Mantra Input -->
-    <div class="w-full max-w-sm mb-4">
-     <input id="mantra-input" type="text" placeholder="Enter your mantra..." class="w-full bg-white/10 border border-amber-400/30 rounded-lg px-4 py-3 text-amber-100 placeholder-amber-100/40 focus:outline-none focus:border-amber-400 text-center" style="font-family:'Noto Sans Devanagari',sans-serif;">
-    </div><!-- Target Input -->
-    <div class="w-full max-w-sm mb-6 flex gap-2">
-     <input id="target-input" type="number" placeholder="Set target (e.g. 108)" class="flex-1 bg-white/10 border border-amber-400/30 rounded-lg px-4 py-2 text-amber-100 placeholder-amber-100/40 focus:outline-none focus:border-amber-400 text-center text-sm"> <button id="save-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-semibold transition-colors">Save</button> <button id="reset-btn" class="px-4 py-2 bg-red-900/60 hover:bg-red-800 text-red-200 rounded-lg text-sm font-semibold transition-colors">Reset</button>
-    </div><!-- Tab Reminder Toggle -->
-    <div class="w-full max-w-sm bg-white/5 border border-amber-400/20 rounded-xl p-4 mb-6">
-     <div class="flex items-center justify-between">
-      <div class="flex items-center gap-2">
-       <i data-lucide="bell" class="w-5 h-5 text-amber-300"></i> <span class="text-amber-100 text-sm font-medium">Tab Switch Reminder</span>
-      </div><button id="reminder-toggle" class="w-12 h-6 rounded-full bg-gray-600 relative transition-colors"> <span id="toggle-dot" class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform"></span> </button>
-     </div>
-     <p class="text-amber-100/40 text-xs mt-2">Get reminded to continue jaap when switching tabs</p>
-    </div><!-- History -->
-    <div class="w-full max-w-sm">
-     <h3 class="text-amber-300/80 text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="history" class="w-4 h-4"></i> Saved Sessions</h3>
-     <div id="history-list" class="space-y-2 max-h-48 overflow-auto"></div>
-     <p id="empty-msg" class="text-amber-100/30 text-xs text-center py-4">No saved sessions yet. Start chanting and save!</p>
-    </div><!-- Limit Warning -->
-    <div id="limit-warning" class="hidden w-full max-w-sm mt-4 bg-red-900/40 border border-red-400/30 rounded-lg p-3 text-red-200 text-xs text-center">
-     Maximum sessions reached (999). Please delete old sessions.
-    </div>
-   </div>
-  </div>
-  <script>
-  // State
-  let currentCount = 0;
-  let currentTarget = 108;
-  let reminderEnabled = true;
-  let allSessions = [];
-
-  const defaultConfig = {
-    page_title: 'Naam Jaap',
-    subtitle_text: 'Divine Chanting Counter',
-    background_color: '#0d0221',
-    surface_color: '#1a0533',
-    text_color: '#ffd54f',
-    primary_action_color: '#f59e0b',
-    secondary_action_color: '#4f46e5',
-    font_family: 'Philosopher',
-    font_size: 16
-  };
-
-  // Elements SDK
-  window.elementSdk.init({
-    defaultConfig,
-    onConfigChange: async (config) => {
-      const c = { ...defaultConfig, ...config };
-      document.getElementById('page-title').textContent = c.page_title;
-      document.getElementById('subtitle').textContent = c.subtitle_text;
-      document.getElementById('app').style.background = `linear-gradient(160deg, ${c.background_color} 0%, ${c.surface_color} 40%, #2d1b69 100%)`;
-      document.getElementById('page-title').style.color = c.text_color;
-      document.getElementById('count-display').style.color = c.text_color;
-      document.getElementById('jaap-btn').style.background = `linear-gradient(to bottom right, ${c.primary_action_color}, #ea580c)`;
-      document.getElementById('save-btn').style.backgroundColor = c.secondary_action_color;
-      const font = `${c.font_family}, serif`;
-      document.getElementById('page-title').style.fontFamily = font;
-      document.getElementById('subtitle').style.fontFamily = font;
-      const base = c.font_size;
-      document.getElementById('page-title').style.fontSize = `${base * 2.5}px`;
-      document.getElementById('subtitle').style.fontSize = `${base * 1.1}px`;
-    },
-    mapToCapabilities: (config) => {
-      const c = { ...defaultConfig, ...config };
-      const make = (key) => ({
-        get: () => c[key] || defaultConfig[key],
-        set: (v) => { c[key] = v; window.elementSdk.setConfig({ [key]: v }); }
-      });
-      return {
-        recolorables: [make('background_color'), make('surface_color'), make('text_color'), make('primary_action_color'), make('secondary_action_color')],
-        borderables: [],
-        fontEditable: make('font_family'),
-        fontSizeable: make('font_size')
-      };
-    },
-    mapToEditPanelValues: (config) => {
-      const c = { ...defaultConfig, ...config };
-      return new Map([
-        ['page_title', c.page_title],
-        ['subtitle_text', c.subtitle_text]
-      ]);
-    }
-  });
-
-  // Data SDK
-  const dataHandler = {
-    onDataChanged(data) {
-      allSessions = data;
-      renderHistory();
-    }
-  };
-
-  (async () => {
-    const r = await window.dataSdk.init(dataHandler);
-    if (!r.isOk) console.error('Data SDK init failed');
-  })();
-
-  function renderHistory() {
-    const list = document.getElementById('history-list');
-    const empty = document.getElementById('empty-msg');
-    empty.style.display = allSessions.length === 0 ? 'block' : 'none';
     
-    const existingMap = new Map([...list.children].map(el => [el.dataset.id, el]));
-    const newIds = new Set(allSessions.map(s => s.__backendId));
+    <!-- Toast Notification -->
+    <div id="tab-toast" class="tab-toast">
+      <span>🙏</span> <span>Welcome back!</span>
+    </div>
 
-    existingMap.forEach((el, id) => { if (!newIds.has(id)) el.remove(); });
+    <div class="flex flex-col items-center justify-center min-h-full px-4 py-8">
+      <!-- Header -->
+      <h1 id="page-title" class="text-4xl md:text-5xl font-bold text-amber-300 mb-1 text-center" style="text-shadow: 0 0 20px rgba(255,183,77,0.4);">Naam Jaap</h1>
+      <p id="subtitle" class="text-amber-100/60 text-lg mb-8">Divine Chanting Counter</p>
 
-    allSessions.forEach(session => {
-      let el = existingMap.get(session.__backendId);
-      if (!el) {
-        el = document.createElement('div');
-        el.dataset.id = session.__backendId;
-        el.className = 'flex items-center justify-between bg-white/5 border border-amber-400/10 rounded-lg px-3 py-2 fade-in';
-        list.appendChild(el);
-      }
-      const date = new Date(session.created_at);
-      const dateStr = date.toLocaleDateString(undefined, { month:'short', day:'numeric' });
-      el.innerHTML = `
-        <div class="flex-1 min-w-0">
-          <span class="text-amber-200 text-sm truncate block" style="font-family:'Noto Sans Devanagari',sans-serif;">${session.mantra || 'No mantra'}</span>
-          <span class="text-amber-100/40 text-xs">${dateStr} • ${session.count}/${session.target}</span>
+      <!-- Counter Display -->
+      <div class="glow-ring rounded-full w-56 h-56 md:w-64 md:h-64 flex flex-col items-center justify-center border-2 border-amber-400/40 bg-gradient-to-br from-purple-900/50 to-indigo-900/50 mb-6">
+        <span id="count-display" class="text-6xl md:text-7xl font-bold text-amber-200">0</span> 
+        <span id="target-display" class="text-amber-100/50 text-sm mt-1">Target: 108</span>
+      </div>
+
+      <!-- Main Action Button -->
+      <button id="jaap-btn" class="jaap-btn w-32 h-32 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 text-white text-xl font-bold shadow-lg hover:from-amber-400 hover:to-orange-500 transition-all mb-6 flex items-center justify-center" style="font-family:'Noto Sans Devanagari',sans-serif;"> 🙏 जप </button>
+
+      <!-- Mantra Input -->
+      <div class="w-full max-w-sm mb-4">
+        <input id="mantra-input" type="text" placeholder="Enter your mantra..." class="w-full bg-white/10 border border-amber-400/30 rounded-lg px-4 py-3 text-amber-100 placeholder-amber-100/40 focus:outline-none focus:border-amber-400 text-center" style="font-family:'Noto Sans Devanagari',sans-serif;">
+      </div>
+
+      <!-- Target & Controls -->
+      <div class="w-full max-w-sm mb-6 flex gap-2">
+        <input id="target-input" type="number" placeholder="Target (e.g. 108)" class="flex-1 bg-white/10 border border-amber-400/30 rounded-lg px-4 py-2 text-amber-100 placeholder-amber-100/40 focus:outline-none focus:border-amber-400 text-center text-sm"> 
+        <button id="save-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-semibold transition-colors">Save</button> 
+        <button id="reset-btn" class="px-4 py-2 bg-red-900/60 hover:bg-red-800 text-red-200 rounded-lg text-sm font-semibold transition-colors">Reset</button>
+      </div>
+
+      <!-- Tab Reminder Toggle -->
+      <div class="w-full max-w-sm bg-white/5 border border-amber-400/20 rounded-xl p-4 mb-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i data-lucide="bell" class="w-5 h-5 text-amber-300"></i> 
+            <span class="text-amber-100 text-sm font-medium">Tab Switch Reminder</span>
+          </div>
+          <button id="reminder-toggle" class="w-12 h-6 rounded-full bg-amber-500 relative transition-colors"> 
+            <span id="toggle-dot" class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform" style="transform: translateX(24px);"></span> 
+          </button>
         </div>
-        <button onclick="deleteSession('${session.__backendId}')" class="text-red-400/60 hover:text-red-300 ml-2 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-      `;
-      lucide.createIcons();
-    });
-  }
+        <p class="text-amber-100/40 text-xs mt-2">Get reminded to continue jaap when switching tabs</p>
+      </div>
 
-  async function deleteSession(id) {
-    const session = allSessions.find(s => s.__backendId === id);
-    if (!session) return;
-    const r = await window.dataSdk.delete(session);
-    if (!r.isOk) showToast('Failed to delete');
-  }
+      <!-- History Section -->
+      <div class="w-full max-w-sm">
+        <h3 class="text-amber-300/80 text-sm font-semibold mb-2 flex items-center gap-2"><i data-lucide="history" class="w-4 h-4"></i> Saved Sessions</h3>
+        <div id="history-list" class="space-y-2 max-h-48 overflow-auto"></div>
+        <p id="empty-msg" class="text-amber-100/30 text-xs text-center py-4">No saved sessions yet. Start chanting and save!</p>
+      </div>
 
-  // Counter
-  function onJaapClick() {
-    currentCount++;
-    updateCountDisplay();
-    if (currentCount === currentTarget) {
-      showToast('🎉 Target reached! Congratulations!');
+      <!-- Limit Warning -->
+      <div id="limit-warning" class="hidden w-full max-w-sm mt-4 bg-red-900/40 border border-red-400/30 rounded-lg p-3 text-red-200 text-xs text-center">
+        Maximum sessions reached (999). Please delete old sessions.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- State Management ---
+    let currentCount = 0;
+    let currentTarget = 108;
+    let reminderEnabled = true;
+    let allSessions = [];
+
+    const defaultConfig = {
+      page_title: 'Naam Jaap',
+      subtitle_text: 'Divine Chanting Counter',
+      background_color: '#0d0221',
+      surface_color: '#1a0533',
+      text_color: '#ffd54f',
+      primary_action_color: '#f59e0b',
+      secondary_action_color: '#4f46e5',
+      font_family: 'Philosopher',
+      font_size: 16
+    };
+
+    // --- Core Functions ---
+    function updateCountDisplay() {
+      document.getElementById('count-display').textContent = currentCount;
+      document.getElementById('target-display').textContent = currentTarget ? `Target: ${currentTarget}` : '';
     }
-  }
-  
-  document.getElementById('jaap-btn').addEventListener('click', onJaapClick);
 
-  function updateCountDisplay() {
-    document.getElementById('count-display').textContent = currentCount;
-    document.getElementById('target-display').textContent = currentTarget ? `Target: ${currentTarget}` : '';
-  }
-
-  // Save
-  document.getElementById('save-btn').addEventListener('click', async () => {
-    if (allSessions.length >= 999) {
-      document.getElementById('limit-warning').classList.remove('hidden');
-      return;
-    }
-    const mantra = document.getElementById('mantra-input').value.trim();
-    const target = parseInt(document.getElementById('target-input').value) || 108;
-    const btn = document.getElementById('save-btn');
-    btn.disabled = true; btn.textContent = '...';
-    const r = await window.dataSdk.create({
-      mantra: mantra || 'ॐ',
-      count: currentCount,
-      target: target,
-      created_at: new Date().toISOString()
-    });
-    btn.disabled = false; btn.textContent = 'Save';
-    if (r.isOk) {
-      currentCount = 0;
-      updateCountDisplay();
-      showToast('Session saved! 🙏');
-    } else {
-      showToast('Failed to save');
-    }
-  });
-
-  // Reset
-  document.getElementById('reset-btn').addEventListener('click', () => {
-    currentCount = 0;
-    updateCountDisplay();
-  });
-
-  // Target input
-  document.getElementById('target-input').addEventListener('change', (e) => {
-    currentTarget = parseInt(e.target.value) || 108;
-    updateCountDisplay();
-  });
-
-  // Tab Switch Reminder
-  document.getElementById('reminder-toggle').addEventListener('click', () => {
-    reminderEnabled = !reminderEnabled;
-    const toggle = document.getElementById('reminder-toggle');
-    const dot = document.getElementById('toggle-dot');
-    if (reminderEnabled) {
-      toggle.classList.remove('bg-gray-600');
-      toggle.classList.add('bg-amber-500');
-      dot.style.transform = 'translateX(24px)';
-    } else {
-      toggle.classList.add('bg-gray-600');
-      toggle.classList.remove('bg-amber-500');
-      dot.style.transform = 'translateX(0)';
-    }
-  });
-
-  // Initialize toggle as ON
-  document.getElementById('reminder-toggle').classList.remove('bg-gray-600');
-  document.getElementById('reminder-toggle').classList.add('bg-amber-500');
-  document.getElementById('toggle-dot').style.transform = 'translateX(24px)';
-
-  // Tab visibility
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && reminderEnabled) {
+    function showToast(msg) {
       const toast = document.getElementById('tab-toast');
+      toast.querySelector('span:last-child').textContent = msg;
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 3000);
     }
-  });
 
-  function showToast(msg) {
-    const toast = document.getElementById('tab-toast');
-    toast.querySelector('span:last-child').textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-  }
+    function renderHistory() {
+      const list = document.getElementById('history-list');
+      const empty = document.getElementById('empty-msg');
+      empty.style.display = allSessions.length === 0 ? 'block' : 'none';
+      
+      list.innerHTML = ''; // Clear and re-render
+      allSessions.forEach(session => {
+        const el = document.createElement('div');
+        el.className = 'flex items-center justify-between bg-white/5 border border-amber-400/10 rounded-lg px-3 py-2 fade-in';
+        const date = new Date(session.created_at);
+        const dateStr = date.toLocaleDateString(undefined, { month:'short', day:'numeric' });
+        el.innerHTML = `
+          <div class="flex-1 min-w-0">
+            <span class="text-amber-200 text-sm truncate block" style="font-family:'Noto Sans Devanagari',sans-serif;">${session.mantra || 'ॐ'}</span>
+            <span class="text-amber-100/40 text-xs">${dateStr} • ${session.count}/${session.target}</span>
+          </div>
+          <button onclick="handleDelete('${session.__backendId}')" class="text-red-400/60 hover:text-red-300 ml-2 p-1">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+        `;
+        list.appendChild(el);
+      });
+      if (window.lucide) lucide.createIcons();
+    }
 
-  updateCountDisplay();
-  lucide.createIcons();
-</script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9f7763d9f7b09a7b',t:'MTc3ODA2NDI3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    // --- Event Listeners ---
+    document.getElementById('jaap-btn').addEventListener('click', () => {
+      currentCount++;
+      updateCountDisplay();
+      if (currentCount === currentTarget) {
+        showToast('🎉 Target reached! Congratulations!');
+      }
+    });
+
+    document.getElementById('reset-btn').addEventListener('click', () => {
+      currentCount = 0;
+      updateCountDisplay();
+    });
+
+    document.getElementById('target-input').addEventListener('input', (e) => {
+      currentTarget = parseInt(e.target.value) || 0;
+      updateCountDisplay();
+    });
+
+    document.getElementById('save-btn').addEventListener('click', async () => {
+      if (allSessions.length >= 999) {
+        document.getElementById('limit-warning').classList.remove('hidden');
+        return;
+      }
+      
+      const mantra = document.getElementById('mantra-input').value.trim() || 'ॐ';
+      const btn = document.getElementById('save-btn');
+      
+      if (!window.dataSdk) {
+        showToast('Local Mode: Progress not synced.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '...';
+      
+      const r = await window.dataSdk.create({
+        mantra: mantra,
+        count: currentCount,
+        target: currentTarget,
+        created_at: new Date().toISOString()
+      });
+      
+      btn.disabled = false;
+      btn.textContent = 'Save';
+      
+      if (r.isOk) {
+        currentCount = 0;
+        updateCountDisplay();
+        showToast('Session saved! 🙏');
+      }
+    });
+
+    async function handleDelete(id) {
+      if (!window.dataSdk) return;
+      const session = allSessions.find(s => s.__backendId === id);
+      if (session) await window.dataSdk.delete(session);
+    }
+
+    document.getElementById('reminder-toggle').addEventListener('click', () => {
+      reminderEnabled = !reminderEnabled;
+      const toggle = document.getElementById('reminder-toggle');
+      const dot = document.getElementById('toggle-dot');
+      toggle.classList.toggle('bg-gray-600', !reminderEnabled);
+      toggle.classList.toggle('bg-amber-500', reminderEnabled);
+      dot.style.transform = reminderEnabled ? 'translateX(24px)' : 'translateX(0)';
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && reminderEnabled && currentCount > 0) {
+        showToast('🙏 Continue your Jaap');
+      }
+    });
+
+    // --- SDK Integrations ---
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: (config) => {
+          const c = { ...defaultConfig, ...config };
+          document.getElementById('page-title').textContent = c.page_title;
+          document.getElementById('subtitle').textContent = c.subtitle_text;
+          document.getElementById('app').style.background = `linear-gradient(160deg, ${c.background_color} 0%, ${c.surface_color} 40%, #2d1b69 100%)`;
+          document.getElementById('page-title').style.color = c.text_color;
+          document.getElementById('count-display').style.color = c.text_color;
+          document.getElementById('jaap-btn').style.background = `linear-gradient(to bottom right, ${c.primary_action_color}, #ea580c)`;
+        }
+      });
+    }
+
+    if (window.dataSdk) {
+      window.dataSdk.init({
+        onDataChanged: (data) => {
+          allSessions = data;
+          renderHistory();
+        }
+      });
+    }
+
+    // Initialize
+    updateCountDisplay();
+    if (window.lucide) lucide.createIcons();
+  </script>
+</body>
 </html>
