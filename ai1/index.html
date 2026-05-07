@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:image" content="https://taxtron.in/∫ (1).png">
+    <title>Taxtron AI</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        /* --- GLOBAL --- */
+        :root {
+            --bg-dark: #020617;
+            --bg-panel: #0f172a;
+            --bg-hover: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --danger: #f87171;
+        }
+
+        html, body {
+            margin: 0;
+            height: 100%;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* --- AUTH SCREEN --- */
+        #login-screen {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+        .login-box {
+            background: var(--bg-panel);
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            animation: slideUp 0.6s ease-out;
+            width: 90%;
+            max-width: 400px;
+        }
+        .login-btn, .guest-btn {
+            width: 100%;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            margin-top: 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .login-btn { background: white; color: #0f172a; }
+        .guest-btn { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+        
+        .login-btn:hover, .guest-btn:hover { transform: scale(1.02); }
+        .guest-btn:hover { background: rgba(56, 189, 248, 0.1); }
+
+        /* --- LAYOUT --- */
+        #app { display: none; height: 100%; width: 100%; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-dark);
+            border-right: 1px solid var(--bg-hover);
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .logo-area h2 { margin: 0; font-size: 20px; color: white; }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 8px;
+            transition: 0.2s;
+            display: flex;
+            gap: 10px;
+        }
+        .nav-link:hover { background: var(--bg-panel); color: white; }
+
+        .new-chat-btn {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 15px 0;
+            transition: 0.2s;
+            width: 100%;
+        }
+        .new-chat-btn:hover { background: rgba(56, 189, 248, 0.1); }
+
+        #chatList { flex: 1; overflow-y: auto; margin-top: 10px; }
+
+        .chat-item {
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+        }
+        .chat-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+        .chat-item:hover { background: var(--bg-panel); }
+        .chat-item.active { background: var(--bg-hover); color: white; }
+
+        .delete-btn { font-size: 14px; opacity: 0; transition: 0.2s; }
+        .chat-item:hover .delete-btn { opacity: 1; }
+
+        /* --- MAIN CONTENT --- */
+        .main { flex: 1; display: flex; flex-direction: column; position: relative; }
+
+        .header-mobile {
+            display: none;
+            padding: 15px;
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--bg-hover);
+            align-items: center;
+        }
+        .menu-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+
+        .chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            scroll-behavior: smooth;
+        }
+
+        /* --- MESSAGES --- */
+        .message-wrapper {
+            display: flex;
+            width: 100%;
+            margin-bottom: 20px;
+            animation: slideUp 0.4s ease-out forwards;
+        }
+        .message-wrapper.user { justify-content: flex-end; }
+
+        .message {
+            max-width: 75%;
+            padding: 14px 20px;
+            border-radius: 16px;
+            line-height: 1.6;
+            position: relative;
+            font-size: 15px;
+        }
+        .message.user { background: var(--accent); color: #000; border-bottom-right-radius: 4px; }
+        .message.bot { background: var(--bg-panel); color: var(--text-main); border-bottom-left-radius: 4px; border: 1px solid var(--bg-hover); }
+
+        .copy-btn {
+            position: absolute;
+            top: -25px;
+            right: 0px;
+            font-size: 12px;
+            cursor: pointer;
+            color: var(--text-muted);
+            background: var(--bg-hover);
+            padding: 4px 8px;
+            border-radius: 4px;
+            opacity: 0;
+        }
+        .message-wrapper:hover .copy-btn { opacity: 1; }
+
+        /* --- INPUT BOX --- */
+        .input-container { padding: 20px; background: var(--bg-dark); }
+        .input-box {
+            display: flex;
+            background: var(--bg-panel);
+            border: 1px solid var(--bg-hover);
+            border-radius: 12px;
+            padding: 8px 12px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .input-box input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        .input-box button {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 0 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .typing { display: flex; gap: 4px; padding: 10px 5px; }
+        .typing .dot { width: 8px; height: 8px; background: var(--text-muted); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+        .typing .dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing .dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+        @media (max-width: 768px) {
+            .header-mobile { display: flex; }
+            .sidebar { position: absolute; left: -100%; top: 0; height: 100%; }
+            .sidebar.open { left: 0; }
+            .message { max-width: 90%; }
+        }
+        .overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+        .overlay.show { display: block; }
+    </style>
+</head>
+<body>
+
+<div id="login-screen">
+    <div class="login-box">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" style="width:50px; margin-bottom:15px;">
+        <h1 style="margin:0 0 10px 0;">Taxtron AI</h1>
+        <p style="color:#94a3b8; margin-bottom:20px;">Sign in to save history or continue as guest.</p>
+        
+        <button class="login-btn" onclick="signInWithGoogle()">
+            <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.73 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+            Sign in with Google
+        </button>
+
+        <button class="guest-btn" onclick="continueAsGuest()">
+            Continue as Guest
+        </button>
+    </div>
+</div>
+
+<div id="app">
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="logo-area">
+            <div style="width:32px; height:32px; background:var(--accent); border-radius:8px; display:flex; align-items:center; justify-content:center; color:black; font-weight:bold;">T</div>
+            <h2>Taxtron</h2>
+        </div>
+
+        <a href="/" class="nav-link"> Home</a>
+        <a href="#" class="nav-link" id="authLink" onclick="handleAuthAction()"> Logout</a>
+
+        <button class="new-chat-btn" onclick="newChat()">+ New Chat</button>
+        <div id="chatList"></div>
+    </div>
+
+    <div class="main">
+        <div class="header-mobile">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <h3 style="margin:0 0 0 15px; font-size:18px;">Taxtron AI</h3>
+        </div>
+
+        <div id="chat" class="chat"></div>
+
+        <div class="input-container">
+            <div class="input-box">
+                <input id="input" placeholder="Ask anything..." autocomplete="off" />
+                <button id="sendBtn" onclick="send()">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
+    authDomain: "taxtron-ai.firebaseapp.com",
+    projectId: "taxtron-ai",
+    appId: "1:1009675616284:web:27c8e67f2107d9a4255fd9"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+let currentChatId = null;
+let unsubscribe = null;
+let sending = false;
+let isGuest = false;
+
+marked.setOptions({ breaks: true });
+
+/* --- AUTHENTICATION & GUEST LOGIC --- */
+
+function signInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(err => alert("Login failed: " + err.message));
+}
+
+function continueAsGuest() {
+    isGuest = true;
+    showApp();
+    document.getElementById("authLink").innerText = "Exit Guest Mode";
+    checkUrlParams();
+}
+
+function handleAuthAction() {
+    if (isGuest) {
+        location.reload();
+    } else {
+        auth.signOut().then(() => location.reload());
+    }
+}
+
+function showApp() {
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("app").style.display = "flex";
+}
+
+auth.onAuthStateChanged(user => {
+    if (user) {
+        isGuest = false;
+        showApp();
+        document.getElementById("authLink").innerText = "Logout";
+        loadChatList();
+        loadLastChat(user);
+        checkUrlParams();
+    } else if (!isGuest) {
+        // If not logged in and not guest, check if there's a URL query
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("q")) {
+            continueAsGuest();
+        } else {
+            document.getElementById("login-screen").style.display = "flex";
+            document.getElementById("app").style.display = "none";
+        }
+    }
+});
+
+function checkUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get("q");
+    if (q) {
+        window.history.replaceState({}, document.title, "/");
+        setTimeout(() => {
+            newChat();
+            send(q);
+        }, 500);
+    }
+}
+
+/* --- UI HELPERS --- */
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
+}
+
+function scrollToBottom() {
+    const chat = document.getElementById("chat");
+    chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+}
+
+/* --- SEND MESSAGE --- */
+async function send(prefill=null) {
+    if (sending) return;
+
+    const input = document.getElementById("input");
+    const sendBtn = document.getElementById("sendBtn");
+    const text = prefill || input.value.trim();
+    if (!text) return;
+
+    sending = true;
+    input.value = "";
+    sendBtn.disabled = true;
+
+    if (!currentChatId && !isGuest) {
+        currentChatId = Date.now().toString();
+        await saveChatMeta(text);
+        loadChatList();
+    } else if (!currentChatId && isGuest) {
+        currentChatId = "guest_" + Date.now();
+    }
+
+    addMessage(text, "user");
+    if (!isGuest) saveMessage("user", text);
+    
+    const botWrapper = document.createElement("div");
+    botWrapper.className = "message-wrapper bot";
+    const botMsg = document.createElement("div");
+    botMsg.className = "message bot";
+    botMsg.innerHTML = '<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+    botWrapper.appendChild(botMsg);
+    document.getElementById("chat").appendChild(botWrapper);
+    scrollToBottom();
+
+    try {
+        const res = await fetch("https://project-0wxuy.vercel.app/api/generate", {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({ topic: text })
+        });
+
+        const data = await res.json();
+        const finalResult = data.result || "No response received.";
+        
+        botMsg.innerHTML = "";
+        await streamText(botMsg, finalResult, botWrapper);
+        if (!isGuest) saveMessage("bot", finalResult);
+
+    } catch (error) {
+        botMsg.innerHTML = `⚠️ Error: ${error.message}`;
+    }
+
+    sending = false;
+    sendBtn.disabled = false;
+    input.focus();
+}
+
+async function streamText(el, text, wrapper) {
+    let currentText = "";
+    for (let i = 0; i < text.length; i++) {
+        currentText += text[i];
+        if(i % 5 === 0 || i === text.length - 1) {
+            el.innerHTML = marked.parse(currentText);
+            scrollToBottom();
+        }
+        await new Promise(r => setTimeout(r, 5));
+    }
+    addCopyButton(wrapper, text);
+}
+
+function addMessage(text, type) {
+    const wrapper = document.createElement("div");
+    wrapper.className = `message-wrapper ${type}`;
+    const div = document.createElement("div");
+    div.className = `message ${type}`;
+    
+    if(type === "bot") {
+        div.innerHTML = marked.parse(text);
+        addCopyButton(wrapper, text);
+    } else {
+        div.innerText = text;
+    }
+
+    wrapper.appendChild(div);
+    document.getElementById("chat").appendChild(wrapper);
+    scrollToBottom();
+    return div;
+}
+
+function addCopyButton(wrapper, rawText) {
+    if(wrapper.querySelector('.copy-btn')) return;
+    const copy = document.createElement("div");
+    copy.className = "copy-btn";
+    copy.innerText = "Copy";
+    copy.onclick = () => {
+        navigator.clipboard.writeText(rawText);
+        copy.innerText = "Copied!";
+        setTimeout(() => copy.innerText = "Copy", 2000);
+    };
+    wrapper.appendChild(copy);
+}
+
+/* --- FIRESTORE LOGIC --- */
+function saveMessage(role, text) {
+    if (isGuest) return;
+    const user = auth.currentUser;
+    if (!user || !currentChatId) return;
+    db.collection("chats").doc(user.uid).collection("sessions").doc(currentChatId).collection("messages").add({ role, text, time: Date.now() });
+}
+
+function saveChatMeta(text) {
+    if (isGuest) return;
+    const user = auth.currentUser;
+    if (!user) return;
+    return db.collection("chats").doc(user.uid).collection("sessions").doc(currentChatId).set({ title: text.substring(0, 25) + "...", created: Date.now() });
+}
+
+function loadChatList() {
+    if (isGuest) return;
+    const user = auth.currentUser;
+    if (!user) return;
+    const list = document.getElementById("chatList");
+    list.innerHTML = "";
+    db.collection("chats").doc(user.uid).collection("sessions").orderBy("created", "desc").get().then(snap => {
+        snap.forEach(doc => {
+            const div = document.createElement("div");
+            div.className = `chat-item ${doc.id === currentChatId ? 'active' : ''}`;
+            div.innerHTML = `<span>${doc.data().title || "New Chat"}</span><span class="delete-btn" onclick="event.stopPropagation(); deleteChat('${doc.id}')">🗑️</span>`;
+            div.onclick = () => openChat(doc.id, div);
+            list.appendChild(div);
+        });
+    });
+}
+
+function openChat(id, el) {
+    if(sending || isGuest) return;
+    currentChatId = id;
+    document.getElementById("chat").innerHTML = "";
+    document.querySelectorAll(".chat-item").forEach(e => e.classList.remove("active"));
+    if (el) el.classList.add("active");
+    const user = auth.currentUser;
+    if (unsubscribe) unsubscribe();
+    unsubscribe = db.collection("chats").doc(user.uid).collection("sessions").doc(id).collection("messages").orderBy("time").onSnapshot(snap => {
+        document.getElementById("chat").innerHTML = "";
+        snap.forEach(d => addMessage(d.data().text, d.data().role));
+        setTimeout(scrollToBottom, 100);
+    });
+}
+
+function newChat() {
+    if(sending) return;
+    currentChatId = null;
+    document.getElementById("chat").innerHTML = "";
+    document.querySelectorAll(".chat-item").forEach(e => e.classList.remove("active"));
+    if(unsubscribe) { unsubscribe(); unsubscribe = null; }
+}
+
+function deleteChat(id) {
+    if(confirm("Delete this chat?")) {
+        db.collection("chats").doc(auth.currentUser.uid).collection("sessions").doc(id).delete();
+        if(currentChatId === id) newChat();
+        loadChatList();
+    }
+}
+
+function loadLastChat(user) {
+    db.collection("chats").doc(user.uid).collection("sessions").orderBy("created", "desc").limit(1).get().then(snap => {
+        if (!snap.empty) openChat(snap.docs[0].id);
+    });
+}
+
+document.getElementById("input").addEventListener("keypress", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+});
+</script>
+</body>
+</html>
