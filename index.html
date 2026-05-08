@@ -3,13 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Taxtron AI</title>
+  <title>Taxtron AI - Advanced JEE Preparation</title>
   
   <meta name="description" content="Taxtron AI helps students with JEE preparation, concepts, questions, and AI tools.">
   <meta name="robots" content="index, follow">
-
   <link rel="canonical" href="https://taxtron.in">
-
   <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 
   <meta property="og:title" content="Taxtron AI">
@@ -17,38 +15,58 @@
   <meta property="og:url" content="https://taxtron.in">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://taxtron.in/∫ (1).png">
-
   <link rel="icon" href="/∫ (1).png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     /* VARIABLES */
     :root {
       --bg-color: #020617;
-      --card-bg: #0f172a;
-      --border-color: #1e293b;
+      --card-bg: rgba(15, 23, 42, 0.6);
+      --border-color: rgba(30, 41, 59, 0.8);
       --primary: #38bdf8;
       --primary-hover: #0ea5e9;
-      --text-main: #ffffff;
+      --secondary: #818cf8;
+      --text-main: #f8fafc;
       --text-muted: #94a3b8;
     }
 
     /* GLOBAL */
+    * {
+      box-sizing: border-box;
+    }
+    
     body {
       margin: 0;
       font-family: 'Inter', system-ui, sans-serif;
       background: var(--bg-color);
       color: var(--text-main);
       overflow-x: hidden;
-      line-height: 1.5;
+      line-height: 1.6;
+      scroll-behavior: smooth;
+    }
+
+    /* CUSTOM SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-color);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
     }
 
     /* KEYFRAME ANIMATIONS */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(30px); }
+      from { opacity: 0; transform: translateY(40px); }
       to { opacity: 1; transform: translateY(0); }
     }
     
@@ -59,21 +77,46 @@
 
     @keyframes pulseGlow {
       0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }
-      70% { box-shadow: 0 0 0 10px rgba(56, 189, 248, 0); }
+      70% { box-shadow: 0 0 0 12px rgba(56, 189, 248, 0); }
       100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
     }
 
-    /* BACKGROUND GLOW EFFECT */
+    @keyframes gradientSweep {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes floatOrb {
+      0%, 100% { transform: translate(-50%, 0) scale(1); }
+      50% { transform: translate(-50%, 30px) scale(1.05); }
+    }
+
+    /* BACKGROUND GLOW EFFECTS */
     .bg-glow {
-      position: absolute;
-      top: -10%;
+      position: fixed;
+      top: -15%;
       left: 50%;
       transform: translateX(-50%);
-      width: 600px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(56,189,248,0.15) 0%, rgba(2,6,23,0) 70%);
+      width: 800px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, rgba(2, 6, 23, 0) 60%);
       z-index: -1;
       pointer-events: none;
+      animation: floatOrb 8s ease-in-out infinite;
+    }
+
+    .bg-glow-2 {
+      position: fixed;
+      bottom: -20%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(129, 140, 248, 0.06) 0%, rgba(2, 6, 23, 0) 60%);
+      z-index: -1;
+      pointer-events: none;
+      border-radius: 50%;
+      animation: floatOrb 12s ease-in-out infinite reverse;
     }
 
     /* NAV (Glassmorphism & Sticky) */
@@ -84,28 +127,28 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px 40px;
-      background: rgba(2, 6, 23, 0.7);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+      padding: 16px 50px;
+      background: rgba(2, 6, 23, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       animation: fadeIn 0.8s ease-out;
     }
 
     .logo {
-      font-weight: 700;
-      font-size: 1.2rem;
+      font-weight: 800;
+      font-size: 1.3rem;
       letter-spacing: -0.5px;
-      transition: transform 0.2s ease;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .logo:hover {
-      transform: scale(1.05);
+      transform: scale(1.08) rotate(-2deg);
     }
 
     .nav-right {
       display: flex;
       align-items: center;
-      gap: 24px;
+      gap: 30px;
     }
 
     .nav a {
@@ -113,62 +156,85 @@
       text-decoration: none;
       font-size: 14px;
       font-weight: 500;
-      transition: color 0.2s ease;
+      transition: all 0.2s ease;
+      position: relative;
     }
+    
+    .nav a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background-color: var(--primary);
+      transition: width 0.3s ease;
+    }
+
     .nav a:hover {
       color: var(--text-main);
     }
+    .nav a:hover::after {
+      width: 100%;
+    }
 
     .user-btn {
-      background: var(--card-bg);
-      padding: 8px 16px;
-      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 8px 18px;
+      border-radius: 10px;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       border: 1px solid var(--border-color);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
+      color: var(--text-main);
     }
     .user-btn:hover {
-      background: #1e293b;
+      background: rgba(56, 189, 248, 0.1);
       border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
     }
 
     /* HERO */
     .hero {
       position: relative;
-      padding: 100px 20px 60px;
+      padding: 120px 20px 80px;
       text-align: center;
-      animation: fadeUp 0.8s ease-out forwards;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     .hero h1 {
-      font-size: 3.5rem;
-      font-weight: 700;
+      font-size: 4rem;
+      font-weight: 800;
       margin-bottom: 30px;
-      letter-spacing: -1px;
-      background: linear-gradient(135deg, #ffffff 0%, #38bdf8 100%);
+      letter-spacing: -1.5px;
+      background: linear-gradient(to right, #ffffff, #38bdf8, #818cf8, #ffffff);
+      background-size: 300% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      animation: gradientSweep 6s linear infinite;
     }
 
     .search-box {
       margin: auto;
       display: flex;
-      width: 650px;
-      max-width: 90%;
-      background: rgba(15, 23, 42, 0.6);
+      width: 700px;
+      max-width: 95%;
+      background: rgba(15, 23, 42, 0.7);
       border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 8px;
-      backdrop-filter: blur(8px);
-      transition: all 0.3s ease;
+      border-radius: 20px;
+      padding: 10px;
+      backdrop-filter: blur(12px);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
     }
 
     .search-box:focus-within {
       border-color: var(--primary);
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
-      transform: translateY(-2px);
+      box-shadow: 0 15px 40px -5px rgba(56, 189, 248, 0.2);
+      transform: translateY(-4px) scale(1.02);
+      background: rgba(15, 23, 42, 0.9);
     }
 
     .search-box input {
@@ -176,97 +242,173 @@
       background: none;
       border: none;
       color: white;
-      font-size: 16px;
-      padding: 0 15px;
+      font-size: 17px;
+      padding: 0 20px;
       outline: none;
+      font-family: inherit;
     }
     .search-box input::placeholder {
       color: var(--text-muted);
+      transition: opacity 0.3s;
     }
 
     .search-box button {
       background: var(--primary);
       color: #020617;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 15px;
       border: none;
-      border-radius: 10px;
-      padding: 12px 24px;
+      border-radius: 14px;
+      padding: 14px 28px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
+      letter-spacing: 0.5px;
     }
     .search-box button:hover {
-      background: var(--primary-hover);
+      background: #ffffff;
       transform: scale(1.05);
       animation: pulseGlow 1.5s infinite;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
     }
 
     /* SECTIONS */
     .section {
-      padding: 60px 20px;
-      max-width: 1100px;
+      padding: 70px 20px;
+      max-width: 1150px;
       margin: auto;
+      position: relative;
+      z-index: 10;
     }
 
     .section h2 {
-      font-size: 1.8rem;
-      margin-bottom: 30px;
-      font-weight: 600;
+      font-size: 2rem;
+      margin-bottom: 40px;
+      font-weight: 700;
       text-align: center;
       color: var(--text-main);
+      letter-spacing: -0.5px;
     }
 
     /* CARDS */
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
     }
 
     .card {
-      background: linear-gradient(145deg, var(--card-bg), #0b1120);
-      padding: 25px;
-      border-radius: 16px;
+      background: linear-gradient(145deg, var(--card-bg), rgba(2, 6, 23, 0.8));
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 20px;
       border: 1px solid var(--border-color);
       cursor: pointer;
       opacity: 0;
-      animation: fadeUp 0.6s ease-out forwards;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Card inner glow effect */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 50%; height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
+      transform: skewX(-20deg);
+      transition: 0.5s;
     }
 
     /* Staggered animation delays for cards */
-    .card:nth-child(1) { animation-delay: 0.1s; }
-    .card:nth-child(2) { animation-delay: 0.2s; }
-    .card:nth-child(3) { animation-delay: 0.3s; }
-    .card:nth-child(4) { animation-delay: 0.4s; }
+    .section:nth-of-type(1) .card:nth-child(1) { animation-delay: 0.1s; }
+    .section:nth-of-type(1) .card:nth-child(2) { animation-delay: 0.2s; }
+    .section:nth-of-type(1) .card:nth-child(3) { animation-delay: 0.3s; }
+    .section:nth-of-type(1) .card:nth-child(4) { animation-delay: 0.4s; }
+
+    .section:nth-of-type(2) .card:nth-child(1) { animation-delay: 0.2s; }
+    .section:nth-of-type(2) .card:nth-child(2) { animation-delay: 0.3s; }
+    .section:nth-of-type(2) .card:nth-child(3) { animation-delay: 0.4s; }
 
     .card:hover {
-      transform: translateY(-8px);
-      border-color: rgba(56, 189, 248, 0.5);
-      box-shadow: 0 10px 30px -10px rgba(56, 189, 248, 0.2);
+      transform: translateY(-10px) scale(1.02);
+      border-color: rgba(56, 189, 248, 0.6);
+      box-shadow: 0 15px 35px -10px rgba(56, 189, 248, 0.25);
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(2, 6, 23, 0.9));
+    }
+
+    .card:hover::before {
+      left: 150%;
     }
 
     .card h3 {
       margin-top: 0;
-      margin-bottom: 12px;
-      font-size: 1.2rem;
-      font-weight: 600;
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+      font-weight: 700;
       color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .card p {
       margin: 0;
       color: var(--text-muted);
-      font-size: 14.5px;
-      line-height: 1.6;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* FOOTER STYLES */
+    .footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(2, 6, 23, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 60px 20px 40px;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .footer-content {
+      max-width: 800px;
+      margin: 0 auto 30px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px 20px;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .footer p {
+      color: rgba(148, 163, 184, 0.6);
+      font-size: 13px;
+      margin: 0;
     }
 
     /* RESPONSIVE DESIGN */
     @media (max-width: 768px) {
-      .nav { padding: 15px 20px; flex-direction: column; gap: 15px; }
+      .nav { padding: 15px 20px; flex-direction: column; gap: 20px; }
       .nav-right { flex-wrap: wrap; justify-content: center; gap: 15px; }
-      .hero h1 { font-size: 2.5rem; }
-      .hero { padding: 60px 15px 30px; }
+      .hero h1 { font-size: 2.8rem; }
+      .hero { padding: 80px 15px 40px; }
+      .search-box { flex-direction: column; border-radius: 16px; padding: 12px; background: rgba(15, 23, 42, 0.9); }
+      .search-box input { margin-bottom: 15px; text-align: center; }
+      .search-box button { width: 100%; border-radius: 10px; }
     }
   </style>
 </head>
@@ -274,10 +416,11 @@
 <body>
 
 <div class="bg-glow"></div>
+<div class="bg-glow-2"></div>
 
-<div class="nav">
-  <div class="logo" onclick="location.href='/'" style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-    <img src="/logo1526tx.gif" style="height:28px;" alt="Taxtron Logo">
+<nav class="nav">
+  <div class="logo" onclick="location.href='/'" style="display:flex;align-items:center;gap:12px;cursor:pointer;">
+    <img src="/logo1526tx.gif" style="height:32px; border-radius: 6px;" alt="Taxtron Logo" onerror="this.style.display='none'">
     <span>Taxtron</span>
   </div>
 
@@ -285,98 +428,101 @@
     <a href="/ai">Taxtron AI</a>
     <a href="/notifications" target="_blank">Notifications</a>
     <a href="/why-Taxtron">Why Taxtron</a>
-    <a href="/search"> Search Pages 🔍</a>
-   
-    
-    <div id="userArea"></div>
+    <a href="/search">Search Pages 🔍</a>
+    <div id="userArea">
+      <!-- Fallback button while Firebase loads -->
+      <div class="user-btn">Loading...</div>
+    </div>
   </div>
-</div>
+</nav>
 
-<div class="hero">
+<header class="hero">
   <h1>Ask Taxtron AI</h1>
   <div class="search-box">
-    <input id="q" placeholder="Ask anything about JEE, Physics, Chemistry..." onkeydown="if(event.key === 'Enter') go()">
+    <input id="q" type="text" placeholder="Ask anything about JEE, Physics, Chemistry..." onkeydown="if(event.key === 'Enter') go()">
     <button onclick="go()">Ask AI</button>
   </div>
-</div>
+</header>
 
-<div class="section">
-  <h2>Popular Tools</h2>
-  <div class="cards">
-    <div class="card" onclick="quick('Explain rotational motion')">
-      <h3>Physics Help</h3>
-      <p>Instant concept explanations & step-by-step problem solving.</p>
+<main>
+  <section class="section">
+    <h2>Popular Tools</h2>
+    <div class="cards">
+      <div class="card" onclick="quick('Explain rotational motion')">
+        <h3>⚛️ Physics Help</h3>
+        <p>Instant concept explanations & step-by-step problem solving for complex mechanics and electromagnetism.</p>
+      </div>
+      <div class="card" onclick="quick('Generate JEE questions')">
+        <h3>📝 JEE Questions</h3>
+        <p>Generate fresh, pattern-matching practice problems instantly to test your readiness.</p>
+      </div>
+      <div class="card" onclick="quick('Explain chemical bonding')">
+        <h3>🧪 Chemistry AI</h3>
+        <p>Clear up complex organic reactions, mechanisms, and inorganic exceptions fast.</p>
+      </div>
+      <div class="card" onclick="quick('Create math test')">
+        <h3>📐 Math Test</h3>
+        <p>Create highly customized mock tests for specific chapters like Calculus and Algebra.</p>
+      </div>
     </div>
-    <div class="card" onclick="quick('Generate JEE questions')">
-      <h3>JEE Questions</h3>
-      <p>Generate fresh, pattern-matching practice problems instantly.</p>
+  </section>
+
+  <section class="section">
+    <h2>Why Taxtron?</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>🧠 AI Powered</h3>
+        <p>Trained to give smart, accurate answers instantly without hallucinating formulas or misguiding logic.</p>
+      </div>
+      <div class="card">
+        <h3>🎯 JEE Focused</h3>
+        <p>Built strictly for serious engineering aspirants and highly competitive exams. No generic answers.</p>
+      </div>
+      <div class="card">
+        <h3>⚡ Fast & Clean</h3>
+        <p>A minimalist interface. No distractions, no ads, no clutter—just pure, focused learning.</p>
+      </div>
     </div>
-    <div class="card" onclick="quick('Explain chemical bonding')">
-      <h3>Chemistry AI</h3>
-      <p>Clear up complex organic and inorganic concepts fast.</p>
-    </div>
-    <div class="card" onclick="quick('Create math test')">
-      <h3>Math Test</h3>
-      <p>Create highly customized mock tests for specific chapters.</p>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-links">
+      <a href="/aboutus">About Us</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/contact">Contact Us</a>
+      <a href="/why-Taxtron">Why Taxtron</a>
+      <a href="/search">All Pages</a>
     </div>
   </div>
-</div>
+  <p>&copy; 2026 Taxtron.in. Empowering JEE Aspirants.</p>
+</footer>
 
-<div class="section">
-  <h2>Why Taxtron?</h2>
-  <div class="cards">
-    <div class="card">
-      <h3>AI Powered</h3>
-      <p>Trained to give smart, accurate answers instantly without hallucinating formulas.</p>
-    </div>
-    <div class="card">
-      <h3>JEE Focused</h3>
-      <p>Built strictly for serious engineering aspirants and highly competitive exams.</p>
-    </div>
-    <div class="card">
-      <h3>Fast & Clean</h3>
-      <p>A minimalist interface. No distractions, no ads—just pure learning.</p>
-    </div>
-  </div>
-</div>
-<div class="footer">
-    <div class="footer-content">
-        <!-- Links Section -->
-        <div class="footer-links">
-            <a href="/aboutus">About Us</a>
-            <a href="/terms"> • Terms of Service</a>
-            <a href="/privacy"> • Privacy Policy</a>
-            <a href="/contact"> • Contact Us</a>
-            <a href="/why-Taxtron"> • Why Taxtron</a>
-            <a href="/search"> • All Pages</a>
-        </div>
-
-        
-    </div>
-
-    <p>&copy; 2026 Taxtron.in</p>
-</div>
-
-
-
+<!-- Firebase Scripts -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
 // FIREBASE CONFIG
-firebase.initializeApp({
+const firebaseConfig = {
   apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
   authDomain: "taxtron-ai.firebaseapp.com",
   projectId: "taxtron-ai"
-});
+};
 
-// USER UI
+// Initialize Firebase safely
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+// USER UI AUTH LISTENER
 firebase.auth().onAuthStateChanged(user => {
   const box = document.getElementById("userArea");
-
   if(user) {
     box.innerHTML = `<div class="user-btn" onclick="location.href='/profile.html'">
-      👤 ${user.displayName}
+      👤 ${user.displayName || 'Profile'}
     </div>`;
   } else {
     box.innerHTML = `<div class="user-btn" onclick="location.href='/login2.html'">
@@ -389,12 +535,63 @@ firebase.auth().onAuthStateChanged(user => {
 function go() {
   const q = document.getElementById("q").value.trim();
   if(!q) return;
-  window.location.href = "/ai?q=" + encodeURIComponent(q);
+  
+  // Add a slight delay for animation effect
+  const btn = document.querySelector('.search-box button');
+  const originalText = btn.innerText;
+  btn.innerText = "Thinking...";
+  btn.style.opacity = "0.8";
+  
+  setTimeout(() => {
+    window.location.href = "/ai?q=" + encodeURIComponent(q);
+  }, 300);
 }
 
 function quick(text) {
   window.location.href = "/ai?q=" + encodeURIComponent(text);
 }
+
+// DYNAMIC PLACEHOLDER TYPING EFFECT
+const placeholders = [
+  "Ask anything about JEE, Physics, Chemistry...",
+  "Derive the formula for Escape Velocity...",
+  "Generate 5 tough questions on Integration...",
+  "Explain SN1 vs SN2 mechanisms...",
+  "Solve a tricky Thermodynamics problem..."
+];
+
+let pIndex = 0;
+let charIndex = 0;
+let isDeleting = false;
+const inputEl = document.getElementById("q");
+
+function typeEffect() {
+  const currentText = placeholders[pIndex];
+  
+  if (isDeleting) {
+    inputEl.setAttribute('placeholder', currentText.substring(0, charIndex - 1));
+    charIndex--;
+  } else {
+    inputEl.setAttribute('placeholder', currentText.substring(0, charIndex + 1));
+    charIndex++;
+  }
+
+  let typingSpeed = isDeleting ? 30 : 80;
+
+  if (!isDeleting && charIndex === currentText.length) {
+    typingSpeed = 2000; // Pause at end of sentence
+    isDeleting = true;
+  } else if (isDeleting && charIndex === 0) {
+    isDeleting = false;
+    pIndex = (pIndex + 1) % placeholders.length;
+    typingSpeed = 500; // Pause before typing next word
+  }
+
+  setTimeout(typeEffect, typingSpeed);
+}
+
+// Start typing effect after initial load
+setTimeout(typeEffect, 1000);
 </script>
 
 </body>
