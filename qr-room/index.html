@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Portal | Taxtron Living</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --danger: #ef4444;
+            --success: #10b981;
+            --border-radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 30px;
+        }
+
+        header img {
+            max-width: 180px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #334155;
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 8px;
+        }
+
+        /* Wi-Fi Component */
+        .wifi-box {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #475569;
+        }
+        .wifi-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .wifi-row:last-child { margin-bottom: 0; }
+        .copy-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+        .copy-btn:hover { background: var(--accent-hover); }
+
+        /* Rules Component */
+        .rules-list {
+            list-style-position: inside;
+        }
+        .rules-list li {
+            margin-bottom: 12px;
+            color: #cbd5e1;
+        }
+        .rules-list li strong {
+            color: var(--danger);
+        }
+
+        /* Pricing/Brochure Table */
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .price-table th, .price-table td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #334155;
+        }
+        .price-table th {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .price-tag {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        /* Payment QR Component */
+        .payment-zone {
+            text-align: center;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: inline-block;
+            width: 100%;
+        }
+        .payment-zone img {
+            max-width: 160px;
+            height: auto;
+        }
+        .payment-zone p {
+            color: #0f172a;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Contact List */
+        .contact-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #334155;
+        }
+        .contact-item:last-child { border-bottom: none; }
+        .contact-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Complaint Form */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: white;
+            font-size: 1rem;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .submit-btn {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .submit-btn:hover { background: var(--accent-hover); }
+
+        /* AI Quick Action Button */
+        .ai-btn-container {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .ai-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .ai-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+        }
+
+        /* Announcement Banner (Added Extra Feature) */
+        .announcement {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid #f59e0b;
+            color: #fef08a;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Responsive Tweaks */
+        @media(max-width: 768px) {
+            body { padding: 10px; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header>
+            <img src="https://taxtron.in/logo1526tx.gif" alt="Taxtron Logo">
+            <h1>Taxtron Living</h1>
+            <p>Welcome home! Your essential house details & digital dashboard.</p>
+        </header>
+
+        <div class="announcement">
+            <div>
+                <strong>📢 Notice Board:</strong> Please ensure all common areas are kept clean. For any immediate support, use the Taxtron AI helper below or contact management.
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            
+            <div class="card">
+                <h2>📶 Wi-Fi Networks</h2>
+                <p style="color: var(--text-muted); margin-bottom: 10px;">High-speed internet access across the premises:</p>
+                <div class="wifi-box">
+                    <div class="wifi-row">
+                        <span><strong>SSID:</strong> Taxtron_Home_5G</span>
+                    </div>
+                    <div class="wifi-row">
+                        <span><strong>Pass:</strong> <span id="wifi-pass">TaxtronLiving@2026</span></span>
+                        <button class="copy-btn" onclick="copyPassword()">Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📜 House Rules & Policy</h2>
+                <ul class="rules-list">
+                    <li><strong>Gate Closing:</strong> The main entrance gate closes strictly at <b>11:00 PM</b>. Please plan your commute accordingly.</li>
+                    <li><strong>Guests:</strong> Inform management in advance regarding overnight visitors.</li>
+                    <li><strong>Quiet Hours:</strong> Maintain low noise profiles between 10:00 PM and 7:00 AM.</li>
+                    </ul>
+            </div>
+
+            <div class="card">
+                <h2>📞 Contacts & Helpdesk</h2>
+                <div class="contact-item">
+                    <div>
+                        <p><strong>Property Manager</strong></p>
+                        <p style="color: var(--text-muted); font-size:0.85rem;">General inquiries & lease</p>
+                    </div>
+                    <a href="tel:+911234567890" class="contact-link">+91 12345 67890</a>
+                </div>
+                <div class="contact-item">
+                    <div>
+                        <p><strong>On-Site Caretaker</strong></p>
+                        <p style="color: var(--text-muted); font-size:0.85rem;">Keys, gates & basic assistance</p>
+                    </div>
+                    <a href="tel:+910987654321" class="contact-link">+91 09876 54321</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🏢 Room Brochure & Plans</h2>
+                <table class="price-table">
+                    <thead>
+                        <tr>
+                            <th>Room Type</th>
+                            <th>Monthly Rent (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Single Person Room (Economy)</td>
+                            <td><span class="price-tag">3,500</span></td>
+                        </tr>
+                        <tr>
+                            <td>Single Person Room (Standard)</td>
+                            <td><span class="price-tag">4,500</span></td>
+                        </tr>
+                        <tr>
+                            <td>Single Person Room (Premium)</td>
+                            <td><span class="price-tag">4,700</span></td>
+                        </tr>
+                        <tr>
+                            <td>Single Person Room (Deluxe)</td>
+                            <td><span class="price-tag">5,000</span></td>
+                        </tr>
+                        <tr>
+                            <td>2-Person Sharing (Standard)</td>
+                            <td><span class="price-tag">2,250</span> <small>/ person</small></td>
+                        </tr>
+                        <tr>
+                            <td>2-Person Sharing (Premium)</td>
+                            <td><span class="price-tag">2,350</span> <small>/ person</small></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card" style="text-align: center;">
+                <h2>💳 Secure Rent Payment</h2>
+                <p style="color: var(--text-muted); margin-bottom: 10px;">Scan below to settle your monthly dues instantly.</p>
+                <div class="payment-zone">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://taxtron.in/qr-room" alt="Payment QR Code">
+                    <p>Scan to Pay via UPI / Netbanking</p>
+                </div>
+                <p style="font-size: 0.85rem; margin-top: 10px; color: var(--text-muted)">
+                    Direct Link: <a href="https://taxtron.in/qr-room" target="_blank" style="color: var(--accent);">taxtron.in/qr-room</a>
+                </p>
+            </div>
+
+            <div class="card">
+                <h2>🛠️ Raise a Complaint / Request</h2>
+                <form id="complaintForm" onsubmit="handleComplaintSubmit(event)">
+                    <div class="form-group">
+                        <label for="tenantName">Name</label>
+                        <input type="text" id="tenantName" class="form-control" required placeholder="Your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="roomNo">Room Number</label>
+                        <input type="text" id="roomNo" class="form-control" required placeholder="e.g., 102-B">
+                    </div>
+                    <div class="form-group">
+                        <label for="issueType">Issue Category</label>
+                        <select id="issueType" class="form-control">
+                            <option value="Plumbing">Plumbing / Water Supply</option>
+                            <option value="Electrical">Electrical / Appliances</option>
+                            <option value="WiFi">Wi-Fi & Network connectivity</option>
+                            <option value="Cleaning">Housekeeping / Cleanliness</option>
+                            <option value="Other">Other Issues</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Describe your issue</label>
+                        <textarea id="message" class="form-control" rows="3" required placeholder="Provide clear details..."></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Request</button>
+                </form>
+            </div>
+
+            <div class="ai-btn-container">
+                <a href="https://taxtron.in/ai" target="_blank" class="ai-action-btn">
+                    🤖 Open Taxtron AI Assistant
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Copy WiFi Password functionality
+        function copyPassword() {
+            const passwordText = document.getElementById('wifi-pass').innerText;
+            navigator.clipboard.writeText(passwordText).then(() => {
+                alert('Wi-Fi Password copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+
+        // Mock Handle Complaints Submission Form 
+        function handleComplaintSubmit(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('tenantName').value;
+            const room = document.getElementById('roomNo').value;
+            const category = document.getElementById('issueType').value;
+            const details = document.getElementById('message').value;
+
+            // This can easily link up to your custom backend API or Firebase later
+            alert(`Thank you, ${name}! Your complaint regarding "${category}" for Room ${room} has been registered successfully.`);
+            
+            document.getElementById('complaintForm').reset();
+        }
+    </script>
+</body>
+</html>
