@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tenant Portal | Taxtron Living</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
     <style>
         :root {
             --bg-color: #0f172a;
@@ -247,7 +251,7 @@
             box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
         }
 
-        /* Announcement Banner (Added Extra Feature) */
+        /* Announcement Banner */
         .announcement {
             background: rgba(245, 158, 11, 0.15);
             border: 1px solid #f59e0b;
@@ -306,7 +310,7 @@
                     <li><strong>Gate Closing:</strong> The main entrance gate closes strictly at <b>11:00 PM</b>. Please plan your commute accordingly.</li>
                     <li><strong>Guests:</strong> Inform management in advance regarding overnight visitors.</li>
                     <li><strong>Quiet Hours:</strong> Maintain low noise profiles between 10:00 PM and 7:00 AM.</li>
-                    </ul>
+                </ul>
             </div>
 
             <div class="card">
@@ -416,6 +420,22 @@
     </div>
 
     <script>
+        // 1. Paste your actual Firebase project configuration here
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // 2. Initialize Firebase if it hasn't been initialized yet
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
         // Copy WiFi Password functionality
         function copyPassword() {
             const passwordText = document.getElementById('wifi-pass').innerText;
@@ -426,7 +446,7 @@
             });
         }
 
-        // Mock Handle Complaints Submission Form 
+        // Handle Complaints Submission Form 
         function handleComplaintSubmit(event) {
             event.preventDefault();
             
@@ -435,10 +455,22 @@
             const category = document.getElementById('issueType').value;
             const details = document.getElementById('message').value;
 
-            // This can easily link up to your custom backend API or Firebase later
-            alert(`Thank you, ${name}! Your complaint regarding "${category}" for Room ${room} has been registered successfully.`);
-            
-            document.getElementById('complaintForm').reset();
+            db.collection("tenant_complaints").add({
+                tenantName: name,
+                roomNumber: room,
+                issueCategory: category,
+                description: details,
+                status: "Pending", 
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                alert("Complaint logged successfully! Management has been notified.");
+                document.getElementById('complaintForm').reset();
+            })
+            .catch((error) => {
+                console.error("Error saving complaint: ", error);
+                alert("Failed to submit. Please try again.");
+            });
         }
     </script>
 </body>
