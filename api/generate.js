@@ -9,18 +9,32 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
 
   try {
-    const { topic } = req.body;
+    const { topic, image } = req.body;
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) throw new Error("API Key is missing in Vercel settings.");
-    if (!topic) throw new Error("Topic/Prompt is required.");
+    if (!topic && !image) throw new Error("Topic/Prompt or image is required.");
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    // Use the latest stable model
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const result = await model.generateContent(topic);
-    // Correct way to get text in the latest SDK
+    const parts = [];
+
+    if (image) {
+      const base64Data = image.includes(",") ? image.split(",")[1] : image;
+      const mimeTypeMatch = image.match(/^data:(image\/[a-zA-Z]+);/);
+      const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : "image/png";
+
+      parts.push({
+        inlineData: { data: base64Data, mimeType }
+      });
+    }
+
+    if (topic) {
+      parts.push({ text: topic });
+    }
+
+    const result = await model.generateContent({ contents: [{ role: "user", parts }] });
     const text = result.response.text();
 
     res.status(200).json({ result: text });
