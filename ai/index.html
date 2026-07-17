@@ -79,7 +79,7 @@
         .guest-btn:hover { background: rgba(56, 189, 248, 0.1); }
 
         /* --- LAYOUT --- */
-        #app { display: none; height: 100%; width: 100%; }
+        #app { display: none; height: 100%; width: 100%; flex-direction: row; }
 
         /* --- SIDEBAR --- */
         .sidebar {
@@ -309,7 +309,7 @@ const firebaseConfig = {
     appId: "1:1009675616284:web:27c8e67f2107d9a4255fd9"
 };
 
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
@@ -318,7 +318,9 @@ let unsubscribe = null;
 let sending = false;
 let isGuest = false;
 
-marked.setOptions({ breaks: true });
+if (window.marked && typeof marked.setOptions === "function") {
+    marked.setOptions({ breaks: true });
+}
 
 /* --- AUTHENTICATION & GUEST LOGIC --- */
 
@@ -430,9 +432,11 @@ async function send(prefill=null) {
             body: JSON.stringify({ topic: text })
         });
 
+        if (!res.ok) throw new Error(`Server responded with status ${res.status}`);
         const data = await res.json();
+        if (data.error) throw new Error(data.error);
         const finalResult = data.result || "No response received.";
-        
+
         botMsg.innerHTML = "";
         await streamText(botMsg, finalResult, botWrapper);
         if (!isGuest) saveMessage("bot", finalResult);
@@ -447,11 +451,12 @@ async function send(prefill=null) {
 }
 
 async function streamText(el, text, wrapper) {
+    const safeParse = (t) => (window.marked && marked.parse) ? marked.parse(t) : t;
     let currentText = "";
     for (let i = 0; i < text.length; i++) {
         currentText += text[i];
         if(i % 5 === 0 || i === text.length - 1) {
-            el.innerHTML = marked.parse(currentText);
+            el.innerHTML = safeParse(currentText);
             scrollToBottom();
         }
         await new Promise(r => setTimeout(r, 5));
@@ -464,10 +469,11 @@ function addMessage(text, type) {
     wrapper.className = `message-wrapper ${type}`;
     const div = document.createElement("div");
     div.className = `message ${type}`;
-    
+
     if(type === "bot") {
-        div.innerHTML = marked.parse(text);
-        addCopyButton(wrapper, text);
+        const safeParse = (t) => (window.marked && marked.parse) ? marked.parse(t) : (t || "");
+        div.innerHTML = safeParse(text);
+        if (text) addCopyButton(wrapper, text);
     } else {
         div.innerText = text;
     }
@@ -525,15 +531,16 @@ function loadChatList() {
 
 function openChat(id, el) {
     if(sending || isGuest) return;
+    const user = auth.currentUser;
+    if (!user) return;
     currentChatId = id;
     document.getElementById("chat").innerHTML = "";
     document.querySelectorAll(".chat-item").forEach(e => e.classList.remove("active"));
     if (el) el.classList.add("active");
-    const user = auth.currentUser;
     if (unsubscribe) unsubscribe();
     unsubscribe = db.collection("chats").doc(user.uid).collection("sessions").doc(id).collection("messages").orderBy("time").onSnapshot(snap => {
         document.getElementById("chat").innerHTML = "";
-        snap.forEach(d => addMessage(d.data().text, d.data().role));
+        snap.forEach(d => addMessage(d.data().text || "", d.data().role));
         setTimeout(scrollToBottom, 100);
     });
 }
@@ -547,17 +554,24 @@ function newChat() {
 }
 
 function deleteChat(id) {
-    if(confirm("Delete this chat?")) {
-        db.collection("chats").doc(auth.currentUser.uid).collection("sessions").doc(id).delete();
-        if(currentChatId === id) newChat();
-        loadChatList();
-    }
+    if(!confirm("Delete this chat?")) return;
+    const user = auth.currentUser;
+    if (!user) return;
+    db.collection("chats").doc(user.uid).collection("sessions").doc(id).delete()
+        .catch(err => alert("Failed to delete chat: " + err.message));
+    if(currentChatId === id) newChat();
+    loadChatList();
 }
 
 function loadLastChat(user) {
+    if (!user) return;
     db.collection("chats").doc(user.uid).collection("sessions").orderBy("created", "desc").limit(1).get().then(snap => {
-        if (!snap.empty) openChat(snap.docs[0].id);
-    });
+        if (!snap.empty) {
+            const lastId = snap.docs[0].id;
+            const lastEl = document.querySelector(`.chat-item[onclick*="${lastId}"]`);
+            openChat(lastId, lastEl);
+        }
+    }).catch(() => {});
 }
 
 document.getElementById("input").addEventListener("keypress", e => {
