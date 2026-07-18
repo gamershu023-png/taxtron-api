@@ -37,6 +37,7 @@
   --font:          'Inter', system-ui, sans-serif;
   --mono:          'JetBrains Mono', ui-monospace, monospace;
   --nav-h:         54px;
+  --suggest-h:     44px;
   --sidebar-w:     340px;
 }
 
@@ -358,7 +359,7 @@ a:hover { color: var(--accent-hi); }
 
 /* ── WORKSPACE ────────────────────────────────────────────── */
 #workspace {
-  position: fixed; top: var(--nav-h); bottom: 0; left: 0; right: 0;
+  position: fixed; top: calc(var(--nav-h) + var(--suggest-h)); bottom: 0; left: 0; right: 0;
   overflow: hidden; z-index: 1;
 }
 
@@ -603,7 +604,8 @@ a:hover { color: var(--accent-hi); }
   padding: 12px 24px 0;
   border-bottom: 1px solid var(--border);
   background: rgba(11,18,32,0.4);
-  position: fixed; left: 0; right: 0;
+  backdrop-filter: blur(10px);
+  position: fixed; top: var(--nav-h); left: 0; right: 0;
   z-index: 199;
 }
 .chip { font-size: 11px; color: var(--text-m); background: var(--surface); border: 1px solid var(--border); padding: 5px 11px; border-radius: 999px; cursor: pointer; transition: all .14s; user-select: none; margin-bottom: 10px; }
@@ -823,7 +825,26 @@ a:hover { color: var(--accent-hi); }
 ============================================================= */
 const SB_URL  = 'https://0ec90b57d6e95fcbda19832f.supabase.co';
 const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJib2x0IiwicmVmIjoiMGVjOTBiNTdkNmU5NWZjYmRhMTk4MzJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4ODE1NzQsImV4cCI6MTc1ODg4MTU3NH0.9I8-U0x86Ak8t2DGaIk0HfvTSLsAyzdnz-Nw00mMkKw';
-const supabase = window.supabase.createClient(SB_URL, SB_KEY);
+let supabase;
+try {
+  supabase = window.supabase.createClient(SB_URL, SB_KEY);
+} catch(e) {
+  console.warn('Supabase unavailable — running in guest-only mode:', e.message);
+  // Provide a no-op stub so all .from()/.auth calls fail gracefully
+  supabase = {
+    auth: {
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: ()=>{} } } }),
+      signInWithPassword: async () => ({ error: { message: 'Database unavailable' } }),
+      signUp: async () => ({ error: { message: 'Database unavailable' } }),
+      signOut: async () => ({})
+    },
+    from: () => ({
+      select: () => ({ order: () => ({ limit: () => Promise.resolve({ data: [], error: null }) }) }),
+      insert: () => ({ select: () => ({ maybeSingle: async () => ({ data: null, error: { message: 'Database unavailable' } }) }) }),
+      delete: () => ({ eq: async () => ({ error: null }) })
+    })
+  };
+}
 
 /* =============================================================
    UTIL
@@ -1623,9 +1644,9 @@ function buildExploreZones(){
 (function boot(){
   function adjustWorkspace(){
     const bar=document.getElementById('suggestions-bar');
-    const navH=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h'));
     const barH=bar.offsetHeight;
-    document.getElementById('workspace').style.top=(navH+barH)+'px';
+    document.documentElement.style.setProperty('--suggest-h', barH+'px');
+    document.getElementById('workspace').style.top='calc(var(--nav-h) + var(--suggest-h))';
   }
   adjustWorkspace();
   window.addEventListener('resize',adjustWorkspace);
