@@ -81,7 +81,17 @@ a:hover { color: var(--accent-hi); }
   width: 92%; max-width: 420px;
   box-shadow: var(--shadow);
   animation: fadeUp .45s ease both;
+  position: relative;
 }
+.auth-close-btn {
+  position: absolute; top: 14px; right: 14px;
+  background: var(--surface-2); border: 1px solid var(--border);
+  color: var(--text-m); width: 28px; height: 28px;
+  border-radius: 50%; cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .14s;
+}
+.auth-close-btn:hover { border-color: var(--crimson); color: var(--crimson); }
 .auth-logo {
   height: 48px; border-radius: 10px; margin-bottom: 20px;
 }
@@ -629,12 +639,13 @@ a:hover { color: var(--accent-hi); }
 <body>
 
 <!-- ═══ AUTH OVERLAY ═════════════════════════════════════════ -->
-<div id="auth-overlay">
+<div id="auth-overlay" class="hidden">
   <div class="auth-box">
+    <button class="auth-close-btn" onclick="AuthController.continueGuest()" title="Close">&#x2715;</button>
     <img class="auth-logo" src="https://taxtron.in/logo1526tx.gif" alt="Taxtron"
       onerror="this.style.display='none'">
-    <h1>Taxtron Workspace</h1>
-    <p>Sign in to save your chat history across sessions, or continue as a guest.</p>
+    <h1>Sign in to Taxtron</h1>
+    <p>Save your chat history across sessions. You can also use the workspace without an account.</p>
 
     <div id="authFormWrap">
       <!-- Sign In form (default) -->
@@ -680,9 +691,10 @@ a:hover { color: var(--accent-hi); }
   </div>
   <div class="hd-footer">
     <div class="hd-user-row" id="hdUserRow">
-      <div class="hd-user-avatar" id="hdAvatar">?</div>
+      <div class="hd-user-avatar" id="hdAvatar">G</div>
       <div class="hd-user-name" id="hdUserName">Guest</div>
-      <button class="hd-signout-btn" id="hdSignoutBtn" onclick="AuthController.signOut()">Sign out</button>
+      <button class="hd-signout-btn" id="hdSignoutBtn" onclick="AuthController.signOut()" style="display:none;">Sign out</button>
+      <button class="hd-signout-btn" id="hdSigninBtn" onclick="AuthController.handleNavUser()" style="border-color:var(--accent);color:var(--accent);">Sign in</button>
     </div>
   </div>
 </div>
@@ -875,6 +887,10 @@ const AuthController = (() => {
   let isGuest = false;
 
   function init() {
+    // Default to guest mode immediately so the workspace is usable on first paint
+    isGuest = true;
+    updateNavUser(null);
+
     supabase.auth.onAuthStateChange((event, session) => {
       (async () => {
         currentUser = session?.user ?? null;
@@ -883,6 +899,10 @@ const AuthController = (() => {
           dismissOverlay();
           updateNavUser(currentUser);
           await HistoryController.loadSessions();
+        } else {
+          // Signed out or no session — stay/go back to guest mode
+          isGuest = true;
+          updateNavUser(null);
         }
       })();
     });
@@ -893,11 +913,12 @@ const AuthController = (() => {
   }
 
   function updateNavUser(user) {
-    const label  = document.getElementById('navUserLabel');
-    const avatar = document.getElementById('navAvatar');
-    const hdName = document.getElementById('hdUserName');
-    const hdAv   = document.getElementById('hdAvatar');
+    const label     = document.getElementById('navUserLabel');
+    const avatar    = document.getElementById('navAvatar');
+    const hdName    = document.getElementById('hdUserName');
+    const hdAv      = document.getElementById('hdAvatar');
     const hdSignout = document.getElementById('hdSignoutBtn');
+    const hdSignin  = document.getElementById('hdSigninBtn');
 
     if (user) {
       const name = user.email.split('@')[0];
@@ -907,13 +928,15 @@ const AuthController = (() => {
       hdName.textContent = user.email;
       hdAv.textContent   = initials;
       hdSignout.style.display = '';
+      hdSignin.style.display  = 'none';
       document.getElementById('saveIndicator').style.display = 'flex';
     } else {
-      label.textContent  = isGuest ? 'Guest' : 'Sign In';
-      avatar.textContent = isGuest ? 'G' : '?';
-      hdName.textContent = 'Guest';
+      label.textContent  = 'Sign In';
+      avatar.textContent = '?';
+      hdName.textContent = 'Guest — not saving';
       hdAv.textContent   = 'G';
       hdSignout.style.display = 'none';
+      hdSignin.style.display  = '';
       document.getElementById('saveIndicator').style.display = 'none';
     }
   }
@@ -947,11 +970,10 @@ const AuthController = (() => {
 
   async function signOut() {
     await supabase.auth.signOut();
-    currentUser = null; isGuest = false;
-    document.getElementById('auth-overlay').classList.remove('hidden');
-    updateNavUser(null);
+    // onAuthStateChange will fire and set isGuest = true + update nav
     HistoryController.clearList();
     ChatController.newSession();
+    HistoryController.close();
   }
 
   function continueGuest() {
@@ -961,9 +983,13 @@ const AuthController = (() => {
   }
 
   function handleNavUser() {
-    if (currentUser || isGuest) {
+    if (currentUser) {
       HistoryController.open();
     } else {
+      // Show sign-in modal (user clicked "Sign In" in nav)
+      document.getElementById('signInForm').style.display = '';
+      document.getElementById('signUpForm').style.display = 'none';
+      document.getElementById('siError').classList.remove('show');
       document.getElementById('auth-overlay').classList.remove('hidden');
     }
   }
@@ -1608,8 +1634,6 @@ function buildExploreZones(){
   const params=new URLSearchParams(window.location.search);
   const q=params.get('q');
   if(q&&q.trim()){
-    // Skip login requirement when arriving from homepage search
-    AuthController.continueGuest();
     window.history.replaceState({},'','/explore');
     buildExploreZones();
     WorkspaceState.setTopic(q.trim());
