@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Taxtron Workspace</title>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -827,22 +827,28 @@ const SB_URL  = 'https://0ec90b57d6e95fcbda19832f.supabase.co';
 const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJib2x0IiwicmVmIjoiMGVjOTBiNTdkNmU5NWZjYmRhMTk4MzJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4ODE1NzQsImV4cCI6MTc1ODg4MTU3NH0.9I8-U0x86Ak8t2DGaIk0HfvTSLsAyzdnz-Nw00mMkKw';
 let supabase;
 try {
+  if (!window.supabase || !window.supabase.createClient) throw new Error('CDN not loaded');
   supabase = window.supabase.createClient(SB_URL, SB_KEY);
 } catch(e) {
-  console.warn('Supabase unavailable — running in guest-only mode:', e.message);
-  // Provide a no-op stub so all .from()/.auth calls fail gracefully
+  console.warn('Supabase unavailable, guest-only mode:', e.message);
+  function _chain() {
+    const self = {
+      select:()=>self, order:()=>self, limit:()=>self, eq:()=>self,
+      insert:()=>self, delete:()=>self, update:()=>self, upsert:()=>self,
+      maybeSingle:()=>self, single:()=>self,
+      then: fn => Promise.resolve({data:null, error:null}).then(fn),
+      catch: fn => Promise.resolve({data:null, error:null}).catch(fn)
+    };
+    return self;
+  }
   supabase = {
     auth: {
-      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: ()=>{} } } }),
-      signInWithPassword: async () => ({ error: { message: 'Database unavailable' } }),
-      signUp: async () => ({ error: { message: 'Database unavailable' } }),
-      signOut: async () => ({})
+      onAuthStateChange:()=>({data:{subscription:{unsubscribe:()=>{}}}}),
+      signInWithPassword:async()=>({error:{message:'Sign-in unavailable — reload the page'}}),
+      signUp:async()=>({error:{message:'Sign-up unavailable — reload the page'}}),
+      signOut:async()=>({})
     },
-    from: () => ({
-      select: () => ({ order: () => ({ limit: () => Promise.resolve({ data: [], error: null }) }) }),
-      insert: () => ({ select: () => ({ maybeSingle: async () => ({ data: null, error: { message: 'Database unavailable' } }) }) }),
-      delete: () => ({ eq: async () => ({ error: null }) })
-    })
+    from: _chain
   };
 }
 
@@ -1653,8 +1659,8 @@ function buildExploreZones(){
   WorkspaceState.setView('ai');
 
   const params=new URLSearchParams(window.location.search);
-  const q=params.get('q');
-  if(q&&q.trim()){
+  const q = params.get('q') || params.get('explore') || '';
+  if(q.trim()){
     window.history.replaceState({},'','/explore');
     buildExploreZones();
     WorkspaceState.setTopic(q.trim());
