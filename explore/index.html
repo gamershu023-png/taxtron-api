@@ -3,7 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taxtron Workspace</title>
+<title>Taxtron Workspace — AI-Powered JEE Concept Explorer</title>
+<meta name="description" content="Explore JEE Physics, Chemistry and Maths concepts with Taxtron AI. Get step-by-step solutions, interactive lab simulations and instant theory chat.">
+<meta name="keywords" content="JEE concept explorer, AI solver, physics lab simulation, chemistry solver, maths step-by-step, JEE preparation tool">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://taxtron.in/explore">
+<link rel="icon" href="/∫ (1).png">
+
+<meta property="og:title" content="Taxtron Workspace — AI Concept Explorer">
+<meta property="og:description" content="Explore JEE concepts with AI-powered theory chat, lab simulations and step-by-step solutions.">
+<meta property="og:url" content="https://taxtron.in/explore">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Taxtron AI">
+<meta property="og:image" content="https://taxtron.in/∫ (1).png">
+<meta property="og:image:alt" content="Taxtron AI Workspace interface">
+<meta property="og:locale" content="en_IN">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Taxtron Workspace — AI Concept Explorer">
+<meta name="twitter:description" content="Explore JEE concepts with AI-powered theory chat and interactive lab simulations.">
+<meta name="twitter:image" content="https://taxtron.in/∫ (1).png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Taxtron Workspace",
+  "url": "https://taxtron.in/explore",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Web Browser",
+  "description": "AI-powered JEE preparation workspace with concept exploration, theory chat and interactive lab simulations for Physics, Chemistry and Maths.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "INR"
+  },
+  "provider": {
+    "@type": "EducationalOrganization",
+    "name": "Taxtron AI",
+    "url": "https://taxtron.in/"
+  }
+}
+</script>
+
+<script>
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var q = params.get('q') || params.get('explore') || '';
+  if (q.trim()) {
+    var topic = q.trim();
+    var safeTitle = topic.length > 60 ? topic.substring(0, 57) + '...' : topic;
+    document.title = 'Exploring: ' + safeTitle + ' | Taxtron AI Solver';
+
+    var metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', 'AI-powered exploration of "' + topic + '" — step-by-step solutions, theory and interactive lab simulations for JEE preparation on Taxtron.');
+
+    var ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', 'Exploring: ' + safeTitle + ' | Taxtron AI');
+
+    var ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', 'AI exploration of "' + topic + '" with step-by-step theory and lab simulations.');
+
+    var canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.setAttribute('href', 'https://taxtron.in/explore?q=' + encodeURIComponent(topic));
+
+    var ldScript = document.createElement('script');
+    ldScript.type = 'application/ld+json';
+    ldScript.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Exploring: " + topic,
+      "description": "AI-generated step-by-step explanation and analysis of " + topic + " for JEE preparation.",
+      "author": { "@type": "Organization", "name": "Taxtron AI" },
+      "publisher": { "@type": "Organization", "name": "Taxtron AI", "url": "https://taxtron.in/" },
+      "mainEntityOfPage": "https://taxtron.in/explore?q=" + encodeURIComponent(topic),
+      "educationalLevel": "Advanced Secondary",
+      "inLanguage": "en"
+    });
+    document.head.appendChild(ldScript);
+  }
+})();
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,6 +93,12 @@
 /* =============================================================
    TAXTRON WORKSPACE — Unified SPA with Auth + Chat Persistence
    ============================================================= */
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
 
 :root {
   --bg:            #0b1220;
@@ -644,7 +731,7 @@ a:hover { color: var(--accent-hi); }
 <div id="auth-overlay" class="hidden">
   <div class="auth-box">
     <button class="auth-close-btn" onclick="AuthController.continueGuest()" title="Close">&#x2715;</button>
-    <img class="auth-logo" src="https://taxtron.in/logo1526tx.gif" alt="Taxtron"
+    <img class="auth-logo" src="https://taxtron.in/logo1526tx.gif" alt="Taxtron AI — JEE preparation platform logo"
       onerror="this.style.display='none'">
     <h1>Sign in to Taxtron</h1>
     <p>Save your chat history across sessions. You can also use the workspace without an account.</p>
@@ -704,7 +791,7 @@ a:hover { color: var(--accent-hi); }
 <!-- ═══ TOP NAV ══════════════════════════════════════════════ -->
 <nav id="topnav">
   <div class="nav-brand">
-    <img src="https://taxtron.in/logo1526tx.gif" alt="Taxtron"
+    <img src="https://taxtron.in/logo1526tx.gif" alt="Taxtron AI logo"
       style="height:28px;border-radius:6px;flex-shrink:0;" onerror="this.style.display='none'">
     <span>Taxtron Workspace</span>
     <span class="nav-topic-pill" id="topicPill">No topic selected</span>
@@ -741,6 +828,7 @@ a:hover { color: var(--accent-hi); }
 <div id="suggestions-bar"></div>
 
 <!-- ═══ WORKSPACE ════════════════════════════════════════════ -->
+<h1 class="sr-only">Taxtron AI Workspace — JEE Concept Explorer</h1>
 <div id="workspace">
 
   <!-- PERSPECTIVE A: Chat -->
