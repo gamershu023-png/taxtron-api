@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Taxtron Workspace</title>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -823,33 +823,44 @@ a:hover { color: var(--accent-hi); }
 /* =============================================================
    SUPABASE CLIENT
 ============================================================= */
-const SB_URL  = 'https://0ec90b57d6e95fcbda19832f.supabase.co';
-const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJib2x0IiwicmVmIjoiMGVjOTBiNTdkNmU5NWZjYmRhMTk4MzJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4ODE1NzQsImV4cCI6MTc1ODg4MTU3NH0.9I8-U0x86Ak8t2DGaIk0HfvTSLsAyzdnz-Nw00mMkKw';
-let supabase;
-try {
-  if (!window.supabase || !window.supabase.createClient) throw new Error('CDN not loaded');
-  supabase = window.supabase.createClient(SB_URL, SB_KEY);
-} catch(e) {
-  console.warn('Supabase unavailable, guest-only mode:', e.message);
-  function _chain() {
-    const self = {
-      select:()=>self, order:()=>self, limit:()=>self, eq:()=>self,
-      insert:()=>self, delete:()=>self, update:()=>self, upsert:()=>self,
-      maybeSingle:()=>self, single:()=>self,
-      then: fn => Promise.resolve({data:null, error:null}).then(fn),
-      catch: fn => Promise.resolve({data:null, error:null}).catch(fn)
-    };
-    return self;
-  }
-  supabase = {
-    auth: {
-      onAuthStateChange:()=>({data:{subscription:{unsubscribe:()=>{}}}}),
-      signInWithPassword:async()=>({error:{message:'Sign-in unavailable — reload the page'}}),
-      signUp:async()=>({error:{message:'Sign-up unavailable — reload the page'}}),
-      signOut:async()=>({})
-    },
-    from: _chain
+var SB_URL  = 'https://0ec90b57d6e95fcbda19832f.supabase.co';
+var SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJib2x0IiwicmVmIjoiMGVjOTBiNTdkNmU5NWZjYmRhMTk4MzJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4ODE1NzQsImV4cCI6MTc1ODg4MTU3NH0.9I8-U0x86Ak8t2DGaIk0HfvTSLsAyzdnz-Nw00mMkKw';
+
+var _sbChain = function() {
+  var self = {
+    select:function(){return self}, order:function(){return self},
+    limit:function(){return self}, eq:function(){return self},
+    insert:function(){return self}, delete:function(){return self},
+    update:function(){return self}, upsert:function(){return self},
+    maybeSingle:function(){return self}, single:function(){return self},
+    then: function(fn){return Promise.resolve({data:null,error:null}).then(fn)},
+    catch: function(fn){return Promise.resolve({data:null,error:null}).catch(fn)}
   };
+  return self;
+};
+
+var _sbStub = {
+  auth: {
+    onAuthStateChange:function(){return {data:{subscription:{unsubscribe:function(){}}}};},
+    signInWithPassword:function(){return Promise.resolve({error:{message:'Service unavailable. Reload the page.'}});},
+    signUp:function(){return Promise.resolve({error:{message:'Service unavailable. Reload the page.'}});},
+    signOut:function(){return Promise.resolve({});}
+  },
+  from: _sbChain
+};
+
+var sb;
+try {
+  var _lib = window.supabase;
+  if (_lib && _lib.createClient) {
+    sb = _lib.createClient(SB_URL, SB_KEY);
+  } else {
+    console.warn('Supabase CDN not loaded, guest-only mode');
+    sb = _sbStub;
+  }
+} catch(e) {
+  console.warn('Supabase init failed:', e.message);
+  sb = _sbStub;
 }
 
 /* =============================================================
@@ -918,7 +929,7 @@ const AuthController = (() => {
     isGuest = true;
     updateNavUser(null);
 
-    supabase.auth.onAuthStateChange((event, session) => {
+    sb.auth.onAuthStateChange((event, session) => {
       (async () => {
         currentUser = session?.user ?? null;
         if (currentUser) {
@@ -976,7 +987,7 @@ const AuthController = (() => {
     errEl.classList.remove('show');
     if (!email || !pass) { errEl.textContent = 'Please enter email and password.'; errEl.classList.add('show'); return; }
     btn.disabled = true; btn.textContent = 'Signing in…';
-    const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
     btn.disabled = false; btn.textContent = 'Sign In';
     if (error) { errEl.textContent = error.message; errEl.classList.add('show'); }
   }
@@ -990,13 +1001,13 @@ const AuthController = (() => {
     if (!email || !pass) { errEl.textContent = 'Please enter email and password.'; errEl.classList.add('show'); return; }
     if (pass.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.classList.add('show'); return; }
     btn.disabled = true; btn.textContent = 'Creating…';
-    const { error } = await supabase.auth.signUp({ email, password: pass });
+    const { error } = await sb.auth.signUp({ email, password: pass });
     btn.disabled = false; btn.textContent = 'Create Account';
     if (error) { errEl.textContent = error.message; errEl.classList.add('show'); }
   }
 
   async function signOut() {
-    await supabase.auth.signOut();
+    await sb.auth.signOut();
     // onAuthStateChange will fire and set isGuest = true + update nav
     HistoryController.clearList();
     ChatController.newSession();
@@ -1051,7 +1062,7 @@ const HistoryController = (() => {
   async function loadSessions() {
     const user = AuthController.getUser();
     if (!user) return;
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('explore_sessions')
       .select('id, title, topic, created_at')
       .order('created_at', { ascending: false })
@@ -1094,7 +1105,7 @@ const HistoryController = (() => {
     renderList();
     close();
 
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('explore_messages')
       .select('role, content')
       .eq('session_id', id)
@@ -1117,7 +1128,7 @@ const HistoryController = (() => {
     const title = firstMessage.length > 40
       ? firstMessage.slice(0,40) + '…'
       : firstMessage;
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('explore_sessions')
       .insert({ title, topic: topic || '' })
       .select('id')
@@ -1131,7 +1142,7 @@ const HistoryController = (() => {
   async function saveMessage(sessionId, role, content) {
     const user = AuthController.getUser();
     if (!user || !sessionId) return;
-    const { error } = await supabase
+    const { error } = await sb
       .from('explore_messages')
       .insert({ session_id: sessionId, role, content });
     if (error) console.error('saveMessage:', error.message);
@@ -1140,7 +1151,7 @@ const HistoryController = (() => {
   async function deleteSession(id, event) {
     event.stopPropagation();
     if (!confirm('Delete this chat session?')) return;
-    const { error } = await supabase
+    const { error } = await sb
       .from('explore_sessions')
       .delete()
       .eq('id', id);
