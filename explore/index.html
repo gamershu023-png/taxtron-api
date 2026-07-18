@@ -3,1122 +3,1814 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taxtron Explore — Search Dashboard</title>
+<title>Taxtron Workspace</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ============================================================
-   TAXTRON LEARN — Search Dashboard
-   Modular, minimalist, responsive. Three vertical zones:
-     1) AI Concept Breakdown
-     2) Interactive Simulation Lab
-     3) Video & Resource Hub
-   ============================================================ */
+/* =============================================================
+   TAXTRON WORKSPACE — Unified SPA
+   Two perspectives sharing one WorkspaceState:
+     Perspective A  →  /ai  — Chat main (75%) + mini-lab sidebar (25%)
+     Perspective B  →  /explore — Full lab grid + collapsible chat drawer
+   ============================================================= */
 
+/* ── Design Tokens ─────────────────────────────────────────── */
 :root {
-  /* Professional engineering palette: deep navy + cyan accent */
   --bg:            #0b1220;
-  --bg-elevated:   #111a2e;
+  --bg-el:         #111a2e;
   --surface:       #16213a;
   --surface-2:     #1c2a48;
   --border:        #243352;
-  --border-strong: #324264;
+  --border-s:      #324264;
   --text:          #e6edf7;
-  --text-muted:    #9aa7c2;
-  --text-dim:      #6b7a99;
-  --accent:        #38d6c4;   /* cyan-teal */
-  --accent-soft:   rgba(56, 214, 196, 0.12);
-  --accent-strong: #5ff0dd;
+  --text-m:        #9aa7c2;
+  --text-d:        #6b7a99;
+  --accent:        #38d6c4;
+  --accent-soft:   rgba(56,214,196,0.12);
+  --accent-hi:     #5ff0dd;
+  --crimson:       #f05a6e;
+  --crimson-soft:  rgba(240,90,110,0.14);
   --warn:          #f5a524;
-  --danger:        #f87171;
   --success:       #34d399;
-  --radius:        14px;
-  --radius-sm:     10px;
-  --shadow:        0 10px 30px rgba(0,0,0,0.35);
-  --shadow-soft:   0 4px 14px rgba(0,0,0,0.25);
-  --maxw:          1180px;
-  --font:          'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --r:             14px;
+  --r-s:           10px;
+  --shadow:        0 12px 32px rgba(0,0,0,0.4);
+  --shadow-s:      0 4px 16px rgba(0,0,0,0.28);
+  --font:          'Inter', system-ui, sans-serif;
   --mono:          'JetBrains Mono', ui-monospace, monospace;
+  --nav-h:         54px;
+  --sidebar-w:     340px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-html, body { height: 100%; }
+*  { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
 body {
   font-family: var(--font);
   background: var(--bg);
   color: var(--text);
-  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  line-height: 1.6;
 }
-
-/* Subtle ambient gradient backdrop */
 body::before {
   content: "";
-  position: fixed; inset: 0;
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background:
-    radial-gradient(800px 500px at 12% -10%, rgba(56,214,196,0.08), transparent 60%),
-    radial-gradient(700px 500px at 100% 0%, rgba(56,150,214,0.07), transparent 55%);
-  pointer-events: none;
-  z-index: -1;
+    radial-gradient(900px 600px at 0% -10%, rgba(56,214,196,0.07) 0%, transparent 55%),
+    radial-gradient(700px 600px at 100% 5%,  rgba(56,130,214,0.06) 0%, transparent 55%);
 }
 
 a { color: var(--accent); text-decoration: none; }
-a:hover { color: var(--accent-strong); }
+a:hover { color: var(--accent-hi); }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-s); border-radius: 4px; }
 
-/* ---------- Top bar ---------- */
-.topbar {
-  position: sticky; top: 0; z-index: 50;
-  backdrop-filter: blur(12px);
-  background: rgba(11, 18, 32, 0.72);
+/* ── Top Navigation Bar ─────────────────────────────────────── */
+#topnav {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--nav-h); z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 18px;
+  backdrop-filter: blur(14px);
+  background: rgba(11,18,32,0.78);
   border-bottom: 1px solid var(--border);
 }
-.topbar-inner {
-  max-width: var(--maxw); margin: 0 auto;
-  display: flex; align-items: center; gap: 16px;
-  padding: 14px 20px;
-}
-.brand {
+.nav-brand {
   display: flex; align-items: center; gap: 10px;
-  font-weight: 600; letter-spacing: 0.2px;
+  font-weight: 600; font-size: 15px; white-space: nowrap;
 }
 .brand-mark {
-  width: 30px; height: 30px; border-radius: 8px;
+  width: 28px; height: 28px; border-radius: 7px;
   background: linear-gradient(135deg, var(--accent), #2b9d8f);
   display: grid; place-items: center;
-  color: #06241f; font-weight: 700; font-size: 14px;
-  box-shadow: 0 4px 12px rgba(56,214,196,0.35);
+  color: #061a17; font-weight: 700; font-size: 13px;
+  box-shadow: 0 0 12px rgba(56,214,196,0.4);
+  flex-shrink: 0;
 }
-.brand-name { font-size: 16px; }
-.brand-sub  { color: var(--text-dim); font-size: 12px; font-weight: 400; }
+.nav-topic-pill {
+  font-size: 12px; font-family: var(--mono);
+  background: var(--surface-2);
+  border: 1px solid var(--border-s);
+  color: var(--accent);
+  padding: 4px 10px; border-radius: 20px;
+  max-width: 200px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+}
 
-/* ---------- Search ---------- */
-.search-form { flex: 1; display: flex; gap: 8px; max-width: 640px; }
-.search-input {
+/* Toggle button group */
+.view-toggle {
+  display: flex; align-items: center; gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border-s);
+  border-radius: 10px; padding: 3px;
+}
+.vt-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 7px;
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; border: none;
+  background: transparent; color: var(--text-m);
+  transition: all .18s cubic-bezier(.4,0,.2,1);
+  white-space: nowrap;
+}
+.vt-btn.active {
+  background: var(--accent); color: #061a17;
+  box-shadow: 0 2px 10px rgba(56,214,196,0.35);
+}
+.vt-btn:not(.active):hover { background: var(--surface-2); color: var(--text); }
+.vt-btn .ico { font-size: 14px; }
+
+/* Topic search bar (topnav center) */
+.nav-search-wrap {
+  flex: 1; max-width: 440px; margin: 0 16px;
+  display: flex; gap: 6px;
+}
+.nav-search {
   flex: 1;
   background: var(--surface);
   border: 1px solid var(--border);
   color: var(--text);
-  padding: 12px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  outline: none;
-  transition: border-color .15s, box-shadow .15s, background .15s;
+  padding: 9px 12px;
+  border-radius: var(--r-s);
+  font-size: 13px; outline: none;
+  transition: border-color .14s, box-shadow .14s;
 }
-.search-input::placeholder { color: var(--text-dim); }
-.search-input:focus {
+.nav-search::placeholder { color: var(--text-d); }
+.nav-search:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
-  background: var(--surface-2);
 }
-.search-btn {
-  background: var(--accent);
-  color: #06241f;
-  border: none;
-  padding: 12px 18px;
-  border-radius: var(--radius-sm);
-  font-weight: 600; font-size: 14px;
-  cursor: pointer;
-  transition: transform .12s, box-shadow .15s, background .15s;
+.nav-go {
+  background: var(--accent); color: #061a17;
+  border: none; padding: 9px 14px; border-radius: var(--r-s);
+  font-weight: 600; font-size: 13px; cursor: pointer;
+  transition: background .14s, transform .12s;
 }
-.search-btn:hover { background: var(--accent-strong); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(56,214,196,0.35); }
-.search-btn:active { transform: translateY(0); }
-.search-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+.nav-go:hover { background: var(--accent-hi); transform: translateY(-1px); }
+.nav-go:disabled { opacity: .55; cursor: not-allowed; transform: none; }
 
-.suggest {
-  display: flex; gap: 8px; flex-wrap: wrap; padding: 0 20px 12px;
-  max-width: var(--maxw); margin: 0 auto;
+/* ── Root workspace container ───────────────────────────────── */
+#workspace {
+  position: fixed; top: var(--nav-h); bottom: 0; left: 0; right: 0;
+  overflow: hidden; z-index: 1;
 }
-.chip {
-  font-size: 12px; color: var(--text-muted);
+
+/* ── Perspective A  →  AI Chat view ─────────────────────────── */
+#pane-ai {
+  position: absolute; inset: 0;
+  display: flex;
+  will-change: transform;
+  transition: transform .32s cubic-bezier(.4,0,.2,1), opacity .32s;
+}
+
+/* Main chat column */
+#ai-main {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column;
+  border-right: 1px solid var(--border);
+}
+.chat-scroll {
+  flex: 1; overflow-y: auto;
+  padding: 24px 28px;
+  display: flex; flex-direction: column; gap: 20px;
+  scroll-behavior: smooth;
+}
+.msg-wrap { display: flex; gap: 10px; animation: fadeUp .3s ease both; }
+.msg-wrap.user { flex-direction: row-reverse; }
+.msg-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  flex-shrink: 0; display: grid; place-items: center;
+  font-size: 12px; font-weight: 700;
+  background: var(--surface-2); color: var(--text-m);
+  align-self: flex-end;
+}
+.msg-wrap.user .msg-avatar { background: var(--accent); color: #061a17; }
+.msg-bubble {
+  max-width: 74%; padding: 13px 16px;
+  border-radius: var(--r); line-height: 1.7; font-size: 14.5px;
+  position: relative;
+}
+.msg-wrap.user .msg-bubble {
+  background: var(--accent); color: #061a17;
+  border-bottom-right-radius: 4px;
+}
+.msg-wrap.bot .msg-bubble {
+  background: var(--bg-el);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-bottom-left-radius: 4px;
+}
+/* Markdown inside bot bubbles */
+.msg-bubble h1,.msg-bubble h2,.msg-bubble h3 { margin: 14px 0 6px; color: var(--text); font-size: 15px; }
+.msg-bubble p  { margin-bottom: 10px; color: var(--text-m); }
+.msg-bubble strong { color: var(--text); }
+.msg-bubble code {
+  font-family: var(--mono); background: var(--surface-2);
+  border: 1px solid var(--border); padding: 2px 5px;
+  border-radius: 5px; font-size: 12.5px; color: var(--accent-hi);
+}
+.msg-bubble pre {
+  font-family: var(--mono); background: #090f1d;
+  border: 1px solid var(--border); padding: 12px 14px;
+  border-radius: 8px; overflow-x: auto; font-size: 12.5px;
+  margin: 8px 0 12px; color: var(--text);
+}
+.msg-bubble ul,.msg-bubble ol { margin: 0 0 10px 18px; color: var(--text-m); }
+.msg-bubble li { margin-bottom: 4px; }
+.msg-bubble table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
+.msg-bubble th { background: var(--surface-2); padding: 8px 10px; text-align: left; border: 1px solid var(--border); }
+.msg-bubble td { padding: 7px 10px; border: 1px solid var(--border); color: var(--text-m); }
+
+.copy-btn {
+  position: absolute; top: -22px; right: 0;
+  font-size: 11px; color: var(--text-d);
+  background: var(--surface-2); border: 1px solid var(--border);
+  padding: 3px 7px; border-radius: 5px;
+  cursor: pointer; opacity: 0; transition: opacity .15s;
+}
+.msg-wrap:hover .copy-btn { opacity: 1; }
+
+/* Typing dots */
+.typing { display: flex; gap: 4px; align-items: center; padding: 6px 4px; }
+.typing span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--text-d);
+  animation: bounce 1.3s infinite ease-in-out both;
+}
+.typing span:nth-child(2) { animation-delay: .15s; }
+.typing span:nth-child(3) { animation-delay: .3s; }
+@keyframes bounce { 0%,80%,100% { transform: scale(.55); opacity: .4; } 40% { transform: scale(1); opacity: 1; } }
+
+/* Input row */
+.chat-input-row {
+  padding: 14px 20px;
+  background: rgba(11,18,32,0.6);
+  border-top: 1px solid var(--border);
+  display: flex; gap: 8px; align-items: center;
+}
+.chat-input {
+  flex: 1; background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text); padding: 11px 14px;
+  border-radius: var(--r-s); font-size: 14px; outline: none;
+  transition: border-color .14s, box-shadow .14s;
+  resize: none; min-height: 44px; max-height: 140px; overflow-y: auto;
+  font-family: var(--font);
+}
+.chat-input::placeholder { color: var(--text-d); }
+.chat-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.send-btn {
+  background: var(--accent); color: #061a17;
+  border: none; padding: 11px 18px;
+  border-radius: var(--r-s); font-weight: 600; font-size: 14px;
+  cursor: pointer; transition: background .14s, transform .12s;
+  white-space: nowrap;
+}
+.send-btn:hover { background: var(--accent-hi); transform: translateY(-1px); }
+.send-btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+/* ── AI sidebar (mini-lab) ──────────────────────────────────── */
+#ai-sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  display: flex; flex-direction: column;
+  background: var(--bg-el);
+  overflow: hidden;
+}
+.asi-header {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.asi-label {
+  font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--accent); font-weight: 600; margin-bottom: 4px;
+}
+.asi-title { font-size: 13px; font-weight: 600; color: var(--text); }
+
+/* Mini canvas capsule */
+.mini-canvas-wrap {
+  position: relative; flex-shrink: 0;
+  background: #08101f;
+  border-bottom: 1px solid var(--border);
+  height: 200px; overflow: hidden;
+}
+#miniCanvas { display: block; width: 100%; height: 100%; }
+.mini-overlay {
+  position: absolute; bottom: 8px; left: 8px;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-m);
+  background: rgba(8,16,31,0.72);
+  border: 1px solid var(--border);
+  padding: 4px 8px; border-radius: 6px;
+  pointer-events: none;
+}
+.mini-overlay b { color: var(--accent); }
+
+/* Formula chips */
+.asi-body { flex: 1; overflow-y: auto; padding: 14px 14px 12px; }
+.formula-chips {
+  display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px;
+}
+.fchip {
+  font-family: var(--mono); font-size: 11px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-s);
+  color: var(--accent-hi);
+  padding: 5px 10px; border-radius: 7px;
+  white-space: nowrap;
+}
+
+/* Enter lab button */
+.enter-lab-btn {
+  width: 100%; padding: 11px 14px;
+  background: linear-gradient(135deg, var(--accent), #2b9d8f);
+  color: #061a17; border: none; border-radius: var(--r-s);
+  font-weight: 700; font-size: 13px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: filter .15s, transform .12s;
+  letter-spacing: 0.2px;
+}
+.enter-lab-btn:hover { filter: brightness(1.12); transform: translateY(-1px); }
+
+/* ── Perspective B  →  Explore / Lab view ───────────────────── */
+#pane-explore {
+  position: absolute; inset: 0;
+  display: flex;
+  will-change: transform;
+  transition: transform .32s cubic-bezier(.4,0,.2,1), opacity .32s;
+}
+
+/* Explore main scroll area */
+#explore-main {
+  flex: 1; min-width: 0;
+  overflow-y: auto;
+  padding: 24px 24px 60px;
+}
+
+/* ── Shared Zone card ───────────────────────────────────────── */
+.zone {
+  background: var(--bg-el);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-s);
+  overflow: hidden;
+  margin-bottom: 22px;
+  animation: fadeUp .38s ease both;
+}
+.zone-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg,rgba(255,255,255,0.018),transparent);
+}
+.ztag {
+  font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-soft);
+  padding: 3px 8px; border-radius: 5px; font-weight: 600;
+}
+.ztitle { font-size: 14px; font-weight: 600; }
+.zsub { color: var(--text-d); font-size: 11px; margin-left: auto; }
+.zone-body { padding: 18px; }
+
+/* ── Zone 1 — Executive Summary ─────────────────────────────── */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.scard {
   background: var(--surface);
   border: 1px solid var(--border);
-  padding: 6px 12px; border-radius: 999px;
-  cursor: pointer; transition: all .15s;
-  user-select: none;
+  border-radius: var(--r-s);
+  padding: 14px 16px;
 }
-.chip:hover { color: var(--text); border-color: var(--accent); background: var(--accent-soft); }
+.scard-label {
+  font-size: 10px; letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--text-d); margin-bottom: 8px; font-weight: 600;
+}
+.scard-val {
+  font-family: var(--mono); font-size: 13px; color: var(--accent-hi);
+  word-break: break-word;
+}
+.scard-desc { font-size: 12px; color: var(--text-m); margin-top: 5px; }
 
-/* ---------- Layout ---------- */
-main {
-  max-width: var(--maxw); margin: 0 auto;
-  padding: 28px 20px 80px;
-  display: flex; flex-direction: column; gap: 28px;
-}
-
-/* ---------- Empty state ---------- */
-.empty {
-  text-align: center;
-  padding: 80px 20px;
-  color: var(--text-muted);
-}
-.empty h2 { color: var(--text); font-weight: 600; margin-bottom: 8px; }
-.empty p { font-size: 14px; max-width: 480px; margin: 0 auto; }
-
-/* ---------- Zone base ---------- */
-.zone {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-soft);
-  overflow: hidden;
-  animation: fadeUp .4s ease both;
-}
-@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-
-.zone-header {
-  display: flex; align-items: center; gap: 12px;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
-}
-.zone-tag {
-  font-size: 11px; font-weight: 600; letter-spacing: 1px;
-  color: var(--accent);
-  background: var(--accent-soft);
-  padding: 4px 8px; border-radius: 6px;
-  text-transform: uppercase;
-}
-.zone-title { font-size: 15px; font-weight: 600; }
-.zone-sub { color: var(--text-dim); font-size: 12px; margin-left: auto; }
-
-.zone-body { padding: 20px; }
-
-/* ---------- Zone 1: AI Concept Breakdown ---------- */
-.concept-loading {
-  display: flex; gap: 8px; align-items: center;
-  color: var(--text-muted); font-size: 13px;
-}
-.concept-loading .dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--accent);
-  animation: pulse 1.2s infinite ease-in-out both;
-}
-.concept-loading .dot:nth-child(2) { animation-delay: .15s; }
-.concept-loading .dot:nth-child(3) { animation-delay: .3s; }
-@keyframes pulse { 0%,80%,100% { transform: scale(.6); opacity: .4; } 40% { transform: scale(1); opacity: 1; } }
-
-.concept-title {
-  font-size: 22px; font-weight: 700;
-  margin-bottom: 12px;
-  letter-spacing: -0.01em;
-}
-.concept-content { color: var(--text); font-size: 14.5px; }
-.concept-content p { margin-bottom: 12px; color: var(--text-muted); }
-.concept-content h3 { margin: 18px 0 8px; font-size: 15px; color: var(--text); font-weight: 600; }
-.concept-content ul { margin: 0 0 12px 18px; color: var(--text-muted); }
-.concept-content li { margin-bottom: 6px; }
+/* Concept prose area */
+.concept-title { font-size: 21px; font-weight: 700; margin-bottom: 10px; letter-spacing: -.01em; }
+.concept-content { font-size: 14px; }
+.concept-content p  { color: var(--text-m); margin-bottom: 10px; }
+.concept-content h3 { margin: 16px 0 7px; font-size: 14px; font-weight: 600; }
+.concept-content ul { margin: 0 0 10px 18px; color: var(--text-m); }
+.concept-content li { margin-bottom: 5px; }
 .concept-content code {
-  font-family: var(--mono);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  padding: 2px 6px; border-radius: 6px;
-  font-size: 13px; color: var(--accent-strong);
+  font-family: var(--mono); background: var(--surface-2);
+  border: 1px solid var(--border); padding: 2px 5px;
+  border-radius: 5px; font-size: 12.5px; color: var(--accent-hi);
 }
 .concept-content pre {
-  font-family: var(--mono);
-  background: #0a1120;
-  border: 1px solid var(--border);
-  padding: 14px 16px; border-radius: 10px;
-  overflow-x: auto; margin: 10px 0 16px;
-  font-size: 13px; color: var(--text);
+  font-family: var(--mono); background: #090f1d;
+  border: 1px solid var(--border); padding: 12px 14px;
+  border-radius: 8px; overflow-x: auto; margin: 8px 0 14px;
+  font-size: 12.5px; color: var(--text);
 }
 .concept-content strong { color: var(--text); }
 
-/* ---------- Zone 2: Simulation Lab ---------- */
+/* Loading dots */
+.loading-dots { display: flex; gap: 6px; align-items: center; color: var(--text-d); font-size: 13px; }
+.loading-dots .d {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent);
+  animation: bounce 1.2s infinite ease-in-out both;
+}
+.loading-dots .d:nth-child(2) { animation-delay: .14s; }
+.loading-dots .d:nth-child(3) { animation-delay: .28s; }
+
+/* ── Zone 2 — Simulation Lab ─────────────────────────────────── */
 .sim-wrap {
   display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 20px;
+  grid-template-columns: 1fr 260px;
+  gap: 16px;
   align-items: stretch;
 }
 .sim-canvas-wrap {
   position: relative;
   background: #08101f;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--r-s);
   overflow: hidden;
-  min-height: 360px;
+  min-height: 380px;
 }
-.sim-canvas { display: block; width: 100%; height: 100%; }
+#labCanvas { display: block; width: 100%; height: 100%; }
 .sim-overlay {
-  position: absolute; top: 12px; left: 12px;
-  font-family: var(--mono); font-size: 12px;
-  color: var(--text-muted);
-  background: rgba(8,16,31,0.7);
+  position: absolute; top: 10px; left: 10px;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--text-m);
+  background: rgba(8,16,31,0.72);
   border: 1px solid var(--border);
-  padding: 6px 10px; border-radius: 8px;
+  padding: 5px 9px; border-radius: 7px;
   pointer-events: none;
 }
 .sim-overlay b { color: var(--accent); }
-
 .sim-controls {
-  display: flex; flex-direction: column; gap: 16px;
+  display: flex; flex-direction: column; gap: 14px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 18px;
+  border-radius: var(--r-s);
+  padding: 16px;
 }
-.sim-controls h4 { font-size: 13px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; }
-.control { display: flex; flex-direction: column; gap: 6px; }
-.control label {
+.sim-controls h4 {
+  font-size: 11px; letter-spacing: 0.7px; text-transform: uppercase;
+  color: var(--text-d); font-weight: 600;
+}
+.ctrl { display: flex; flex-direction: column; gap: 5px; }
+.ctrl label {
   display: flex; justify-content: space-between;
-  font-size: 12px; color: var(--text-muted);
+  font-size: 12px; color: var(--text-m);
 }
-.control label span { color: var(--accent); font-family: var(--mono); }
-.control input[type=range] {
+.ctrl label span { color: var(--accent); font-family: var(--mono); font-size: 11px; }
+.ctrl input[type=range] {
   -webkit-appearance: none; appearance: none;
-  width: 100%; height: 4px;
-  background: var(--border-strong);
+  width: 100%; height: 4px; background: var(--border-s);
   border-radius: 4px; outline: none;
 }
-.control input[type=range]::-webkit-slider-thumb {
+.ctrl input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none;
-  width: 16px; height: 16px; border-radius: 50%;
+  width: 15px; height: 15px; border-radius: 50%;
   background: var(--accent); cursor: pointer;
-  border: 2px solid #06241f;
+  border: 2px solid #061a17;
   box-shadow: 0 0 0 2px var(--accent-soft);
 }
-.control input[type=range]::-moz-range-thumb {
-  width: 16px; height: 16px; border-radius: 50%;
-  background: var(--accent); cursor: pointer; border: 2px solid #06241f;
+.ctrl input[type=range]::-moz-range-thumb {
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--accent); cursor: pointer; border: 2px solid #061a17;
 }
-.sim-btns { display: flex; gap: 8px; }
-.sim-btn {
-  flex: 1; padding: 9px 12px;
+.sim-btns { display: flex; gap: 7px; margin-top: 4px; }
+.sbtn {
+  flex: 1; padding: 8px 10px;
   background: var(--surface-2);
-  border: 1px solid var(--border-strong);
-  color: var(--text);
-  border-radius: 8px;
-  font-size: 13px; font-weight: 500;
-  cursor: pointer; transition: all .15s;
+  border: 1px solid var(--border-s);
+  color: var(--text); border-radius: 7px;
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all .14s;
 }
-.sim-btn:hover { border-color: var(--accent); color: var(--accent); }
-.sim-btn.primary { background: var(--accent); color: #06241f; border-color: var(--accent); }
-.sim-btn.primary:hover { background: var(--accent-strong); color: #06241f; }
+.sbtn:hover { border-color: var(--accent); color: var(--accent); }
+.sbtn.pri { background: var(--accent); color: #061a17; border-color: var(--accent); }
+.sbtn.pri:hover { background: var(--accent-hi); }
 
-/* ---------- Zone 3: Video & Resource Hub ---------- */
+/* ── Zone 3 — Resource Hub ──────────────────────────────────── */
 .hub-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
 }
-.card {
+.rcard {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--r-s);
   overflow: hidden;
-  transition: transform .15s, border-color .15s, box-shadow .2s;
+  transition: transform .14s, border-color .14s, box-shadow .18s;
 }
-.card:hover {
+.rcard:hover {
   transform: translateY(-2px);
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-soft);
+  border-color: var(--border-s);
+  box-shadow: var(--shadow-s);
 }
-.card-thumb {
+.rcard-thumb {
   position: relative; aspect-ratio: 16/9;
   background: linear-gradient(135deg, #1c2a48, #16213a);
   display: grid; place-items: center;
-  color: var(--text-dim); font-size: 12px;
 }
-.card-thumb::after {
+.rcard-thumb::after {
   content: ""; position: absolute; inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(56,214,196,0.08), transparent 60%);
+  background: radial-gradient(circle at 50% 50%, rgba(56,214,196,0.07), transparent 60%);
 }
-.card-thumb .play {
-  width: 44px; height: 44px; border-radius: 50%;
-  background: rgba(56,214,196,0.15);
+.rcard-thumb .play {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: rgba(56,214,196,0.14);
   border: 1px solid var(--accent);
   display: grid; place-items: center;
-  color: var(--accent); font-size: 16px;
-  z-index: 1;
+  color: var(--accent); font-size: 14px; z-index: 1;
 }
-.card-body { padding: 14px 16px; }
-.card-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; color: var(--text); }
-.card-meta { font-size: 12px; color: var(--text-dim); display: flex; gap: 10px; }
-.card-link {
-  display: flex; align-items: center; gap: 12px;
-  padding: 14px 16px;
+.rcard-body { padding: 12px 14px; }
+.rcard-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.rcard-meta  { font-size: 11px; color: var(--text-d); }
+.rcard-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
   border-top: 1px solid var(--border);
-  font-size: 13px; color: var(--text-muted);
-  transition: color .15s, background .15s;
+  font-size: 13px; color: var(--text-m);
+  transition: color .13s, background .13s;
 }
-.card-link:hover { background: var(--surface-2); color: var(--text); }
-.card-link .icon {
-  width: 34px; height: 34px; border-radius: 8px;
+.rcard-link:hover { background: var(--surface-2); color: var(--text); }
+.rcard-icon {
+  width: 32px; height: 32px; border-radius: 7px;
   background: var(--accent-soft); color: var(--accent);
-  display: grid; place-items: center; font-size: 14px;
+  display: grid; place-items: center; font-size: 13px; flex-shrink: 0;
+}
+.rcard-link .rmeta { font-size: 11px; color: var(--text-d); margin-top: 1px; }
+
+/* ── Explore sidebar (chat drawer) ──────────────────────────── */
+#explore-sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  display: flex; flex-direction: column;
+  border-left: 1px solid var(--border);
+  background: var(--bg-el);
+  overflow: hidden;
+  transition: width .3s cubic-bezier(.4,0,.2,1), opacity .3s;
+}
+#explore-sidebar.collapsed { width: 0; opacity: 0; pointer-events: none; }
+
+.esi-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
   flex-shrink: 0;
 }
-.card-link .meta { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+.esi-header-left { display: flex; flex-direction: column; gap: 2px; }
+.esi-label {
+  font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--accent); font-weight: 600;
+}
+.esi-title { font-size: 13px; font-weight: 600; }
+.esi-collapse-btn {
+  background: var(--surface-2); border: 1px solid var(--border-s);
+  color: var(--text-m); padding: 5px 9px;
+  border-radius: 6px; font-size: 11px; cursor: pointer;
+  transition: all .14s; white-space: nowrap;
+}
+.esi-collapse-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ---------- Responsive ---------- */
-@media (max-width: 860px) {
+/* Minimize to theory button inside chat drawer */
+.min-theory-btn {
+  margin: 10px 14px;
+  padding: 10px 12px;
+  background: var(--crimson-soft);
+  border: 1px solid var(--crimson);
+  color: var(--crimson);
+  border-radius: var(--r-s);
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: background .14s, transform .12s;
+  flex-shrink: 0;
+}
+.min-theory-btn:hover { background: rgba(240,90,110,0.22); transform: translateY(-1px); }
+
+.esi-chat-scroll {
+  flex: 1; overflow-y: auto;
+  padding: 14px 14px 0;
+  display: flex; flex-direction: column; gap: 14px;
+  min-height: 0;
+}
+.esi-input-row {
+  padding: 10px 12px 12px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 7px; align-items: center;
+  flex-shrink: 0;
+}
+.esi-input {
+  flex: 1; background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text); padding: 9px 12px;
+  border-radius: var(--r-s); font-size: 13px; outline: none;
+  font-family: var(--font);
+  transition: border-color .14s;
+}
+.esi-input::placeholder { color: var(--text-d); }
+.esi-input:focus { border-color: var(--accent); }
+.esi-send {
+  background: var(--accent); color: #061a17;
+  border: none; padding: 9px 14px;
+  border-radius: var(--r-s); font-weight: 600; font-size: 13px;
+  cursor: pointer; transition: background .14s;
+}
+.esi-send:hover { background: var(--accent-hi); }
+
+/* Toggle for collapsed sidebar (floating button) */
+#open-sidebar-fab {
+  position: fixed; right: 16px; bottom: 80px; z-index: 150;
+  background: var(--accent); color: #061a17;
+  border: none; border-radius: 50%;
+  width: 42px; height: 42px; font-size: 18px;
+  cursor: pointer; display: none;
+  align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(56,214,196,0.45);
+  transition: transform .14s;
+}
+#open-sidebar-fab:hover { transform: scale(1.08); }
+#open-sidebar-fab.visible { display: flex; }
+
+/* ── Suggestions bar (explore only) ─────────────────────────── */
+#suggestions-bar {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  padding: 12px 24px 0;
+  border-bottom: 1px solid var(--border);
+  background: rgba(11,18,32,0.4);
+}
+.chip {
+  font-size: 11px; color: var(--text-m);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 5px 11px; border-radius: 999px;
+  cursor: pointer; transition: all .14s; user-select: none;
+  margin-bottom: 10px;
+}
+.chip:hover { color: var(--text); border-color: var(--accent); background: var(--accent-soft); }
+.chip.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+
+/* ── Empty state ─────────────────────────────────────────────── */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 80px 20px;
+  text-align: center; color: var(--text-m);
+}
+.empty-state h2 { color: var(--text); font-size: 20px; margin-bottom: 8px; }
+.empty-state p  { font-size: 14px; max-width: 420px; }
+
+/* ── Animations ──────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Perspective slide transitions */
+.pane-hidden-left  { transform: translateX(-100%); opacity: 0; pointer-events: none; }
+.pane-hidden-right { transform: translateX(100%);  opacity: 0; pointer-events: none; }
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  :root { --sidebar-w: 290px; }
+}
+@media (max-width: 900px) {
+  #ai-sidebar { display: none; }
+  #explore-sidebar { display: none; }
+  #open-sidebar-fab.visible { display: none; }
   .sim-wrap { grid-template-columns: 1fr; }
-  .sim-canvas-wrap { min-height: 320px; }
+  .sim-canvas-wrap { min-height: 300px; }
 }
 @media (max-width: 640px) {
-  .topbar-inner { flex-wrap: wrap; gap: 10px; padding: 12px 14px; }
-  .search-form { order: 3; flex-basis: 100%; max-width: none; }
-  .brand-sub { display: none; }
-  main { padding: 20px 14px 60px; gap: 20px; }
-  .zone-body { padding: 16px; }
-  .concept-title { font-size: 19px; }
-  .zone-sub { display: none; }
+  .nav-search-wrap { max-width: 200px; }
+  .vt-btn .lbl { display: none; }
+  .chat-scroll { padding: 16px; }
+  .msg-bubble { max-width: 90%; font-size: 13.5px; }
+  #explore-main { padding: 14px 14px 40px; }
+  #suggestions-bar { padding: 10px 14px 0; }
 }
 </style>
 </head>
 <body>
 
-<!-- ===== TOP BAR ===== -->
-<header class="topbar">
-  <div class="topbar-inner">
-    <div class="brand">
-      <div class="brand-mark">T</div>
-      <div>
-        <div class="brand-name">Taxtron Explore</div>
-        <div class="brand-sub">Engineering & Student Ecosystem</div>
+<!-- ═══════════════════════════════════════════════════════════
+     TOP NAVIGATION BAR
+════════════════════════════════════════════════════════════ -->
+<nav id="topnav">
+  <div class="nav-brand">
+    <div class="brand-mark">T</div>
+    <span>Taxtron Workspace</span>
+    <span class="nav-topic-pill" id="topicPill">No topic selected</span>
+  </div>
+
+  <div class="nav-search-wrap">
+    <input id="navSearch" class="nav-search" type="text"
+      placeholder="Enter topic — e.g. Projectile Motion…" autocomplete="off">
+    <button id="navGo" class="nav-go">Explore</button>
+  </div>
+
+  <div class="view-toggle">
+    <button class="vt-btn active" id="btnAI" onclick="WorkspaceState.setView('ai')">
+      <span class="ico">&#128172;</span><span class="lbl">Theory Chat</span>
+    </button>
+    <button class="vt-btn" id="btnExplore" onclick="WorkspaceState.setView('explore')">
+      <span class="ico">&#128300;</span><span class="lbl">Lab Suite</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Suggestion chips row (shown in both views, below nav) -->
+<div id="suggestions-bar"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     WORKSPACE
+════════════════════════════════════════════════════════════ -->
+<div id="workspace">
+
+  <!-- ── PERSPECTIVE A: AI Chat ───────────────────────────── -->
+  <div id="pane-ai">
+
+    <!-- Main chat column -->
+    <div id="ai-main">
+      <div id="chatScroll" class="chat-scroll">
+        <div class="empty-state" id="chatEmpty">
+          <h2>Ask anything about your topic</h2>
+          <p>Search a topic above, then ask detailed questions. Long-form derivations, tables, and code blocks are all supported.</p>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <textarea id="chatInput" class="chat-input" rows="1"
+          placeholder="Ask a question about the current topic…"></textarea>
+        <button id="chatSend" class="send-btn">Send</button>
       </div>
     </div>
-    <form class="search-form" id="searchForm" onsubmit="return false;">
-      <input id="searchInput" class="search-input" type="text" placeholder="Explore a topic — e.g. projectile motion, Ohm's law, Fourier series…" autocomplete="off">
-      <button id="searchBtn" class="search-btn" type="submit">Analyze</button>
-    </form>
-  </div>
-  <div class="suggest" id="suggest"></div>
-</header>
 
-<!-- ===== MAIN ===== -->
-<main id="main">
-  <div class="empty" id="emptyState">
-    <h2>Explore any concept to unlock its breakdown</h2>
-    <p>Type a physics, math, or engineering topic above. Taxtron Explore will generate a concept explanation, an interactive simulation, and curated video resources — all in one dashboard.</p>
-  </div>
-</main>
+    <!-- Contextual mini-lab sidebar -->
+    <div id="ai-sidebar">
+      <div class="asi-header">
+        <div class="asi-label">Live Lab Preview</div>
+        <div class="asi-title" id="asiTitle">No topic loaded</div>
+      </div>
+
+      <!-- Mini-canvas simulation -->
+      <div class="mini-canvas-wrap">
+        <canvas id="miniCanvas"></canvas>
+        <div class="mini-overlay" id="miniOverlay">Load a topic to start</div>
+      </div>
+
+      <!-- Formula chips + enter lab -->
+      <div class="asi-body">
+        <div class="asi-label" style="margin-bottom:8px;">Key Formulas</div>
+        <div class="formula-chips" id="formulaChips">
+          <span class="fchip" style="color:var(--text-d);">— awaiting topic —</span>
+        </div>
+        <button class="enter-lab-btn" onclick="WorkspaceState.setView('explore')">
+          Enter Full Immersive Lab Suite &rarr;
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /pane-ai -->
+
+  <!-- ── PERSPECTIVE B: Explore Lab Suite ─────────────────── -->
+  <div id="pane-explore" class="pane-hidden-right">
+
+    <!-- Main lab scroll -->
+    <div id="explore-main">
+      <div id="exploreContent">
+        <div class="empty-state">
+          <h2>Enter a topic to launch the lab</h2>
+          <p>Use the search bar above to load physics, math, or engineering content into the three-zone interactive workspace.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat companion sidebar drawer -->
+    <div id="explore-sidebar">
+      <div class="esi-header">
+        <div class="esi-header-left">
+          <div class="esi-label">Theory Companion</div>
+          <div class="esi-title">AI Chat</div>
+        </div>
+        <button class="esi-collapse-btn" onclick="ExploreController.toggleSidebar()">&#x25B6; Hide</button>
+      </div>
+
+      <button class="min-theory-btn" onclick="WorkspaceState.setView('ai')">
+        &#8617; Minimize to Theory View
+      </button>
+
+      <div id="esiChatScroll" class="esi-chat-scroll"></div>
+
+      <div class="esi-input-row">
+        <input id="esiInput" class="esi-input" type="text"
+          placeholder="Ask the AI…" autocomplete="off">
+        <button id="esiSend" class="esi-send">Ask</button>
+      </div>
+    </div><!-- /explore-sidebar -->
+
+  </div><!-- /pane-explore -->
+
+</div><!-- /workspace -->
+
+<!-- FAB for re-opening collapsed sidebar in explore mode -->
+<button id="open-sidebar-fab" title="Open Theory Chat" onclick="ExploreController.openSidebar()">
+  &#128172;
+</button>
 
 <script>
-/* ============================================================
-   MODULE 1 — App State & Search Controller
-   Orchestrates the three zones. Keeps DOM refs and exposes
-   a single `runSearch(query)` entry point.
-   ============================================================ */
-const App = (() => {
-  const $input = document.getElementById('searchInput');
-  const $btn   = document.getElementById('searchBtn');
-  const $main  = document.getElementById('main');
-  const $empty = document.getElementById('emptyState');
-  const $suggest = document.getElementById('suggest');
-
-  const SUGGESTIONS = [
-    'Projectile Motion', 'Ohm\u2019s Law', 'Newton\u2019s Second Law',
-    'Simple Harmonic Motion', 'Wave Interference', 'Capacitor Charging',
-    'Fourier Series', 'Kinematics'
-  ];
-
-  function init() {
-    // Render suggestion chips
-    SUGGESTIONS.forEach(s => {
-      const c = document.createElement('span');
-      c.className = 'chip'; c.textContent = s;
-      c.onclick = () => { $input.value = s; runSearch(s); };
-      $suggest.appendChild(c);
-    });
-
-    $btn.addEventListener('click', () => runSearch($input.value));
-    $input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') { e.preventDefault(); runSearch($input.value); }
-    });
-  }
-
-  async function runSearch(rawQuery) {
-    const query = (rawQuery || '').trim();
-    if (!query) return;
-
-    $btn.disabled = true;
-    $empty?.remove();
-
-    // Build zones (skeleton first)
-    const conceptZone = ConceptZone.create(query);
-    const simZone     = SimZone.create(query);
-    const hubZone     = HubZone.create(query);
-    $main.innerHTML = '';
-    $main.append(conceptZone.el, simZone.el, hubZone.el);
-
-    // Kick off AI explanation
-    ConceptZone.load(conceptZone, query);
-
-    // Pick + start simulation
-    SimZone.start(simZone, query);
-
-    // Populate video/resource hub
-    HubZone.load(hubZone, query);
-
-    // Re-enable button (AI loads async)
-    setTimeout(() => { $btn.disabled = false; }, 400);
-  }
-
-  return { init };
-})();
-
-/* ============================================================
-   MODULE 2 — Concept Zone (AI Breakdown)
-   Calls the existing /api/generate endpoint and renders
-   Markdown-formatted output into the top card.
-   ============================================================ */
-const ConceptZone = (() => {
-  function create(query) {
-    const el = document.createElement('section');
-    el.className = 'zone';
-    el.innerHTML = `
-      <div class="zone-header">
-        <span class="zone-tag">01 · Concept</span>
-        <span class="zone-title">AI Concept Breakdown</span>
-        <span class="zone-sub">Generated explanation</span>
-      </div>
-      <div class="zone-body">
-        <div class="concept-loading">
-          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-          <span>Analyzing \u201C${escapeHtml(query)}\u201D\u2026</span>
-        </div>
-      </div>`;
-    return { el, body: el.querySelector('.zone-body') };
-  }
-
-  async function load(zone, query) {
-    const prompt = `You are an expert engineering tutor. Explain the topic "${query}" for a student.
-Format strictly as Markdown with these sections:
-## Overview
-(2-3 sentence concise definition)
-## Key Concepts
-(bulleted list of 4-6 key points)
-## Formulas
-(2-4 core formulas using inline code, each with a one-line description)
-## Important Notes
-(2-3 practical tips/common mistakes)
-Keep it concise, direct, and technically accurate. No fluff.`;
-
-    try {
-      const res = await fetch('https://project-0wxuy.vercel.app/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: prompt })
-      });
-      if (!res.ok) throw new Error('Server responded with status ' + res.status);
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      render(zone, query, data.result || 'No response received.');
-    } catch (err) {
-      zone.body.innerHTML = `
-        <div class="concept-title">${escapeHtml(query)}</div>
-        <div class="concept-content">
-          <p style="color:var(--danger)">Could not load AI explanation: ${escapeHtml(err.message)}.</p>
-          <p>Try the simulation and resource hub below in the meantime.</p>
-        </div>`;
-    }
-  }
-
-  function render(zone, query, markdown) {
-    zone.body.innerHTML = `
-      <div class="concept-title">${escapeHtml(query)}</div>
-      <div class="concept-content">${parseMarkdown(markdown)}</div>`;
-  }
-
-  /* Minimal, safe Markdown subset: headings, bold, italic, code, lists, paragraphs */
-  function parseMarkdown(md) {
-    const lines = escapeHtml(md).split(/\r?\n/);
-    const out = [];
-    let inList = false, inCode = false, codeBuf = [];
-
-    function flushList() { if (inList) { out.push('</ul>'); inList = false; } }
-
-    lines.forEach(line => {
-      if (line.trim().startsWith('```')) {
-        if (inCode) { out.push('<pre>' + codeBuf.join('\n') + '</pre>'); codeBuf = []; inCode = false; }
-        else { flushList(); inCode = true; }
-        return;
-      }
-      if (inCode) { codeBuf.push(line); return; }
-
-      if (/^##\s+/.test(line)) { flushList(); out.push('<h3>' + inline(line.replace(/^##\s+/, '')) + '</h3>'); return; }
-      if (/^#\s+/.test(line))  { flushList(); out.push('<h3>' + inline(line.replace(/^#\s+/, '')) + '</h3>'); return; }
-
-      const m = line.match(/^\s*[-*]\s+(.*)/);
-      if (m) {
-        if (!inList) { out.push('<ul>'); inList = true; }
-        out.push('<li>' + inline(m[1]) + '</li>');
-        return;
-      }
-
-      if (!line.trim()) { flushList(); return; }
-      flushList();
-      out.push('<p>' + inline(line) + '</p>');
-    });
-    if (inCode) out.push('<pre>' + codeBuf.join('\n') + '</pre>');
-    flushList();
-    return out.join('');
-  }
-
-  function inline(s) {
-    return s
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*([^*]+)\*/g, '<em>$1</em>');
-  }
-
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-
-  return { create, load };
-})();
-
-/* ============================================================
-   MODULE 3 — Simulation Zone (Interactive Canvas)
-   Maps a topic to a simulation factory. Each factory returns
-   { mount(canvas), controls, dispose() }. New simulations can
-   be registered in `SIM_REGISTRY` without touching the rest.
-   ============================================================ */
-const SimZone = (() => {
-  // Topic keyword -> simulation id
-  function pickSim(query) {
-    const q = query.toLowerCase();
-    if (/projectile|trajectory|ball|throw|launch/.test(q)) return 'projectile';
-    if (/ohm|resistance|voltage|circuit/.test(q))         return 'ohm';
-    if (/wave|interference|sound|light wave/.test(q))      return 'wave';
-    if (/harmonic|oscillation|pendulum|spring/.test(q))    return 'harmonic';
-    return 'projectile'; // default fallback
-  }
-
-  function create(query) {
-    const simId = pickSim(query);
-    const el = document.createElement('section');
-    el.className = 'zone';
-    el.innerHTML = `
-      <div class="zone-header">
-        <span class="zone-tag">02 · Lab</span>
-        <span class="zone-title">Interactive Simulation Lab</span>
-        <span class="zone-sub">${escapeHtml(SIM_LABELS[simId] || 'Live simulation')}</span>
-      </div>
-      <div class="zone-body">
-        <div class="sim-wrap">
-          <div class="sim-canvas-wrap">
-            <canvas id="simCanvas" class="sim-canvas"></canvas>
-            <div class="sim-overlay" id="simOverlay"></div>
-          </div>
-          <div class="sim-controls" id="simControls"></div>
-        </div>
-      </div>`;
-    return { el, simId };
-  }
-
-  function start(zone, query) {
-    const canvas  = zone.el.querySelector('#simCanvas');
-    const overlay = zone.el.querySelector('#simOverlay');
-    const controls= zone.el.querySelector('#simControls');
-    const factory = SIM_REGISTRY[zone.simId] || SIM_REGISTRY.projectile;
-    zone.sim = factory(canvas, overlay, controls);
-    zone.sim.mount();
-  }
-
-  const SIM_LABELS = {
-    projectile: 'Projectile Motion',
-    ohm:       'Ohm\u2019s Law Circuit',
-    wave:      'Wave Interference',
-    harmonic:  'Simple Harmonic Motion'
+/* =============================================================
+   WORKSPACE STATE — Global singleton
+   Tracks: currentTopic, activeView, isSidebarExpanded
+   Broadcasts changes via update() so all modules react.
+============================================================= */
+const WorkspaceState = (() => {
+  const state = {
+    currentTopic:      '',
+    activeView:        'ai',   // 'ai' | 'explore'
+    isSidebarExpanded: true
   };
 
-  return { create, start };
+  const listeners = [];
+
+  function subscribe(fn) { listeners.push(fn); }
+
+  function update(patch) {
+    Object.assign(state, patch);
+    listeners.forEach(fn => fn({ ...state }));
+  }
+
+  function setTopic(topic) {
+    const t = (topic || '').trim();
+    if (!t) return;
+    update({ currentTopic: t });
+    document.getElementById('topicPill').textContent = t;
+    document.getElementById('navSearch').value = t;
+    LabController.loadTopic(t);
+    ChatController.notifyTopic(t);
+    SidebarMini.loadTopic(t);
+    HubZone.load(t);
+    ConceptZone.load(t);
+  }
+
+  function setView(view) {
+    update({ activeView: view });
+    const btnAI      = document.getElementById('btnAI');
+    const btnExplore = document.getElementById('btnExplore');
+    const paneAI     = document.getElementById('pane-ai');
+    const paneEx     = document.getElementById('pane-explore');
+
+    btnAI.classList.toggle('active', view === 'ai');
+    btnExplore.classList.toggle('active', view === 'explore');
+
+    if (view === 'ai') {
+      paneAI.classList.remove('pane-hidden-left');
+      paneEx.classList.add('pane-hidden-right');
+    } else {
+      paneAI.classList.add('pane-hidden-left');
+      paneEx.classList.remove('pane-hidden-right');
+      SidebarMini.pauseMini();
+      LabController.resumeLab();
+    }
+    ExploreController.updateFab();
+  }
+
+  return { state, subscribe, update, setTopic, setView };
 })();
 
-/* ---------- Simulation Registry ----------
-   Each factory: (canvas, overlay, controlsEl) => { mount, dispose }
-   Self-contained; no shared state between sims.
--------------------------------------------- */
+/* =============================================================
+   UTIL
+============================================================= */
+function escHtml(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
 
+function parseMd(md) {
+  const lines = escHtml(md).split(/\r?\n/);
+  const out = []; let inList = false, inCode = false, codeBuf = [];
+  function flushList() { if (inList) { out.push('</ul>'); inList = false; } }
+  lines.forEach(line => {
+    if (line.trim().startsWith('```')) {
+      if (inCode) { out.push('<pre>'+codeBuf.join('\n')+'</pre>'); codeBuf=[]; inCode=false; }
+      else { flushList(); inCode = true; }
+      return;
+    }
+    if (inCode) { codeBuf.push(line); return; }
+    if (/^##\s+/.test(line)) { flushList(); out.push('<h3>'+inl(line.replace(/^##\s+/,''))+'</h3>'); return; }
+    if (/^#\s+/.test(line))  { flushList(); out.push('<h3>'+inl(line.replace(/^#\s+/,''))+'</h3>'); return; }
+    const m = line.match(/^\s*[-*]\s+(.*)/);
+    if (m) { if (!inList) { out.push('<ul>'); inList=true; } out.push('<li>'+inl(m[1])+'</li>'); return; }
+    if (!line.trim()) { flushList(); return; }
+    flushList(); out.push('<p>'+inl(line)+'</p>');
+  });
+  if (inCode) out.push('<pre>'+codeBuf.join('\n')+'</pre>');
+  flushList();
+  return out.join('');
+}
+
+function inl(s) {
+  return s
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+}
+
+async function callAI(prompt) {
+  const res = await fetch('https://project-0wxuy.vercel.app/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ topic: prompt })
+  });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const d = await res.json();
+  if (d.error) throw new Error(d.error);
+  return d.result || '';
+}
+
+/* =============================================================
+   CHAT CONTROLLER — Manages the main AI chat pane
+============================================================= */
+const ChatController = (() => {
+  const $scroll  = document.getElementById('chatScroll');
+  const $input   = document.getElementById('chatInput');
+  const $send    = document.getElementById('chatSend');
+  const $empty   = document.getElementById('chatEmpty');
+  let sending = false;
+  const msgs = [];  // {role, html} for reference
+
+  function init() {
+    $send.addEventListener('click', sendMsg);
+    $input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+    });
+    // Auto-resize textarea
+    $input.addEventListener('input', () => {
+      $input.style.height = 'auto';
+      $input.style.height = Math.min($input.scrollHeight, 140) + 'px';
+    });
+  }
+
+  function notifyTopic(topic) {
+    if (msgs.length === 0) {
+      appendMsg('bot', `Topic loaded: **${topic}**\n\nI'm ready to give you deep explanations, derivations, and worked examples. What would you like to understand first?`);
+    }
+  }
+
+  async function sendMsg() {
+    if (sending) return;
+    const text = $input.value.trim();
+    if (!text) return;
+    $empty?.remove();
+    sending = true; $send.disabled = true;
+    $input.value = ''; $input.style.height = 'auto';
+
+    appendMsg('user', text);
+
+    const topic = WorkspaceState.state.currentTopic || 'general';
+    const botWrap = appendTyping();
+
+    try {
+      const prompt = `You are an expert engineering tutor for the topic "${topic}". The student asks:\n\n${text}\n\nProvide a clear, detailed, well-structured answer. Use Markdown with formulas in inline code, numbered derivations, tables where helpful. Be thorough but direct.`;
+      const result = await callAI(prompt);
+      replaceTyping(botWrap, result);
+      msgs.push({ role: 'bot', text: result });
+    } catch (e) {
+      replaceTyping(botWrap, `**Error:** ${escHtml(e.message)}`);
+    }
+    sending = false; $send.disabled = false;
+    $input.focus();
+  }
+
+  function appendMsg(role, mdText) {
+    const isUser = role === 'user';
+    const wrap = document.createElement('div');
+    wrap.className = 'msg-wrap ' + role;
+    const avatar = document.createElement('div');
+    avatar.className = 'msg-avatar';
+    avatar.textContent = isUser ? 'U' : 'T';
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    if (isUser) {
+      bubble.textContent = mdText;
+    } else {
+      bubble.innerHTML = (window.marked && marked.parse)
+        ? marked.parse(mdText)
+        : parseMd(mdText);
+      addCopyBtn(wrap, mdText);
+    }
+    wrap.append(avatar, bubble);
+    $scroll.appendChild(wrap);
+    scrollDown();
+    msgs.push({ role, text: mdText });
+    return wrap;
+  }
+
+  function appendTyping() {
+    const wrap = document.createElement('div');
+    wrap.className = 'msg-wrap bot';
+    wrap.innerHTML = `<div class="msg-avatar">T</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+    $scroll.appendChild(wrap);
+    scrollDown();
+    return wrap;
+  }
+
+  function replaceTyping(wrap, mdText) {
+    const bubble = wrap.querySelector('.msg-bubble');
+    bubble.innerHTML = (window.marked && marked.parse)
+      ? marked.parse(mdText)
+      : parseMd(mdText);
+    addCopyBtn(wrap, mdText);
+    scrollDown();
+  }
+
+  function addCopyBtn(wrap, raw) {
+    const btn = document.createElement('div');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.onclick = () => { navigator.clipboard.writeText(raw); btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 2000); };
+    wrap.appendChild(btn);
+  }
+
+  function scrollDown() {
+    $scroll.scrollTo({ top: $scroll.scrollHeight, behavior: 'smooth' });
+  }
+
+  /* Shared send for the explore sidebar mini-chat */
+  async function sendFromSidebar(text, targetScroll) {
+    if (!text.trim()) return;
+    appendSidebarMsg(targetScroll, 'user', text);
+    const typWrap = appendSidebarTyping(targetScroll);
+    const topic = WorkspaceState.state.currentTopic || 'general';
+    try {
+      const result = await callAI(`Engineering tutor on "${topic}". Student asks: ${text}\n\nBe concise and direct.`);
+      replaceSidebarTyping(typWrap, result);
+    } catch(e) {
+      replaceSidebarTyping(typWrap, `Error: ${e.message}`);
+    }
+  }
+
+  function appendSidebarMsg(container, role, text) {
+    const isUser = role === 'user';
+    const wrap = document.createElement('div');
+    wrap.className = 'msg-wrap ' + role;
+    wrap.style.cssText = 'animation: fadeUp .25s ease both; gap:7px;';
+    const av = document.createElement('div');
+    av.className = 'msg-avatar';
+    av.style.cssText = 'width:22px;height:22px;font-size:10px;';
+    av.textContent = isUser ? 'U' : 'T';
+    const bub = document.createElement('div');
+    bub.className = 'msg-bubble';
+    bub.style.cssText = 'font-size:12.5px; padding:9px 12px; max-width:85%;';
+    if (isUser) { bub.textContent = text; }
+    else {
+      bub.innerHTML = (window.marked && marked.parse) ? marked.parse(text) : parseMd(text);
+    }
+    wrap.append(av, bub);
+    container.appendChild(wrap);
+    container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+  }
+
+  function appendSidebarTyping(container) {
+    const wrap = document.createElement('div');
+    wrap.className = 'msg-wrap bot';
+    wrap.style.gap = '7px';
+    wrap.innerHTML = `<div class="msg-avatar" style="width:22px;height:22px;font-size:10px;">T</div><div class="msg-bubble" style="font-size:12.5px;padding:9px 12px;"><div class="typing"><span></span><span></span><span></span></div></div>`;
+    container.appendChild(wrap);
+    container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+    return wrap;
+  }
+
+  function replaceSidebarTyping(wrap, text) {
+    const bub = wrap.querySelector('.msg-bubble');
+    bub.innerHTML = (window.marked && marked.parse) ? marked.parse(text) : parseMd(text);
+    const container = wrap.parentElement;
+    if (container) container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+  }
+
+  init();
+  return { notifyTopic, sendFromSidebar };
+})();
+
+/* =============================================================
+   EXPLORE CONTROLLER — sidebar toggle + sidebar chat wiring
+============================================================= */
+const ExploreController = (() => {
+  const $sidebar    = document.getElementById('explore-sidebar');
+  const $esiScroll  = document.getElementById('esiChatScroll');
+  const $esiInput   = document.getElementById('esiInput');
+  const $esiSend    = document.getElementById('esiSend');
+  const $fab        = document.getElementById('open-sidebar-fab');
+
+  let sidebarOpen = true;
+
+  function init() {
+    $esiSend.addEventListener('click', doSend);
+    $esiInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doSend(); } });
+  }
+
+  function doSend() {
+    const text = $esiInput.value.trim();
+    if (!text) return;
+    $esiInput.value = '';
+    ChatController.sendFromSidebar(text, $esiScroll);
+  }
+
+  function toggleSidebar() {
+    sidebarOpen = !sidebarOpen;
+    WorkspaceState.update({ isSidebarExpanded: sidebarOpen });
+    $sidebar.classList.toggle('collapsed', !sidebarOpen);
+    updateFab();
+    const btn = $sidebar.querySelector('.esi-collapse-btn');
+    if (btn) btn.textContent = sidebarOpen ? '\u25B6 Hide' : '\u25C0 Show';
+    if (sidebarOpen) LabController.resizeLab();
+  }
+
+  function openSidebar() {
+    sidebarOpen = true;
+    $sidebar.classList.remove('collapsed');
+    $fab.classList.remove('visible');
+    const btn = $sidebar.querySelector('.esi-collapse-btn');
+    if (btn) btn.textContent = '\u25B6 Hide';
+    LabController.resizeLab();
+  }
+
+  function updateFab() {
+    const inExplore = WorkspaceState.state.activeView === 'explore';
+    $fab.classList.toggle('visible', inExplore && !sidebarOpen);
+  }
+
+  init();
+  return { toggleSidebar, openSidebar, updateFab };
+})();
+
+/* =============================================================
+   SIMULATION ENGINE
+   SIM_REGISTRY: id -> factory(canvas, overlay, controlsEl, isMini)
+   isMini = true means compact rendering (sidebar capsule)
+============================================================= */
 const SIM_REGISTRY = {};
 
-/* --- Projectile Motion --- */
-SIM_REGISTRY.projectile = (canvas, overlay, controlsEl) => {
+function pickSimId(query) {
+  const q = (query || '').toLowerCase();
+  if (/projectile|trajectory|ball|throw|launch|kinematic/.test(q)) return 'projectile';
+  if (/ohm|resistance|voltage|circuit|electric/.test(q))           return 'ohm';
+  if (/wave|interference|sound|light wave|diffraction/.test(q))    return 'wave';
+  if (/harmonic|oscillation|pendulum|spring|shm/.test(q))          return 'harmonic';
+  return 'projectile';
+}
+
+const SIM_META = {
+  projectile: {
+    label: 'Projectile Motion',
+    formulas: ['x = v₀cos(θ)·t', 'y = v₀sin(θ)·t - ½gt²', 'R = v₀²sin(2θ)/g', 'H = v₀²sin²(θ)/2g']
+  },
+  ohm: {
+    label: "Ohm's Law Circuit",
+    formulas: ['V = I·R', 'P = V·I = I²R', 'I = V/R', 'P = V²/R']
+  },
+  wave: {
+    label: 'Wave Interference',
+    formulas: ['λ = v/f', 'Δ = d·sin(θ)', 'constructive: Δ = mλ', 'destructive: Δ = (m+½)λ']
+  },
+  harmonic: {
+    label: 'Simple Harmonic Motion',
+    formulas: ['x = A·cos(ωt)', 'ω = √(k/m)', 'T = 2π/ω', 'E = ½kA²']
+  }
+};
+
+/* ── Projectile Motion ── */
+SIM_REGISTRY.projectile = (canvas, overlay, controlsEl, isMini) => {
   let raf = null, running = false, t = 0;
-  const state = { angle: 45, velocity: 30, g: 9.8 };
+  const s = { angle: 45, velocity: 30, g: 9.8 };
 
   function buildControls() {
+    if (!controlsEl) return;
     controlsEl.innerHTML = `
       <h4>Parameters</h4>
-      <div class="control">
-        <label>Angle <span id="vAngle">45\u00B0</span></label>
-        <input type="range" id="rAngle" min="5" max="85" step="1" value="45">
+      <div class="ctrl">
+        <label>Angle <span id="vA_${canvas.id}">45°</span></label>
+        <input type="range" id="rA_${canvas.id}" min="5" max="85" step="1" value="45">
       </div>
-      <div class="control">
-        <label>Initial Velocity <span id="vVel">30 m/s</span></label>
-        <input type="range" id="rVel" min="5" max="80" step="1" value="30">
+      <div class="ctrl">
+        <label>Velocity <span id="vV_${canvas.id}">30 m/s</span></label>
+        <input type="range" id="rV_${canvas.id}" min="5" max="80" step="1" value="30">
       </div>
-      <div class="control">
-        <label>Gravity <span id="vG">9.8 m/s\u00B2</span></label>
-        <input type="range" id="rG" min="1" max="25" step="0.1" value="9.8">
+      <div class="ctrl">
+        <label>Gravity <span id="vG_${canvas.id}">9.8 m/s²</span></label>
+        <input type="range" id="rG_${canvas.id}" min="1" max="25" step="0.1" value="9.8">
       </div>
       <div class="sim-btns">
-        <button class="sim-btn primary" id="btnPlay">Play</button>
-        <button class="sim-btn" id="btnReset">Reset</button>
+        <button class="sbtn pri" id="bP_${canvas.id}">Play</button>
+        <button class="sbtn" id="bR_${canvas.id}">Reset</button>
       </div>`;
-    controlsEl.querySelector('#rAngle').oninput = e => { state.angle = +e.target.value; controlsEl.querySelector('#vAngle').textContent = state.angle + '\u00B0'; reset(); };
-    controlsEl.querySelector('#rVel').oninput   = e => { state.velocity = +e.target.value; controlsEl.querySelector('#vVel').textContent = state.velocity + ' m/s'; reset(); };
-    controlsEl.querySelector('#rG').oninput     = e => { state.g = +e.target.value; controlsEl.querySelector('#vG').textContent = state.g + ' m/s\u00B2'; reset(); };
-    controlsEl.querySelector('#btnPlay').onclick = () => running ? pause() : play();
-    controlsEl.querySelector('#btnReset').onclick = reset;
+    controlsEl.querySelector(`#rA_${canvas.id}`).oninput = e => { s.angle = +e.target.value; controlsEl.querySelector(`#vA_${canvas.id}`).textContent = s.angle + '°'; reset(); };
+    controlsEl.querySelector(`#rV_${canvas.id}`).oninput = e => { s.velocity = +e.target.value; controlsEl.querySelector(`#vV_${canvas.id}`).textContent = s.velocity + ' m/s'; reset(); };
+    controlsEl.querySelector(`#rG_${canvas.id}`).oninput = e => { s.g = +e.target.value; controlsEl.querySelector(`#vG_${canvas.id}`).textContent = s.g + ' m/s²'; reset(); };
+    controlsEl.querySelector(`#bP_${canvas.id}`).onclick = () => running ? pause() : play();
+    controlsEl.querySelector(`#bR_${canvas.id}`).onclick = reset;
   }
 
   function mount() {
     buildControls();
     resize();
     window.addEventListener('resize', resize);
-    reset();
+    if (isMini) { running = true; loop(); } else reset();
   }
-  function dispose() { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); }
-
-  function resize() {
-    const dpr = window.devicePixelRatio || 1;
-    const r = canvas.parentElement.getBoundingClientRect();
-    canvas.width = r.width * dpr; canvas.height = r.height * dpr;
-    canvas.style.width = r.width + 'px'; canvas.style.height = r.height + 'px';
-    const ctx = canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
-    draw();
+  function dispose() { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); running = false; }
+  function pause() {
+    running = false; cancelAnimationFrame(raf);
+    const btn = controlsEl?.querySelector(`#bP_${canvas.id}`);
+    if (btn) btn.textContent = 'Play';
   }
-
   function play() {
-    if (running) return;
-    running = true;
-    controlsEl.querySelector('#btnPlay').textContent = 'Pause';
+    if (running) return; running = true;
+    const btn = controlsEl?.querySelector(`#bP_${canvas.id}`);
+    if (btn) btn.textContent = 'Pause';
     loop();
   }
-  function pause() { running = false; controlsEl.querySelector('#btnPlay').textContent = 'Play'; cancelAnimationFrame(raf); }
-
-  function reset() {
-    pause(); t = 0; draw();
+  function reset() { pause(); t = 0; draw(); }
+  function resize() {
+    if (!canvas.parentElement) return;
+    const dpr = window.devicePixelRatio || 1;
+    const r = canvas.parentElement.getBoundingClientRect();
+    if (!r.width) return;
+    canvas.width = r.width * dpr; canvas.height = r.height * dpr;
+    canvas.style.width = r.width + 'px'; canvas.style.height = r.height + 'px';
+    canvas.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+    draw();
   }
 
   function loop() {
-    t += 1/60;
+    t += isMini ? 1/45 : 1/60;
     draw();
-    const v = state.velocity, a = state.angle * Math.PI/180, g = state.g;
-    const tFlight = (2 * v * Math.sin(a)) / g;
-    if (t > tFlight + 0.4) { pause(); return; }
-    raf = requestAnimationFrame(loop);
+    const tFlight = (2 * s.velocity * Math.sin(s.angle * Math.PI/180)) / s.g;
+    if (t > tFlight + 0.3) { t = 0; if (!isMini) { running = false; const b = controlsEl?.querySelector(`#bP_${canvas.id}`); if(b) b.textContent='Play'; return; } }
+    if (running) raf = requestAnimationFrame(loop);
   }
 
   function draw() {
     const ctx = canvas.getContext('2d');
     const W = canvas.clientWidth, H = canvas.clientHeight;
+    if (!W || !H) return;
     ctx.clearRect(0,0,W,H);
 
-    // Ground
-    const groundY = H - 30;
+    const groundY = H - (isMini ? 16 : 28);
     ctx.strokeStyle = '#243352'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(W, groundY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,groundY); ctx.lineTo(W,groundY); ctx.stroke();
+    ctx.strokeStyle = 'rgba(36,51,82,0.35)';
+    const grid = isMini ? 30 : 40;
+    for (let x=0;x<W;x+=grid){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for (let y=0;y<H;y+=grid){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
 
-    // Grid (subtle)
-    ctx.strokeStyle = 'rgba(36,51,82,0.4)';
-    for (let x=0; x<W; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-    for (let y=0; y<H; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+    const v=s.velocity, a=s.angle*Math.PI/180, g=s.g;
+    const tF=(2*v*Math.sin(a))/g;
+    const range=(v*v*Math.sin(2*a))/g;
+    const maxHv=(v*v*Math.sin(a)*Math.sin(a))/(2*g);
+    const scale = Math.min(W*0.88/range, (H-groundY-10)/maxHv)*0.72;
+    const ox = isMini ? 18 : 36;
 
-    // Trajectory
-    const v = state.velocity, a = state.angle * Math.PI/180, g = state.g;
-    const scale = Math.min(W * 0.9 / ((v*v)/g), H * 0.8 / ((v*v * Math.sin(a)*Math.sin(a))/(2*g))) * 0.7;
-    const ox = 40, oy = groundY;
-
-    // Predicted path
-    ctx.strokeStyle = 'rgba(56,214,196,0.25)'; ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(56,214,196,0.22)'; ctx.lineWidth = isMini ? 1.5 : 2;
     ctx.beginPath();
-    const tFlight = (2 * v * Math.sin(a)) / g;
-    for (let tt=0; tt<=tFlight; tt+=tFlight/60) {
-      const x = ox + (v * Math.cos(a) * tt) * scale;
-      const y = oy - (v * Math.sin(a) * tt - 0.5 * g * tt * tt) * scale;
-      if (tt === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    for (let tt=0;tt<=tF;tt+=tF/80) {
+      const px = ox + v*Math.cos(a)*tt*scale;
+      const py = groundY - (v*Math.sin(a)*tt - 0.5*g*tt*tt)*scale;
+      tt===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
     }
     ctx.stroke();
 
-    // Current ball
-    const x = ox + (v * Math.cos(a) * t) * scale;
-    const y = oy - (v * Math.sin(a) * t - 0.5 * g * t * t) * scale;
+    const bx = ox + v*Math.cos(a)*t*scale;
+    const by = groundY - (v*Math.sin(a)*t - 0.5*g*t*t)*scale;
+    const br = isMini ? 5 : 7;
     ctx.fillStyle = '#38d6c4';
-    ctx.shadowColor = 'rgba(56,214,196,0.7)'; ctx.shadowBlur = 14;
-    ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI*2); ctx.fill();
-    ctx.shadowBlur = 0;
+    ctx.shadowColor='rgba(56,214,196,0.7)'; ctx.shadowBlur = isMini ? 8 : 14;
+    ctx.beginPath(); ctx.arc(bx,by,br,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur=0;
 
-    // Launcher
-    ctx.save();
-    ctx.translate(ox, oy);
-    ctx.rotate(-a);
-    ctx.fillStyle = '#324264';
-    ctx.fillRect(0, -5, 28, 10);
-    ctx.restore();
+    ctx.save(); ctx.translate(ox,groundY); ctx.rotate(-a);
+    ctx.fillStyle='#324264'; ctx.fillRect(0,-4,isMini?18:24,isMini?8:10); ctx.restore();
 
-    // Stats overlay
-    const range = ((v*v) * Math.sin(2*a)) / g;
-    const maxH  = (v*v * Math.sin(a)*Math.sin(a)) / (2*g);
-    overlay.innerHTML = `time <b>${t.toFixed(2)}s</b> &nbsp; range <b>${range.toFixed(1)} m</b> &nbsp; peak <b>${maxH.toFixed(1)} m</b>`;
+    if (overlay) overlay.innerHTML = `t <b>${t.toFixed(1)}s</b> R <b>${range.toFixed(0)}m</b> H <b>${maxHv.toFixed(0)}m</b>`;
   }
 
-  return { mount, dispose };
+  return { mount, dispose, pause, play, resize };
 };
 
-/* --- Ohm's Law --- */
-SIM_REGISTRY.ohm = (canvas, overlay, controlsEl) => {
+/* ── Ohm's Law ── */
+SIM_REGISTRY.ohm = (canvas, overlay, controlsEl, isMini) => {
   let raf = null, phase = 0;
-  const state = { voltage: 12, resistance: 6 };
+  const s = { voltage: 12, resistance: 6 };
 
   function buildControls() {
+    if (!controlsEl) return;
     controlsEl.innerHTML = `
       <h4>Parameters</h4>
-      <div class="control">
-        <label>Voltage <span id="vV">12 V</span></label>
-        <input type="range" id="rV" min="1" max="24" step="0.5" value="12">
+      <div class="ctrl">
+        <label>Voltage <span id="vV_${canvas.id}">12 V</span></label>
+        <input type="range" id="rV_${canvas.id}" min="1" max="24" step="0.5" value="12">
       </div>
-      <div class="control">
-        <label>Resistance <span id="vR">6 \u03A9</span></label>
-        <input type="range" id="rR" min="1" max="20" step="0.5" value="6">
+      <div class="ctrl">
+        <label>Resistance <span id="vR_${canvas.id}">6 Ω</span></label>
+        <input type="range" id="rR_${canvas.id}" min="1" max="20" step="0.5" value="6">
       </div>
       <div class="sim-btns">
-        <button class="sim-btn" id="btnReset">Reset</button>
+        <button class="sbtn" id="bR_${canvas.id}">Reset</button>
       </div>`;
-    controlsEl.querySelector('#rV').oninput = e => { state.voltage = +e.target.value; controlsEl.querySelector('#vV').textContent = state.voltage + ' V'; };
-    controlsEl.querySelector('#rR').oninput = e => { state.resistance = +e.target.value; controlsEl.querySelector('#vR').textContent = state.resistance + ' \u03A9'; };
-    controlsEl.querySelector('#btnReset').onclick = () => { state.voltage = 12; state.resistance = 6; buildControls(); };
+    controlsEl.querySelector(`#rV_${canvas.id}`).oninput = e => { s.voltage=+e.target.value; controlsEl.querySelector(`#vV_${canvas.id}`).textContent = s.voltage+' V'; };
+    controlsEl.querySelector(`#rR_${canvas.id}`).oninput = e => { s.resistance=+e.target.value; controlsEl.querySelector(`#vR_${canvas.id}`).textContent = s.resistance+' Ω'; };
+    controlsEl.querySelector(`#bR_${canvas.id}`).onclick = () => { s.voltage=12; s.resistance=6; buildControls(); };
   }
 
-  function mount() {
-    buildControls();
-    resize();
-    window.addEventListener('resize', resize);
-    loop();
-  }
-  function dispose() { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); }
-
+  function mount() { buildControls(); resize(); window.addEventListener('resize',resize); loop(); }
+  function dispose() { cancelAnimationFrame(raf); window.removeEventListener('resize',resize); }
   function resize() {
-    const dpr = window.devicePixelRatio || 1;
+    if (!canvas.parentElement) return;
+    const dpr = window.devicePixelRatio||1;
     const r = canvas.parentElement.getBoundingClientRect();
-    canvas.width = r.width * dpr; canvas.height = r.height * dpr;
-    canvas.style.width = r.width + 'px'; canvas.style.height = r.height + 'px';
-    const ctx = canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+    if (!r.width) return;
+    canvas.width=r.width*dpr; canvas.height=r.height*dpr;
+    canvas.style.width=r.width+'px'; canvas.style.height=r.height+'px';
+    canvas.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
   }
-
-  function loop() {
-    phase += 0.05;
-    draw();
-    raf = requestAnimationFrame(loop);
-  }
+  function loop() { phase+=0.05; draw(); raf=requestAnimationFrame(loop); }
 
   function draw() {
-    const ctx = canvas.getContext('2d');
-    const W = canvas.clientWidth, H = canvas.clientHeight;
+    const ctx=canvas.getContext('2d');
+    const W=canvas.clientWidth, H=canvas.clientHeight;
+    if(!W||!H) return;
     ctx.clearRect(0,0,W,H);
+    const I=s.voltage/s.resistance, cx=W/2, cy=H/2;
+    const mini = isMini;
 
-    const current = state.voltage / state.resistance;
-    const cx = W/2, cy = H/2, R = Math.min(W,H) * 0.32;
+    const bw=mini?18:28, bh=mini?44:60;
+    ctx.fillStyle='#1c2a48'; ctx.strokeStyle='#38d6c4'; ctx.lineWidth=1.5;
+    ctx.fillRect(mini?22:38, cy-bh/2, bw, bh);
+    ctx.strokeRect(mini?22:38, cy-bh/2, bw, bh);
+    ctx.fillStyle='#9aa7c2'; ctx.font=`${mini?9:11}px JetBrains Mono`;
+    ctx.fillText(s.voltage+'V', mini?18:34, cy+bh/2+14);
 
-    // Battery (left)
-    ctx.fillStyle = '#1c2a48'; ctx.strokeStyle = '#38d6c4'; ctx.lineWidth = 2;
-    ctx.fillRect(40, cy - 30, 30, 60);
-    ctx.strokeRect(40, cy - 30, 30, 60);
-    ctx.fillStyle = '#9aa7c2'; ctx.font = '11px JetBrains Mono';
-    ctx.fillText(state.voltage + 'V', 38, cy + 50);
-
-    // Resistor (right) — zigzag
-    const rx = W - 100, ry = cy;
-    ctx.strokeStyle = '#38d6c4'; ctx.lineWidth = 2;
+    const rx=W-(mini?60:90), ry=cy;
+    ctx.strokeStyle='#38d6c4'; ctx.lineWidth=1.5;
+    const zh=mini?20:28;
     ctx.beginPath();
-    ctx.moveTo(rx, ry - 30); ctx.lineTo(rx, ry + 30);
-    ctx.moveTo(rx, ry - 30); ctx.lineTo(rx + 12, ry - 22);
-    ctx.lineTo(rx - 12, ry - 14); ctx.lineTo(rx + 12, ry - 6);
-    ctx.lineTo(rx - 12, ry + 2); ctx.lineTo(rx + 12, ry + 10);
-    ctx.lineTo(rx - 12, ry + 18); ctx.lineTo(rx, ry + 30);
+    ctx.moveTo(rx,ry-zh); ctx.lineTo(rx+8,ry-zh*.7); ctx.lineTo(rx-8,ry-zh*.35);
+    ctx.lineTo(rx+8,ry); ctx.lineTo(rx-8,ry+zh*.35); ctx.lineTo(rx+8,ry+zh*.7); ctx.lineTo(rx,ry+zh);
     ctx.stroke();
-    ctx.fillStyle = '#9aa7c2';
-    ctx.fillText(state.resistance + '\u03A9', rx - 10, ry + 50);
+    ctx.fillText(s.resistance+'Ω', rx-10, ry+zh+14);
 
-    // Wires
-    ctx.strokeStyle = '#38d6c4'; ctx.lineWidth = 2;
+    const startX = mini?40:66, endX=rx;
+    ctx.strokeStyle='#38d6c4'; ctx.lineWidth=1.5;
     ctx.beginPath();
-    ctx.moveTo(70, cy - 30); ctx.lineTo(cx, cy - 30); ctx.lineTo(rx, cy - 30);
-    ctx.moveTo(70, cy + 30); ctx.lineTo(cx, cy + 30); ctx.lineTo(rx, cy + 30);
+    ctx.moveTo(startX,cy-bh/2); ctx.lineTo(cx,cy-bh/2); ctx.lineTo(endX,cy-bh/2);
+    ctx.moveTo(startX,cy+bh/2); ctx.lineTo(cx,cy+bh/2); ctx.lineTo(endX,cy+bh/2);
     ctx.stroke();
 
-    // Animated current dots flowing along top wire
-    const flowSpeed = Math.min(current * 0.4, 4);
-    for (let i=0; i<10; i++) {
-      const p = ((phase * flowSpeed + i * 0.1) % 1);
-      const x = 70 + p * (rx - 70);
-      ctx.fillStyle = 'rgba(56,214,196,0.9)';
-      ctx.beginPath(); ctx.arc(x, cy - 30, 3, 0, Math.PI*2); ctx.fill();
+    const flowSpeed = Math.min(I*0.4, 4);
+    for (let i=0;i<(mini?6:10);i++) {
+      const p = ((phase*flowSpeed + i*0.1) % 1);
+      const x = startX + p*(endX-startX);
+      ctx.fillStyle='rgba(56,214,196,0.9)';
+      ctx.beginPath(); ctx.arc(x, cy-bh/2, mini?2:3, 0, Math.PI*2); ctx.fill();
     }
 
-    // Center readout
-    ctx.fillStyle = '#e6edf7'; ctx.font = '600 22px Inter';
-    ctx.textAlign = 'center';
-    ctx.fillText('I = ' + current.toFixed(2) + ' A', cx, cy + 6);
-    ctx.textAlign = 'start';
+    ctx.fillStyle='#e6edf7'; ctx.font=`${mini?'500 14px':'600 20px'} Inter`;
+    ctx.textAlign='center';
+    ctx.fillText('I='+I.toFixed(2)+'A', cx, cy+(mini?5:6));
+    ctx.textAlign='start';
 
-    overlay.innerHTML = `V <b>${state.voltage}V</b> &nbsp; R <b>${state.resistance}\u03A9</b> &nbsp; I <b>${current.toFixed(2)}A</b> &nbsp; P <b>${(state.voltage*current).toFixed(1)}W</b>`;
+    if (overlay) overlay.innerHTML=`V <b>${s.voltage}V</b> R <b>${s.resistance}Ω</b> I <b>${I.toFixed(2)}A</b>`;
   }
 
-  return { mount, dispose };
+  return { mount, dispose, pause: ()=>{}, play: ()=>{}, resize };
 };
 
-/* --- Wave Interference --- */
-SIM_REGISTRY.wave = (canvas, overlay, controlsEl) => {
-  let raf = null;
-  const state = { freq: 1.5, amp: 18, sep: 80 };
+/* ── Wave Interference ── */
+SIM_REGISTRY.wave = (canvas, overlay, controlsEl, isMini) => {
+  let raf=null, t=0;
+  const s = { freq:1.5, sep:80 };
 
   function buildControls() {
+    if (!controlsEl) return;
     controlsEl.innerHTML = `
       <h4>Parameters</h4>
-      <div class="control">
-        <label>Frequency <span id="vF">1.5 Hz</span></label>
-        <input type="range" id="rF" min="0.5" max="4" step="0.1" value="1.5">
+      <div class="ctrl">
+        <label>Frequency <span id="vF_${canvas.id}">1.5 Hz</span></label>
+        <input type="range" id="rF_${canvas.id}" min="0.5" max="4" step="0.1" value="1.5">
       </div>
-      <div class="control">
-        <label>Amplitude <span id="vA">18 px</span></label>
-        <input type="range" id="rA" min="5" max="40" step="1" value="18">
-      </div>
-      <div class="control">
-        <label>Source Separation <span id="vS">80 px</span></label>
-        <input type="range" id="rS" min="20" max="160" step="5" value="80">
+      <div class="ctrl">
+        <label>Source Separation <span id="vS_${canvas.id}">80 px</span></label>
+        <input type="range" id="rS_${canvas.id}" min="20" max="160" step="5" value="80">
       </div>
       <div class="sim-btns">
-        <button class="sim-btn" id="btnReset">Reset</button>
+        <button class="sbtn" id="bR_${canvas.id}">Reset</button>
       </div>`;
-    controlsEl.querySelector('#rF').oninput = e => { state.freq = +e.target.value; controlsEl.querySelector('#vF').textContent = state.freq + ' Hz'; };
-    controlsEl.querySelector('#rA').oninput = e => { state.amp = +e.target.value; controlsEl.querySelector('#vA').textContent = state.amp + ' px'; };
-    controlsEl.querySelector('#rS').oninput = e => { state.sep = +e.target.value; controlsEl.querySelector('#vS').textContent = state.sep + ' px'; };
-    controlsEl.querySelector('#btnReset').onclick = () => { state.freq=1.5; state.amp=18; state.sep=80; buildControls(); };
+    controlsEl.querySelector(`#rF_${canvas.id}`).oninput = e => { s.freq=+e.target.value; controlsEl.querySelector(`#vF_${canvas.id}`).textContent=s.freq+' Hz'; };
+    controlsEl.querySelector(`#rS_${canvas.id}`).oninput = e => { s.sep=+e.target.value; controlsEl.querySelector(`#vS_${canvas.id}`).textContent=s.sep+' px'; };
+    controlsEl.querySelector(`#bR_${canvas.id}`).onclick = () => { s.freq=1.5; s.sep=80; buildControls(); };
   }
 
-  function mount() {
-    buildControls();
-    resize();
-    window.addEventListener('resize', resize);
-    loop();
-  }
-  function dispose() { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); }
-
+  function mount() { buildControls(); resize(); window.addEventListener('resize',resize); loop(); }
+  function dispose() { cancelAnimationFrame(raf); window.removeEventListener('resize',resize); }
   function resize() {
-    const dpr = window.devicePixelRatio || 1;
-    const r = canvas.parentElement.getBoundingClientRect();
-    canvas.width = r.width * dpr; canvas.height = r.height * dpr;
-    canvas.style.width = r.width + 'px'; canvas.style.height = r.height + 'px';
-    const ctx = canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+    if (!canvas.parentElement) return;
+    const dpr=window.devicePixelRatio||1;
+    const r=canvas.parentElement.getBoundingClientRect();
+    if(!r.width) return;
+    canvas.width=r.width*dpr; canvas.height=r.height*dpr;
+    canvas.style.width=r.width+'px'; canvas.style.height=r.height+'px';
+    canvas.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
   }
-
-  let t = 0;
-  function loop() {
-    t += 0.03;
-    draw();
-    raf = requestAnimationFrame(loop);
-  }
+  function loop() { t+=0.04; draw(); raf=requestAnimationFrame(loop); }
 
   function draw() {
-    const ctx = canvas.getContext('2d');
-    const W = canvas.clientWidth, H = canvas.clientHeight;
-    const img = ctx.createImageData(W, H);
-    const s1 = { x: W/2 - state.sep/2, y: H/2 };
-    const s2 = { x: W/2 + state.sep/2, y: H/2 };
-    const k = state.freq * 0.05;
-
-    for (let y=0; y<H; y++) {
-      for (let x=0; x<W; x++) {
-        const d1 = Math.hypot(x - s1.x, y - s1.y);
-        const d2 = Math.hypot(x - s2.x, y - s2.y);
-        const v = Math.sin(k * d1 - t) + Math.sin(k * d2 - t);
-        const i = (y * W + x) * 4;
-        const c = Math.max(0, Math.min(255, 128 + v * 30));
-        img.data[i] = c * 0.2;
-        img.data[i+1] = c * 0.85;
-        img.data[i+2] = c * 0.9;
-        img.data[i+3] = 255;
+    const ctx=canvas.getContext('2d');
+    const W=canvas.clientWidth, H=canvas.clientHeight;
+    if(!W||!H) return;
+    const W2=Math.round(W), H2=Math.round(H);
+    const img=ctx.createImageData(W2,H2);
+    const s1={x:W/2-s.sep/2, y:H/2};
+    const s2={x:W/2+s.sep/2, y:H/2};
+    const k=s.freq*0.05;
+    for(let y=0;y<H2;y++){
+      for(let x=0;x<W2;x++){
+        const d1=Math.hypot(x-s1.x,y-s1.y);
+        const d2=Math.hypot(x-s2.x,y-s2.y);
+        const v=Math.sin(k*d1-t)+Math.sin(k*d2-t);
+        const i=(y*W2+x)*4;
+        const c=Math.max(0,Math.min(255,128+v*(isMini?22:28)));
+        img.data[i]=c*0.18; img.data[i+1]=c*0.82; img.data[i+2]=c*0.88; img.data[i+3]=255;
       }
     }
-    ctx.putImageData(img, 0, 0);
-
-    // Source markers
-    ctx.fillStyle = '#38d6c4';
-    [s1, s2].forEach(s => {
-      ctx.beginPath(); ctx.arc(s.x, s.y, 5, 0, Math.PI*2); ctx.fill();
-    });
-
-    overlay.innerHTML = `freq <b>${state.freq} Hz</b> &nbsp; amp <b>${state.amp}px</b> &nbsp; sep <b>${state.sep}px</b>`;
+    ctx.putImageData(img,0,0);
+    ctx.fillStyle='#38d6c4';
+    [s1,s2].forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,isMini?3:5,0,Math.PI*2);ctx.fill();});
+    if(overlay) overlay.innerHTML=`freq <b>${s.freq}Hz</b> sep <b>${s.sep}px</b>`;
   }
 
-  return { mount, dispose };
+  return { mount, dispose, pause:()=>{}, play:()=>{}, resize };
 };
 
-/* --- Simple Harmonic Motion --- */
-SIM_REGISTRY.harmonic = (canvas, overlay, controlsEl) => {
-  let raf = null, t = 0;
-  const state = { amplitude: 100, k: 20, mass: 1 };
+/* ── Simple Harmonic Motion ── */
+SIM_REGISTRY.harmonic = (canvas, overlay, controlsEl, isMini) => {
+  let raf=null, t=0;
+  const s = { amplitude:90, k:20, mass:1 };
 
   function buildControls() {
+    if (!controlsEl) return;
     controlsEl.innerHTML = `
       <h4>Parameters</h4>
-      <div class="control">
-        <label>Amplitude <span id="vA">100 px</span></label>
-        <input type="range" id="rA" min="40" max="180" step="5" value="100">
+      <div class="ctrl">
+        <label>Amplitude <span id="vA_${canvas.id}">90 px</span></label>
+        <input type="range" id="rA_${canvas.id}" min="30" max="160" step="5" value="90">
       </div>
-      <div class="control">
-        <label>Spring Constant k <span id="vK">20 N/m</span></label>
-        <input type="range" id="rK" min="5" max="60" step="1" value="20">
+      <div class="ctrl">
+        <label>Spring k <span id="vK_${canvas.id}">20 N/m</span></label>
+        <input type="range" id="rK_${canvas.id}" min="5" max="60" step="1" value="20">
       </div>
-      <div class="control">
-        <label>Mass <span id="vM">1 kg</span></label>
-        <input type="range" id="rM" min="0.5" max="5" step="0.1" value="1">
+      <div class="ctrl">
+        <label>Mass <span id="vM_${canvas.id}">1 kg</span></label>
+        <input type="range" id="rM_${canvas.id}" min="0.5" max="5" step="0.1" value="1">
       </div>
       <div class="sim-btns">
-        <button class="sim-btn" id="btnReset">Reset</button>
+        <button class="sbtn" id="bR_${canvas.id}">Reset</button>
       </div>`;
-    controlsEl.querySelector('#rA').oninput = e => { state.amplitude = +e.target.value; controlsEl.querySelector('#vA').textContent = state.amplitude + ' px'; };
-    controlsEl.querySelector('#rK').oninput = e => { state.k = +e.target.value; controlsEl.querySelector('#vK').textContent = state.k + ' N/m'; };
-    controlsEl.querySelector('#rM').oninput = e => { state.mass = +e.target.value; controlsEl.querySelector('#vM').textContent = state.mass + ' kg'; };
-    controlsEl.querySelector('#btnReset').onclick = () => { state.amplitude=100; state.k=20; state.mass=1; buildControls(); };
+    controlsEl.querySelector(`#rA_${canvas.id}`).oninput = e => { s.amplitude=+e.target.value; controlsEl.querySelector(`#vA_${canvas.id}`).textContent=s.amplitude+' px'; };
+    controlsEl.querySelector(`#rK_${canvas.id}`).oninput = e => { s.k=+e.target.value; controlsEl.querySelector(`#vK_${canvas.id}`).textContent=s.k+' N/m'; };
+    controlsEl.querySelector(`#rM_${canvas.id}`).oninput = e => { s.mass=+e.target.value; controlsEl.querySelector(`#vM_${canvas.id}`).textContent=s.mass+' kg'; };
+    controlsEl.querySelector(`#bR_${canvas.id}`).onclick = () => { s.amplitude=90; s.k=20; s.mass=1; buildControls(); };
   }
 
-  function mount() {
-    buildControls();
-    resize();
-    window.addEventListener('resize', resize);
-    loop();
-  }
-  function dispose() { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); }
-
+  function mount() { buildControls(); resize(); window.addEventListener('resize',resize); loop(); }
+  function dispose() { cancelAnimationFrame(raf); window.removeEventListener('resize',resize); }
   function resize() {
-    const dpr = window.devicePixelRatio || 1;
-    const r = canvas.parentElement.getBoundingClientRect();
-    canvas.width = r.width * dpr; canvas.height = r.height * dpr;
-    canvas.style.width = r.width + 'px'; canvas.style.height = r.height + 'px';
-    const ctx = canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+    if (!canvas.parentElement) return;
+    const dpr=window.devicePixelRatio||1;
+    const r=canvas.parentElement.getBoundingClientRect();
+    if(!r.width) return;
+    canvas.width=r.width*dpr; canvas.height=r.height*dpr;
+    canvas.style.width=r.width+'px'; canvas.style.height=r.height+'px';
+    canvas.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
   }
-
-  function loop() {
-    t += 0.03;
-    draw();
-    raf = requestAnimationFrame(loop);
-  }
+  function loop() { t+=isMini?0.04:0.03; draw(); raf=requestAnimationFrame(loop); }
 
   function draw() {
-    const ctx = canvas.getContext('2d');
-    const W = canvas.clientWidth, H = canvas.clientHeight;
+    const ctx=canvas.getContext('2d');
+    const W=canvas.clientWidth, H=canvas.clientHeight;
+    if(!W||!H) return;
     ctx.clearRect(0,0,W,H);
+    const omega=Math.sqrt(s.k/s.mass);
+    const x=s.amplitude*Math.cos(omega*t);
+    const wallX=isMini?22:48, cy=H/2;
+    const blockX=W/2+x;
+    const bs=isMini?24:38;
 
-    const omega = Math.sqrt(state.k / state.mass);
-    const x = state.amplitude * Math.cos(omega * t);
-    const wallX = 60, centerY = H/2;
-    const blockX = W/2 + x;
-    const blockSize = 40;
+    ctx.fillStyle='#243352'; ctx.fillRect(wallX-8,cy-50,8,100);
+    ctx.strokeStyle='#324264'; ctx.lineWidth=1;
+    for(let i=0;i<8;i++){ctx.beginPath();ctx.moveTo(wallX-8,cy-48+i*12);ctx.lineTo(wallX-14,cy-40+i*12);ctx.stroke();}
 
-    // Wall
-    ctx.fillStyle = '#243352';
-    ctx.fillRect(wallX - 10, centerY - 60, 10, 120);
-    ctx.strokeStyle = '#324264';
-    for (let i=0; i<10; i++) {
-      ctx.beginPath(); ctx.moveTo(wallX - 10, centerY - 60 + i*12); ctx.lineTo(wallX - 18, centerY - 50 + i*12); ctx.stroke();
-    }
-
-    // Spring (zigzag)
-    ctx.strokeStyle = '#38d6c4'; ctx.lineWidth = 2;
+    ctx.strokeStyle='#38d6c4'; ctx.lineWidth=isMini?1.5:2;
     ctx.beginPath();
-    const coils = 12;
-    const segLen = (blockX - blockSize/2 - wallX) / coils;
-    ctx.moveTo(wallX, centerY);
-    for (let i=0; i<coils; i++) {
-      const sx = wallX + i * segLen + segLen/2;
-      const sy = centerY + (i % 2 ? 10 : -10);
-      ctx.lineTo(sx, sy);
+    const coils=isMini?8:12;
+    const segLen=(blockX-bs/2-wallX)/coils;
+    ctx.moveTo(wallX,cy);
+    for(let i=0;i<coils;i++){
+      const sx=wallX+i*segLen+segLen/2;
+      const sy=cy+(i%2?8:-8)*(isMini?.7:1);
+      ctx.lineTo(sx,sy);
     }
-    ctx.lineTo(blockX - blockSize/2, centerY);
+    ctx.lineTo(blockX-bs/2,cy);
     ctx.stroke();
 
-    // Block
-    ctx.fillStyle = '#1c2a48'; ctx.strokeStyle = '#38d6c4'; ctx.lineWidth = 2;
-    ctx.fillRect(blockX - blockSize/2, centerY - blockSize/2, blockSize, blockSize);
-    ctx.strokeRect(blockX - blockSize/2, centerY - blockSize/2, blockSize, blockSize);
+    ctx.fillStyle='#1c2a48'; ctx.strokeStyle='#38d6c4'; ctx.lineWidth=1.5;
+    ctx.fillRect(blockX-bs/2,cy-bs/2,bs,bs);
+    ctx.strokeRect(blockX-bs/2,cy-bs/2,bs,bs);
 
-    // Equilibrium line
-    ctx.strokeStyle = 'rgba(154,167,194,0.3)'; ctx.setLineDash([4,4]);
-    ctx.beginPath(); ctx.moveTo(W/2, 20); ctx.lineTo(W/2, H-20); ctx.stroke();
+    ctx.strokeStyle='rgba(154,167,194,0.25)'; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(W/2,10); ctx.lineTo(W/2,H-10); ctx.stroke();
     ctx.setLineDash([]);
 
-    const period = (2 * Math.PI) / omega;
-    overlay.innerHTML = `\u03C9 <b>${omega.toFixed(2)} rad/s</b> &nbsp; T <b>${period.toFixed(2)}s</b> &nbsp; x <b>${x.toFixed(0)}px</b>`;
+    const period=(2*Math.PI)/omega;
+    if(overlay) overlay.innerHTML=`ω <b>${omega.toFixed(2)}</b> T <b>${period.toFixed(2)}s</b> x <b>${x.toFixed(0)}</b>`;
   }
 
-  return { mount, dispose };
+  return { mount, dispose, pause:()=>{}, play:()=>{}, resize };
 };
 
-/* ============================================================
-   MODULE 4 — Hub Zone (Video & Resource Grid)
-   Generates curated placeholder cards for videos and
-   quick-reference notes. Designed to be swapped with real
-   YouTube/search API results later.
-   ============================================================ */
-const HubZone = (() => {
-  function create(query) {
-    const el = document.createElement('section');
-    el.className = 'zone';
-    el.innerHTML = `
-      <div class="zone-header">
-        <span class="zone-tag">03 · Hub</span>
-        <span class="zone-title">Video & Resource Hub</span>
-        <span class="zone-sub">Curated references</span>
-      </div>
-      <div class="zone-body">
-        <div class="hub-grid" id="hubGrid"></div>
-      </div>`;
-    return { el, grid: el.querySelector('#hubGrid') };
+/* =============================================================
+   SIDEBAR MINI — runs the mini-canvas inside the AI sidebar
+============================================================= */
+const SidebarMini = (() => {
+  let simInst = null;
+
+  function loadTopic(topic) {
+    const id = pickSimId(topic);
+    const canvas  = document.getElementById('miniCanvas');
+    const overlay = document.getElementById('miniOverlay');
+    const meta    = SIM_META[id];
+
+    document.getElementById('asiTitle').textContent = meta.label;
+
+    const chips = document.getElementById('formulaChips');
+    chips.innerHTML = '';
+    meta.formulas.forEach(f => {
+      const c = document.createElement('span');
+      c.className = 'fchip'; c.textContent = f;
+      chips.appendChild(c);
+    });
+
+    if (simInst) simInst.dispose();
+    simInst = SIM_REGISTRY[id](canvas, overlay, null, true);
+    requestAnimationFrame(() => simInst.mount());
   }
 
-  function load(zone, query) {
-    const videos = [
-      { title: `${query} — Full Lecture`, meta: 'YouTube · 24 min', kind: 'video' },
-      { title: `Solved Problems: ${query}`, meta: 'YouTube · 18 min', kind: 'video' },
-      { title: `Visual Intuition: ${query}`, meta: 'YouTube · 9 min',  kind: 'video' },
-      { title: `Quick Notes — ${query}`,     meta: 'PDF · 2 pages',   kind: 'note' },
-      { title: `Formula Sheet — ${query}`,  meta: 'Reference',         kind: 'note' },
-      { title: `Wikipedia: ${query}`,         meta: 'External',         kind: 'link' }
-    ];
+  function pauseMini() { if (simInst?.pause) simInst.pause(); }
 
-    zone.grid.innerHTML = '';
-    videos.forEach(v => {
+  return { loadTopic, pauseMini };
+})();
+
+/* =============================================================
+   LAB CONTROLLER — drives the full lab canvas in explore mode
+============================================================= */
+const LabController = (() => {
+  let simInst = null;
+
+  function loadTopic(topic) {
+    const id = pickSimId(topic);
+    rebuildSim(id);
+  }
+
+  function rebuildSim(id) {
+    const container = document.getElementById('labCanvasWrap');
+    if (!container) return;
+    const canvas  = document.getElementById('labCanvas');
+    const overlay = document.getElementById('labOverlay');
+    const ctrlEl  = document.getElementById('labControls');
+    if (simInst) simInst.dispose();
+    simInst = SIM_REGISTRY[id](canvas, overlay, ctrlEl, false);
+    requestAnimationFrame(() => simInst.mount());
+  }
+
+  function resizeLab() {
+    if (simInst?.resize) setTimeout(() => simInst.resize(), 350);
+  }
+
+  function resumeLab() {
+    if (simInst?.resize) requestAnimationFrame(() => simInst.resize());
+  }
+
+  return { loadTopic, resizeLab, resumeLab };
+})();
+
+/* =============================================================
+   CONCEPT ZONE — AI Executive Summary + Formulas
+============================================================= */
+const ConceptZone = (() => {
+  let currentQuery = '';
+
+  function load(query) {
+    if (query === currentQuery) return;
+    currentQuery = query;
+
+    const container = document.getElementById('conceptZoneBody');
+    if (!container) return;
+
+    container.innerHTML = `<div class="loading-dots"><div class="d"></div><div class="d"></div><div class="d"></div><span style="margin-left:8px;font-size:12px;">Generating breakdown for "${escHtml(query)}"…</span></div>`;
+
+    const meta = SIM_META[pickSimId(query)] || {};
+    const formulas = meta.formulas || [];
+
+    callAI(`You are an expert engineering tutor. Explain "${query}" for a student.
+Format as Markdown:
+## Overview
+(2-3 sentences)
+## Key Concepts
+(4-6 bullet points)
+## Formulas
+(3-5 formulas as inline code with description)
+## Common Mistakes
+(2-3 pitfalls)
+Be precise and direct.`)
+      .then(result => {
+        if (!container) return;
+        container.innerHTML = `
+          <div class="concept-title">${escHtml(query)}</div>
+          <div class="concept-content">${parseMd(result)}</div>`;
+
+        const summGrid = document.getElementById('summaryGrid');
+        if (summGrid && formulas.length) {
+          summGrid.innerHTML = formulas.map(f => `
+            <div class="scard">
+              <div class="scard-label">Formula</div>
+              <div class="scard-val">${escHtml(f)}</div>
+            </div>`).join('');
+        }
+      })
+      .catch(e => {
+        container.innerHTML = `<p style="color:var(--crimson)">Failed to load: ${escHtml(e.message)}</p>`;
+      });
+  }
+
+  return { load };
+})();
+
+/* =============================================================
+   HUB ZONE — Video & Resource grid
+============================================================= */
+const HubZone = (() => {
+  function load(query) {
+    const grid = document.getElementById('hubGrid');
+    if (!grid) return;
+    const items = [
+      { title: `${query} — Full Lecture`,    meta: 'YouTube · 24 min', kind: 'video' },
+      { title: `Solved Examples: ${query}`,  meta: 'YouTube · 18 min', kind: 'video' },
+      { title: `Visual Intuition: ${query}`, meta: 'YouTube · 9 min',  kind: 'video' },
+      { title: `Quick Notes — ${query}`,     meta: 'PDF · 2 pages',    kind: 'note'  },
+      { title: `Formula Sheet — ${query}`,   meta: 'Reference Card',   kind: 'note'  },
+      { title: `Wikipedia: ${query}`,        meta: 'External Source',  kind: 'link'  }
+    ];
+    grid.innerHTML = '';
+    items.forEach(v => {
       const card = document.createElement('div');
-      card.className = 'card';
+      card.className = 'rcard';
       if (v.kind === 'video') {
         card.innerHTML = `
-          <div class="card-thumb"><div class="play">\u25B6</div></div>
-          <div class="card-body">
-            <div class="card-title">${escapeHtml(v.title)}</div>
-            <div class="card-meta"><span>${v.meta}</span></div>
+          <div class="rcard-thumb"><div class="play">&#9654;</div></div>
+          <div class="rcard-body">
+            <div class="rcard-title">${escHtml(v.title)}</div>
+            <div class="rcard-meta">${v.meta}</div>
           </div>`;
       } else {
         card.innerHTML = `
-          <a class="card-link" href="https://www.google.com/search?q=${encodeURIComponent(v.title)}" target="_blank" rel="noopener">
-            <div class="icon">${v.kind === 'note' ? '\u2630' : '\u2197'}</div>
+          <a class="rcard-link" href="https://www.google.com/search?q=${encodeURIComponent(v.title)}" target="_blank" rel="noopener">
+            <div class="rcard-icon">${v.kind === 'note' ? '&#9776;' : '&#8599;'}</div>
             <div>
-              <div>${escapeHtml(v.title)}</div>
-              <div class="meta">${v.meta}</div>
+              <div>${escHtml(v.title)}</div>
+              <div class="rmeta">${v.meta}</div>
             </div>
           </a>`;
       }
-      zone.grid.appendChild(card);
+      grid.appendChild(card);
     });
   }
-
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-
-  return { create, load };
+  return { load };
 })();
 
-/* ---------- Bootstrap ---------- */
-App.init();
+/* =============================================================
+   EXPLORE BUILD — constructs the three-zone explore DOM
+============================================================= */
+function buildExploreZones() {
+  const el = document.getElementById('exploreContent');
+  el.innerHTML = `
+    <!-- Zone 1 — Executive Summary -->
+    <div class="zone">
+      <div class="zone-header">
+        <span class="ztag">01 · Summary</span>
+        <span class="ztitle">Executive Concept Summary</span>
+        <span class="zsub">AI-generated breakdown</span>
+      </div>
+      <div class="zone-body">
+        <div class="summary-grid" id="summaryGrid" style="margin-bottom:18px;"></div>
+        <div id="conceptZoneBody">
+          <div class="loading-dots"><div class="d"></div><div class="d"></div><div class="d"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zone 2 — Simulation Lab -->
+    <div class="zone">
+      <div class="zone-header">
+        <span class="ztag">02 · Lab</span>
+        <span class="ztitle">Interactive Simulation Lab</span>
+        <span class="zsub" id="labLabel">Live simulation</span>
+      </div>
+      <div class="zone-body">
+        <div class="sim-wrap">
+          <div class="sim-canvas-wrap" id="labCanvasWrap">
+            <canvas id="labCanvas"></canvas>
+            <div class="sim-overlay" id="labOverlay"></div>
+          </div>
+          <div class="sim-controls" id="labControls"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zone 3 — Resource Hub -->
+    <div class="zone">
+      <div class="zone-header">
+        <span class="ztag">03 · Hub</span>
+        <span class="ztitle">Video &amp; Resource Hub</span>
+        <span class="zsub">Curated references</span>
+      </div>
+      <div class="zone-body">
+        <div class="hub-grid" id="hubGrid"></div>
+      </div>
+    </div>`;
+}
+
+/* =============================================================
+   SUGGESTIONS BAR
+============================================================= */
+(function buildSuggestions() {
+  const SUGGESTIONS = [
+    'Projectile Motion', "Ohm's Law", 'Simple Harmonic Motion',
+    'Wave Interference', 'Newton\'s Second Law', 'Capacitor Charging',
+    'Fourier Series', 'Kinematics'
+  ];
+  const bar = document.getElementById('suggestions-bar');
+  SUGGESTIONS.forEach(s => {
+    const c = document.createElement('span');
+    c.className = 'chip'; c.textContent = s;
+    c.onclick = () => {
+      document.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+      c.classList.add('active');
+      document.getElementById('navSearch').value = s;
+      WorkspaceState.setTopic(s);
+    };
+    bar.appendChild(c);
+  });
+})();
+
+/* =============================================================
+   NAV SEARCH WIRING
+============================================================= */
+(function wireNav() {
+  const $go  = document.getElementById('navGo');
+  const $inp = document.getElementById('navSearch');
+
+  function go() {
+    const t = $inp.value.trim();
+    if (!t) return;
+    document.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+    buildExploreZones();
+    WorkspaceState.setTopic(t);
+  }
+
+  $go.addEventListener('click', go);
+  $inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); go(); } });
+})();
+
+/* =============================================================
+   BOOT — adjust workspace height to account for suggestions bar
+============================================================= */
+(function boot() {
+  function adjustWorkspace() {
+    const bar = document.getElementById('suggestions-bar');
+    const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h'));
+    const barH = bar.offsetHeight;
+    document.getElementById('workspace').style.top = (navH + barH) + 'px';
+  }
+  adjustWorkspace();
+  window.addEventListener('resize', adjustWorkspace);
+
+  // Default view
+  WorkspaceState.setView('ai');
+})();
 </script>
 </body>
 </html>
