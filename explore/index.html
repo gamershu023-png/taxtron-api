@@ -382,7 +382,7 @@ main {
       </div>
     </div>
     <form class="search-form" id="searchForm" onsubmit="return false;">
-      <input id="searchInput" class="search-input" type="text" placeholder="Explore a topic — e.g. projectile motion, ohm's law..." autocomplete="off">
+      <input id="searchInput" class="search-input" type="text" placeholder="Explore a topic — e.g. projectile motion, Ohm's law, Fourier series…" autocomplete="off">
       <button id="searchBtn" class="search-btn" type="submit">Analyze</button>
     </form>
   </div>
@@ -400,6 +400,8 @@ main {
 <script>
 /* ============================================================
    MODULE 1 — App State & Search Controller
+   Orchestrates the three zones. Keeps DOM refs and exposes
+   a single `runSearch(query)` entry point.
    ============================================================ */
 const App = (() => {
   const $input = document.getElementById('searchInput');
@@ -409,18 +411,23 @@ const App = (() => {
   const $suggest = document.getElementById('suggest');
 
   const SUGGESTIONS = [
-    'Projectile Motion', 'Ohm\u2019s Law', 'Simple Harmonic Motion', 'Wave Interference'
+    'Projectile Motion', 'Ohm\u2019s Law', 'Newton\u2019s Second Law',
+    'Simple Harmonic Motion', 'Wave Interference', 'Capacitor Charging',
+    'Fourier Series', 'Kinematics'
   ];
 
   function init() {
+    // Render suggestion chips
     SUGGESTIONS.forEach(s => {
       const c = document.createElement('span');
       c.className = 'chip'; c.textContent = s;
-      c.onclick = () => { $input.value = s; runSearch(s); };$suggest.appendChild(c);
+      c.onclick = () => { $input.value = s; runSearch(s); };
+      $suggest.appendChild(c);
     });
 
     $btn.addEventListener('click', () => runSearch($input.value));
-    $input.addEventListener('keydown', e => {       if (e.key === 'Enter') { e.preventDefault(); runSearch($input.value); }
+    $input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); runSearch($input.value); }
     });
   }
 
@@ -429,19 +436,25 @@ const App = (() => {
     if (!query) return;
 
     $btn.disabled = true;
-    if (document.getElementById('emptyState')) {
-      document.getElementById('emptyState').remove();
-    }
+    $empty?.remove();
 
+    // Build zones (skeleton first)
     const conceptZone = ConceptZone.create(query);
     const simZone     = SimZone.create(query);
     const hubZone     = HubZone.create(query);
-    $main.innerHTML = '';$main.append(conceptZone.el, simZone.el, hubZone.el);
+    $main.innerHTML = '';
+    $main.append(conceptZone.el, simZone.el, hubZone.el);
 
+    // Kick off AI explanation
     ConceptZone.load(conceptZone, query);
+
+    // Pick + start simulation
     SimZone.start(simZone, query);
+
+    // Populate video/resource hub
     HubZone.load(hubZone, query);
 
+    // Re-enable button (AI loads async)
     setTimeout(() => { $btn.disabled = false; }, 400);
   }
 
@@ -450,6 +463,8 @@ const App = (() => {
 
 /* ============================================================
    MODULE 2 — Concept Zone (AI Breakdown)
+   Calls the existing /api/generate endpoint and renders
+   Markdown-formatted output into the top card.
    ============================================================ */
 const ConceptZone = (() => {
   function create(query) {
@@ -509,6 +524,7 @@ Keep it concise, direct, and technically accurate. No fluff.`;
       <div class="concept-content">${parseMarkdown(markdown)}</div>`;
   }
 
+  /* Minimal, safe Markdown subset: headings, bold, italic, code, lists, paragraphs */
   function parseMarkdown(md) {
     const lines = escapeHtml(md).split(/\r?\n/);
     const out = [];
@@ -559,15 +575,19 @@ Keep it concise, direct, and technically accurate. No fluff.`;
 
 /* ============================================================
    MODULE 3 — Simulation Zone (Interactive Canvas)
+   Maps a topic to a simulation factory. Each factory returns
+   { mount(canvas), controls, dispose() }. New simulations can
+   be registered in `SIM_REGISTRY` without touching the rest.
    ============================================================ */
 const SimZone = (() => {
+  // Topic keyword -> simulation id
   function pickSim(query) {
     const q = query.toLowerCase();
     if (/projectile|trajectory|ball|throw|launch/.test(q)) return 'projectile';
     if (/ohm|resistance|voltage|circuit/.test(q))         return 'ohm';
-    if (/wave|interference|sound|light/.test(q))          return 'wave';
+    if (/wave|interference|sound|light wave/.test(q))      return 'wave';
     if (/harmonic|oscillation|pendulum|spring/.test(q))    return 'harmonic';
-    return 'projectile';
+    return 'projectile'; // default fallback
   }
 
   function create(query) {
@@ -603,21 +623,22 @@ const SimZone = (() => {
 
   const SIM_LABELS = {
     projectile: 'Projectile Motion',
-    ohm:        'Ohm\u2019s Law Circuit',
-    wave:       'Wave Interference',
-    harmonic:   'Simple Harmonic Motion'
+    ohm:       'Ohm\u2019s Law Circuit',
+    wave:      'Wave Interference',
+    harmonic:  'Simple Harmonic Motion'
   };
-
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
 
   return { create, start };
 })();
 
+/* ---------- Simulation Registry ----------
+   Each factory: (canvas, overlay, controlsEl) => { mount, dispose }
+   Self-contained; no shared state between sims.
+-------------------------------------------- */
+
 const SIM_REGISTRY = {};
 
-/* --- Projectile Simulation Engine --- */
+/* --- Projectile Motion --- */
 SIM_REGISTRY.projectile = (canvas, overlay, controlsEl) => {
   let raf = null, running = false, t = 0;
   const state = { angle: 45, velocity: 30, g: 9.8 };
@@ -648,24 +669,40 @@ SIM_REGISTRY.projectile = (canvas, overlay, controlsEl) => {
     controlsEl.querySelector('#btnReset').onclick = reset;
   }
 
-  function mount() { buildControls(); resize(); window.addEventListener('resize', resize); reset(); }
+  function mount() {
+    buildControls();
+    resize();
+    window.addEventListener('resize', resize);
+    reset();
+  }
   function dispose() { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); }
-  function play() { if (!running) { running = true; controlsEl.querySelector('#btnPlay').textContent = 'Pause'; loop(); } }
-  function pause() { running = false; controlsEl.querySelector('#btnPlay').textContent = 'Play'; cancelAnimationFrame(raf); }
-  function reset() { pause(); t = 0; draw(); }
 
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     const r = canvas.parentElement.getBoundingClientRect();
     canvas.width = r.width * dpr; canvas.height = r.height * dpr;
     canvas.style.width = r.width + 'px'; canvas.style.height = r.height + 'px';
-    canvas.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+    const ctx = canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
     draw();
   }
 
+  function play() {
+    if (running) return;
+    running = true;
+    controlsEl.querySelector('#btnPlay').textContent = 'Pause';
+    loop();
+  }
+  function pause() { running = false; controlsEl.querySelector('#btnPlay').textContent = 'Play'; cancelAnimationFrame(raf); }
+
+  function reset() {
+    pause(); t = 0; draw();
+  }
+
   function loop() {
-    t += 1/60; draw();
-    const tFlight = (2 * state.velocity * Math.sin(state.angle * Math.PI/180)) / state.g;
+    t += 1/60;
+    draw();
+    const v = state.velocity, a = state.angle * Math.PI/180, g = state.g;
+    const tFlight = (2 * v * Math.sin(a)) / g;
     if (t > tFlight + 0.4) { pause(); return; }
     raf = requestAnimationFrame(loop);
   }
@@ -674,15 +711,23 @@ SIM_REGISTRY.projectile = (canvas, overlay, controlsEl) => {
     const ctx = canvas.getContext('2d');
     const W = canvas.clientWidth, H = canvas.clientHeight;
     ctx.clearRect(0,0,W,H);
+
+    // Ground
     const groundY = H - 30;
-    
     ctx.strokeStyle = '#243352'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(W, groundY); ctx.stroke();
 
+    // Grid (subtle)
+    ctx.strokeStyle = 'rgba(36,51,82,0.4)';
+    for (let x=0; x<W; x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for (let y=0; y<H; y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+    // Trajectory
     const v = state.velocity, a = state.angle * Math.PI/180, g = state.g;
-    const scale = Math.min(W * 0.9 / ((v*v)/g), H * 0.8 / ((v*v * Math.sin(a)*Math.sin(a))/(2*g))) * 0.7 || 4;
+    const scale = Math.min(W * 0.9 / ((v*v)/g), H * 0.8 / ((v*v * Math.sin(a)*Math.sin(a))/(2*g))) * 0.7;
     const ox = 40, oy = groundY;
 
+    // Predicted path
     ctx.strokeStyle = 'rgba(56,214,196,0.25)'; ctx.lineWidth = 2;
     ctx.beginPath();
     const tFlight = (2 * v * Math.sin(a)) / g;
@@ -693,11 +738,23 @@ SIM_REGISTRY.projectile = (canvas, overlay, controlsEl) => {
     }
     ctx.stroke();
 
+    // Current ball
     const x = ox + (v * Math.cos(a) * t) * scale;
     const y = oy - (v * Math.sin(a) * t - 0.5 * g * t * t) * scale;
     ctx.fillStyle = '#38d6c4';
+    ctx.shadowColor = 'rgba(56,214,196,0.7)'; ctx.shadowBlur = 14;
     ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
 
+    // Launcher
+    ctx.save();
+    ctx.translate(ox, oy);
+    ctx.rotate(-a);
+    ctx.fillStyle = '#324264';
+    ctx.fillRect(0, -5, 28, 10);
+    ctx.restore();
+
+    // Stats overlay
     const range = ((v*v) * Math.sin(2*a)) / g;
     const maxH  = (v*v * Math.sin(a)*Math.sin(a)) / (2*g);
     overlay.innerHTML = `time <b>${t.toFixed(2)}s</b> &nbsp; range <b>${range.toFixed(1)} m</b> &nbsp; peak <b>${maxH.toFixed(1)} m</b>`;
@@ -706,7 +763,7 @@ SIM_REGISTRY.projectile = (canvas, overlay, controlsEl) => {
   return { mount, dispose };
 };
 
-/* --- Ohm's Law Simulation Engine --- */
+/* --- Ohm's Law --- */
 SIM_REGISTRY.ohm = (canvas, overlay, controlsEl) => {
   let raf = null, phase = 0;
   const state = { voltage: 12, resistance: 6 };
@@ -730,52 +787,87 @@ SIM_REGISTRY.ohm = (canvas, overlay, controlsEl) => {
     controlsEl.querySelector('#btnReset').onclick = () => { state.voltage = 12; state.resistance = 6; buildControls(); };
   }
 
-  function mount() { buildControls(); resize(); window.addEventListener('resize', resize); loop(); }
+  function mount() {
+    buildControls();
+    resize();
+    window.addEventListener('resize', resize);
+    loop();
+  }
   function dispose() { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); }
+
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     const r = canvas.parentElement.getBoundingClientRect();
     canvas.width = r.width * dpr; canvas.height = r.height * dpr;
     canvas.style.width = r.width + 'px'; canvas.style.height = r.height + 'px';
-    canvas.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+    const ctx = canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
   }
-  function loop() { phase += 0.05; draw(); raf = requestAnimationFrame(loop); }
+
+  function loop() {
+    phase += 0.05;
+    draw();
+    raf = requestAnimationFrame(loop);
+  }
 
   function draw() {
     const ctx = canvas.getContext('2d');
     const W = canvas.clientWidth, H = canvas.clientHeight;
     ctx.clearRect(0,0,W,H);
+
     const current = state.voltage / state.resistance;
-    const cy = H/2, cx = W/2, rx = W - 100;
+    const cx = W/2, cy = H/2, R = Math.min(W,H) * 0.32;
 
+    // Battery (left)
     ctx.fillStyle = '#1c2a48'; ctx.strokeStyle = '#38d6c4'; ctx.lineWidth = 2;
-    ctx.fillRect(40, cy - 30, 30, 60); ctx.strokeRect(40, cy - 30, 30, 60);
+    ctx.fillRect(40, cy - 30, 30, 60);
+    ctx.strokeRect(40, cy - 30, 30, 60);
+    ctx.fillStyle = '#9aa7c2'; ctx.font = '11px JetBrains Mono';
+    ctx.fillText(state.voltage + 'V', 38, cy + 50);
 
-    ctx.strokeStyle = '#38d6c4'; ctx.beginPath();
-    ctx.moveTo(rx, cy - 30); ctx.lineTo(rx, cy + 30); ctx.stroke();
-
+    // Resistor (right) — zigzag
+    const rx = W - 100, ry = cy;
+    ctx.strokeStyle = '#38d6c4'; ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(70, cy - 30); ctx.lineTo(rx, cy - 30);
-    ctx.moveTo(70, cy + 30); ctx.lineTo(rx, cy + 30); ctx.stroke();
+    ctx.moveTo(rx, ry - 30); ctx.lineTo(rx, ry + 30);
+    ctx.moveTo(rx, ry - 30); ctx.lineTo(rx + 12, ry - 22);
+    ctx.lineTo(rx - 12, ry - 14); ctx.lineTo(rx + 12, ry - 6);
+    ctx.lineTo(rx - 12, ry + 2); ctx.lineTo(rx + 12, ry + 10);
+    ctx.lineTo(rx - 12, ry + 18); ctx.lineTo(rx, ry + 30);
+    ctx.stroke();
+    ctx.fillStyle = '#9aa7c2';
+    ctx.fillText(state.resistance + '\u03A9', rx - 10, ry + 50);
 
+    // Wires
+    ctx.strokeStyle = '#38d6c4'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(70, cy - 30); ctx.lineTo(cx, cy - 30); ctx.lineTo(rx, cy - 30);
+    ctx.moveTo(70, cy + 30); ctx.lineTo(cx, cy + 30); ctx.lineTo(rx, cy + 30);
+    ctx.stroke();
+
+    // Animated current dots flowing along top wire
     const flowSpeed = Math.min(current * 0.4, 4);
     for (let i=0; i<10; i++) {
       const p = ((phase * flowSpeed + i * 0.1) % 1);
+      const x = 70 + p * (rx - 70);
       ctx.fillStyle = 'rgba(56,214,196,0.9)';
-      ctx.beginPath(); ctx.arc(70 + p * (rx - 70), cy - 30, 3, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x, cy - 30, 3, 0, Math.PI*2); ctx.fill();
     }
 
-    ctx.fillStyle = '#e6edf7'; ctx.font = '600 22px Inter'; ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
-    ctx.fillText('I = ' + current.toFixed(2) + ' A', cx, cy);
-    overlay.innerHTML = `V <b>${state.voltage}V</b> &nbsp; R <b>${state.resistance}\u03A9</b> &nbsp; I <b>${current.toFixed(2)}A</b>`;
+    // Center readout
+    ctx.fillStyle = '#e6edf7'; ctx.font = '600 22px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('I = ' + current.toFixed(2) + ' A', cx, cy + 6);
+    ctx.textAlign = 'start';
+
+    overlay.innerHTML = `V <b>${state.voltage}V</b> &nbsp; R <b>${state.resistance}\u03A9</b> &nbsp; I <b>${current.toFixed(2)}A</b> &nbsp; P <b>${(state.voltage*current).toFixed(1)}W</b>`;
   }
 
   return { mount, dispose };
 };
 
-/* --- Wave Interference Simulation Engine --- */
+/* --- Wave Interference --- */
 SIM_REGISTRY.wave = (canvas, overlay, controlsEl) => {
-  let raf = null, time = 0;
+  let raf = null;
   const state = { freq: 1.5, amp: 18, sep: 80 };
 
   function buildControls() {
@@ -796,106 +888,176 @@ SIM_REGISTRY.wave = (canvas, overlay, controlsEl) => {
       <div class="sim-btns">
         <button class="sim-btn" id="btnReset">Reset</button>
       </div>`;
-    
     controlsEl.querySelector('#rF').oninput = e => { state.freq = +e.target.value; controlsEl.querySelector('#vF').textContent = state.freq + ' Hz'; };
     controlsEl.querySelector('#rA').oninput = e => { state.amp = +e.target.value; controlsEl.querySelector('#vA').textContent = state.amp + ' px'; };
     controlsEl.querySelector('#rS').oninput = e => { state.sep = +e.target.value; controlsEl.querySelector('#vS').textContent = state.sep + ' px'; };
-    controlsEl.querySelector('#btnReset').onclick = () => { state.freq = 1.5; state.amp = 18; state.sep = 80; buildControls(); };
+    controlsEl.querySelector('#btnReset').onclick = () => { state.freq=1.5; state.amp=18; state.sep=80; buildControls(); };
   }
 
-  function mount() { buildControls(); resize(); window.addEventListener('resize', resize); loop(); }
+  function mount() {
+    buildControls();
+    resize();
+    window.addEventListener('resize', resize);
+    loop();
+  }
   function dispose() { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); }
+
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     const r = canvas.parentElement.getBoundingClientRect();
     canvas.width = r.width * dpr; canvas.height = r.height * dpr;
     canvas.style.width = r.width + 'px'; canvas.style.height = r.height + 'px';
-    canvas.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+    const ctx = canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
   }
-  function loop() { time += 0.05; draw(); raf = requestAnimationFrame(loop); }
+
+  let t = 0;
+  function loop() {
+    t += 0.03;
+    draw();
+    raf = requestAnimationFrame(loop);
+  }
 
   function draw() {
     const ctx = canvas.getContext('2d');
     const W = canvas.clientWidth, H = canvas.clientHeight;
-    ctx.clearRect(0,0,W,H);
+    const img = ctx.createImageData(W, H);
+    const s1 = { x: W/2 - state.sep/2, y: H/2 };
+    const s2 = { x: W/2 + state.sep/2, y: H/2 };
+    const k = state.freq * 0.05;
 
-    ctx.strokeStyle = '#38d6c4'; ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    for(let x = 0; x < W; x += 2) {
-      const d1 = Math.sqrt(Math.pow(x - W/2, 2) + Math.pow(H/2 - state.sep/2, 2));
-      const d2 = Math.sqrt(Math.pow(x - W/2, 2) + Math.pow(H/2 + state.sep/2, 2));
-      const w1 = Math.sin(d1 * 0.08 - time * state.freq) * state.amp;
-      const w2 = Math.sin(d2 * 0.08 - time * state.freq) * state.amp;
-      
-      if(x === 0) ctx.moveTo(x, H/2 + w1 + w2);
-      else ctx.lineTo(x, H/2 + w1 + w2);
+    for (let y=0; y<H; y++) {
+      for (let x=0; x<W; x++) {
+        const d1 = Math.hypot(x - s1.x, y - s1.y);
+        const d2 = Math.hypot(x - s2.x, y - s2.y);
+        const v = Math.sin(k * d1 - t) + Math.sin(k * d2 - t);
+        const i = (y * W + x) * 4;
+        const c = Math.max(0, Math.min(255, 128 + v * 30));
+        img.data[i] = c * 0.2;
+        img.data[i+1] = c * 0.85;
+        img.data[i+2] = c * 0.9;
+        img.data[i+3] = 255;
+      }
     }
-    ctx.stroke();
+    ctx.putImageData(img, 0, 0);
 
-    ctx.fillStyle = '#f87171';
-    ctx.beginPath(); ctx.arc(W/2, H/2 - state.sep/2, 5, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(W/2, H/2 + state.sep/2, 5, 0, Math.PI*2); ctx.fill();
+    // Source markers
+    ctx.fillStyle = '#38d6c4';
+    [s1, s2].forEach(s => {
+      ctx.beginPath(); ctx.arc(s.x, s.y, 5, 0, Math.PI*2); ctx.fill();
+    });
 
-    overlay.innerHTML = `Interference Wave Pattern Max Amp: <b>${(state.amp * 2)}px</b>`;
+    overlay.innerHTML = `freq <b>${state.freq} Hz</b> &nbsp; amp <b>${state.amp}px</b> &nbsp; sep <b>${state.sep}px</b>`;
   }
 
   return { mount, dispose };
 };
 
-/* --- Simple Harmonic Motion Engine --- */
+/* --- Simple Harmonic Motion --- */
 SIM_REGISTRY.harmonic = (canvas, overlay, controlsEl) => {
   let raf = null, t = 0;
-  const state = { length: 120, gravity: 9.8 };
+  const state = { amplitude: 100, k: 20, mass: 1 };
 
   function buildControls() {
     controlsEl.innerHTML = `
       <h4>Parameters</h4>
       <div class="control">
-        <label>Pendulum Length <span id="vL">120 px</span></label>
-        <input type="range" id="rL" min="60" max="200" step="5" value="120">
+        <label>Amplitude <span id="vA">100 px</span></label>
+        <input type="range" id="rA" min="40" max="180" step="5" value="100">
+      </div>
+      <div class="control">
+        <label>Spring Constant k <span id="vK">20 N/m</span></label>
+        <input type="range" id="rK" min="5" max="60" step="1" value="20">
+      </div>
+      <div class="control">
+        <label>Mass <span id="vM">1 kg</span></label>
+        <input type="range" id="rM" min="0.5" max="5" step="0.1" value="1">
       </div>
       <div class="sim-btns">
         <button class="sim-btn" id="btnReset">Reset</button>
       </div>`;
-    controlsEl.querySelector('#rL').oninput = e => { state.length = +e.target.value; controlsEl.querySelector('#vL').textContent = state.length + ' px'; };
-    controlsEl.querySelector('#btnReset').onclick = () => { state.length = 120; buildControls(); };
+    controlsEl.querySelector('#rA').oninput = e => { state.amplitude = +e.target.value; controlsEl.querySelector('#vA').textContent = state.amplitude + ' px'; };
+    controlsEl.querySelector('#rK').oninput = e => { state.k = +e.target.value; controlsEl.querySelector('#vK').textContent = state.k + ' N/m'; };
+    controlsEl.querySelector('#rM').oninput = e => { state.mass = +e.target.value; controlsEl.querySelector('#vM').textContent = state.mass + ' kg'; };
+    controlsEl.querySelector('#btnReset').onclick = () => { state.amplitude=100; state.k=20; state.mass=1; buildControls(); };
   }
 
-  function mount() { buildControls(); resize(); window.addEventListener('resize', resize); loop(); }
+  function mount() {
+    buildControls();
+    resize();
+    window.addEventListener('resize', resize);
+    loop();
+  }
   function dispose() { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); }
+
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     const r = canvas.parentElement.getBoundingClientRect();
     canvas.width = r.width * dpr; canvas.height = r.height * dpr;
     canvas.style.width = r.width + 'px'; canvas.style.height = r.height + 'px';
-    canvas.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+    const ctx = canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
   }
-  function loop() { t += 0.04; draw(); raf = requestAnimationFrame(loop); }
+
+  function loop() {
+    t += 0.03;
+    draw();
+    raf = requestAnimationFrame(loop);
+  }
 
   function draw() {
     const ctx = canvas.getContext('2d');
     const W = canvas.clientWidth, H = canvas.clientHeight;
     ctx.clearRect(0,0,W,H);
 
-    const angle = 0.6 * Math.sin(Math.sqrt(state.gravity / (state.length / 10)) * t);
-    const cx = W/2, cy = 40;
-    const bx = cx + Math.sin(angle) * state.length;
-    const by = cy + Math.cos(angle) * state.length;
+    const omega = Math.sqrt(state.k / state.mass);
+    const x = state.amplitude * Math.cos(omega * t);
+    const wallX = 60, centerY = H/2;
+    const blockX = W/2 + x;
+    const blockSize = 40;
 
-    ctx.strokeStyle = '#243352'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(bx, by); ctx.stroke();
+    // Wall
+    ctx.fillStyle = '#243352';
+    ctx.fillRect(wallX - 10, centerY - 60, 10, 120);
+    ctx.strokeStyle = '#324264';
+    for (let i=0; i<10; i++) {
+      ctx.beginPath(); ctx.moveTo(wallX - 10, centerY - 60 + i*12); ctx.lineTo(wallX - 18, centerY - 50 + i*12); ctx.stroke();
+    }
 
-    ctx.fillStyle = '#38d6c4';
-    ctx.beginPath(); ctx.arc(bx, by, 12, 0, Math.PI*2); ctx.fill();
+    // Spring (zigzag)
+    ctx.strokeStyle = '#38d6c4'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    const coils = 12;
+    const segLen = (blockX - blockSize/2 - wallX) / coils;
+    ctx.moveTo(wallX, centerY);
+    for (let i=0; i<coils; i++) {
+      const sx = wallX + i * segLen + segLen/2;
+      const sy = centerY + (i % 2 ? 10 : -10);
+      ctx.lineTo(sx, sy);
+    }
+    ctx.lineTo(blockX - blockSize/2, centerY);
+    ctx.stroke();
 
-    overlay.innerHTML = `Theta <b>${(angle * 180 / Math.PI).toFixed(1)}\u00B0</b>`;
+    // Block
+    ctx.fillStyle = '#1c2a48'; ctx.strokeStyle = '#38d6c4'; ctx.lineWidth = 2;
+    ctx.fillRect(blockX - blockSize/2, centerY - blockSize/2, blockSize, blockSize);
+    ctx.strokeRect(blockX - blockSize/2, centerY - blockSize/2, blockSize, blockSize);
+
+    // Equilibrium line
+    ctx.strokeStyle = 'rgba(154,167,194,0.3)'; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(W/2, 20); ctx.lineTo(W/2, H-20); ctx.stroke();
+    ctx.setLineDash([]);
+
+    const period = (2 * Math.PI) / omega;
+    overlay.innerHTML = `\u03C9 <b>${omega.toFixed(2)} rad/s</b> &nbsp; T <b>${period.toFixed(2)}s</b> &nbsp; x <b>${x.toFixed(0)}px</b>`;
   }
 
   return { mount, dispose };
 };
 
 /* ============================================================
-   MODULE 4 — Video & Resource Hub
+   MODULE 4 — Hub Zone (Video & Resource Grid)
+   Generates curated placeholder cards for videos and
+   quick-reference notes. Designed to be swapped with real
+   YouTube/search API results later.
    ============================================================ */
 const HubZone = (() => {
   function create(query) {
@@ -914,35 +1076,38 @@ const HubZone = (() => {
   }
 
   function load(zone, query) {
-    // Hardcoded highly relevant high-tier context mappings for students
-    const cards = [
-      { title: `Deep Dive Concept Video: ${query}`, meta: 'YouTube · 15 min', type: 'video' },
-      { title: `Advanced JEE Practice Problems — ${query}`, meta: 'Taxtron Notes · PDF', type: 'link', subtitle: 'Step-by-step solutions' },
-      { title: `Core Engineering Reference Handout`, meta: 'Formula Sheet', type: 'link', subtitle: 'Quick calculation sheets' }
+    const videos = [
+      { title: `${query} — Full Lecture`, meta: 'YouTube · 24 min', kind: 'video' },
+      { title: `Solved Problems: ${query}`, meta: 'YouTube · 18 min', kind: 'video' },
+      { title: `Visual Intuition: ${query}`, meta: 'YouTube · 9 min',  kind: 'video' },
+      { title: `Quick Notes — ${query}`,     meta: 'PDF · 2 pages',   kind: 'note' },
+      { title: `Formula Sheet — ${query}`,  meta: 'Reference',         kind: 'note' },
+      { title: `Wikipedia: ${query}`,         meta: 'External',         kind: 'link' }
     ];
 
-    zone.grid.innerHTML = cards.map(c => {
-      if (c.type === 'video') {
-        return `
-          <div class="card">
-            <div class="card-thumb">
-              <div class="play">\u25B6</div>
-            </div>
-            <div class="card-body">
-              <div class="card-title">${escapeHtml(c.title)}</div>
-              <div class="card-meta"><span>${c.meta}</span></div>
-            </div>
+    zone.grid.innerHTML = '';
+    videos.forEach(v => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      if (v.kind === 'video') {
+        card.innerHTML = `
+          <div class="card-thumb"><div class="play">\u25B6</div></div>
+          <div class="card-body">
+            <div class="card-title">${escapeHtml(v.title)}</div>
+            <div class="card-meta"><span>${v.meta}</span></div>
           </div>`;
+      } else {
+        card.innerHTML = `
+          <a class="card-link" href="https://www.google.com/search?q=${encodeURIComponent(v.title)}" target="_blank" rel="noopener">
+            <div class="icon">${v.kind === 'note' ? '\u2630' : '\u2197'}</div>
+            <div>
+              <div>${escapeHtml(v.title)}</div>
+              <div class="meta">${v.meta}</div>
+            </div>
+          </a>`;
       }
-      return `
-        <a href="#" class="card-link" onclick="return false;">
-          <div class="icon">\uD83D\uDCC4</div>
-          <div>
-            <div style="color:var(--text); font-weight:500;">${escapeHtml(c.title)}</div>
-            <div class="meta">${escapeHtml(c.subtitle)} · ${c.meta}</div>
-          </div>
-        </a>`;
-    }).join('');
+      zone.grid.appendChild(card);
+    });
   }
 
   function escapeHtml(s) {
@@ -952,8 +1117,8 @@ const HubZone = (() => {
   return { create, load };
 })();
 
-// Initialize the workspace dashboard view lifecycle on script injection
-document.addEventListener('DOMContentLoaded', App.init);
+/* ---------- Bootstrap ---------- */
+App.init();
 </script>
 </body>
 </html>
