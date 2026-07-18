@@ -705,7 +705,7 @@ a:hover { color: var(--accent-hi); }
 ════════════════════════════════════════════════════════════ -->
 <nav id="topnav">
   <div class="nav-brand">
-    <div class="brand-mark">T</div>
+    <img src="https://taxtron.in/logo1526tx.gif" alt="Taxtron" style="height:28px;border-radius:6px;flex-shrink:0;" onerror="this.style.display='none'">
     <span>Taxtron Workspace</span>
     <span class="nav-topic-pill" id="topicPill">No topic selected</span>
   </div>
@@ -1810,6 +1810,16 @@ function buildExploreZones() {
 
   // Default view
   WorkspaceState.setView('ai');
+
+  // Auto-load topic from ?q= param (e.g. arriving from homepage search)
+  const params = new URLSearchParams(window.location.search);
+  const q = params.get('q');
+  if (q && q.trim()) {
+    window.history.replaceState({}, document.title, '/explore');
+    buildExploreZones();
+    WorkspaceState.setTopic(q.trim());
+    WorkspaceState.setView('explore');
+  }
 })();
 </script>
 </body>

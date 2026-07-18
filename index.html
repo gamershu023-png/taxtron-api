@@ -544,12 +544,12 @@ function go() {
   btn.style.opacity = "0.8";
   
   setTimeout(() => {
-    window.location.href = "/ai?q=" + encodeURIComponent(q);
+    window.location.href = "/explore?q=" + encodeURIComponent(q);
   }, 300);
 }
 
 function quick(text) {
-  window.location.href = "/ai?q=" + encodeURIComponent(text);
+  window.location.href = "/explore?q=" + encodeURIComponent(text);
 }
 
 // DYNAMIC PLACEHOLDER TYPING EFFECT
