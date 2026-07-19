@@ -1,200 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
- <meta property="og:image" content="https://taxtron.in/∫ (1).png">
-<title>Taxtron Notifications</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Updates | Taxtron Ecosystem</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #020617;
-  color: white;
-}
+    <style>
+        :root {
+            --bg-color: #0b0f19; --card-bg: #111827; --text-main: #f3f4f6;
+            --text-muted: #9ca3af; --border-radius: 12px;
+            
+            /* Category Colors */
+            --c-ai: #8b5cf6; --c-edu: #3b82f6; 
+            --c-music: #ec4899; --c-content: #10b981; --c-sys: #f59e0b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; padding: 20px; }
+        .container { max-width: 700px; margin: 0 auto; }
+        
+        header { padding: 40px 0; border-bottom: 1px solid #1f2937; margin-bottom: 40px; }
+        header h1 { font-size: 2.5rem; font-weight: 700; background: linear-gradient(to right, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: #1f2937; }
+        
+        .update-card { position: relative; background: var(--card-bg); border: 1px solid #1f2937; border-radius: var(--border-radius); padding: 25px; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .update-card::before { content: ''; position: absolute; left: -35px; top: 25px; width: 12px; height: 12px; border-radius: 50%; background: #374151; border: 2px solid var(--bg-color); }
+        
+        .tag { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; margin-bottom: 15px; }
+        
+        /* Dynamic Tag Coloring */
+        .cat-ai-engine { background: rgba(139, 92, 246, 0.1); color: var(--c-ai); }
+        .cat-education { background: rgba(59, 130, 246, 0.1); color: var(--c-edu); }
+        .cat-music { background: rgba(236, 72, 153, 0.1); color: var(--c-music); }
+        .cat-content { background: rgba(16, 185, 129, 0.1); color: var(--c-content); }
+        .cat-system { background: rgba(245, 158, 11, 0.1); color: var(--c-sys); }
 
-/* HEADER */
-.header {
-  text-align: center;
-  padding: 25px 15px;
-  border-bottom: 1px solid #1e293b;
-}
-
-.header h1 {
-  margin: 0;
-  font-size: 26px;
-}
-
-.header p {
-  color: #94a3b8;
-  margin-top: 6px;
-}
-
-/* CONTAINER */
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-}
-
-/* CARD */
-.card {
-  background: #1e293b;
-  padding: 18px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  transition: 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-}
-
-/* DATE */
-.date {
-  font-size: 14px;
-  color: #38bdf8;
-  margin-bottom: 10px;
-}
-
-/* LIST */
-ul {
-  padding-left: 18px;
-}
-
-/* LINK */
-a {
-  color: #38bdf8;
-  text-decoration: none;
-}
-
-/* FOOTER */
-.footer {
-  text-align: center;
-  color: #64748b;
-  margin: 40px 0 20px;
-  font-size: 14px;
-}
-</style>
+        .update-card p { font-size: 1.05rem; color: #d1d5db; white-space: pre-wrap; line-height: 1.7; }
+        .date { font-size: 0.85rem; color: var(--text-muted); margin-top: 20px; display: block; border-top: 1px solid #1f2937; padding-top: 15px; }
+        
+        .empty-state { text-align: center; padding: 40px; color: var(--text-muted); }
+    </style>
 </head>
-
 <body>
+    <div class="container">
+        <header>
+            <h1>What's New</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Latest releases, AI model updates, and new tools across the Taxtron ecosystem.</p>
+        </header>
 
-<!-- HEADER -->
-<div class="header">
-  <h1>🔔 Notifications</h1>
-  <p>Taxtron Universe [formerly Legendary Playz]</p>
-</div>
+        <div class="timeline" id="changelogFeed">
+            <div class="empty-state">Connecting to Taxtron network...</div>
+        </div>
+    </div>
 
-<!-- CONTENT -->
-<div class="container">
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
+            authDomain: "taxtron-ai.firebaseapp.com",
+            projectId: "taxtron-ai",
+            appId: "1:1009675616284:web:27c8e67f2107d9a4255fd9"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.firestore();
 
-  <!-- UPDATE 1 -->
-   <div class="card">
-    <div class="date">📅 18/07/2026 — Saturday</div>
-    <p>
-Feature Launch (The "Explore" Upgrades)
-🚀 System Update: Explore 2.0 is Live!
-We've completely revamped the Taxtron Explore engine. Get faster, distraction-free conceptual breakdowns for Physics, Chemistry, and Math with enhanced 3D animations and instant pattern-matching mock tests. Type your toughest doubt in the search bar to test it out now!
+        db.collection("taxtron_updates").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+            const feed = document.getElementById('changelogFeed');
+            feed.innerHTML = ''; 
+            
+            if (snapshot.empty) {
+                feed.innerHTML = '<div class="empty-state">Systems nominal. No recent updates.</div>';
+                return;
+            }
 
-Performance & Study Motivation (Exam-Focused)
-⚡ Daily Check-In: Crush Your Weak Chapters
-Your JEE prep waits for no one. Don't let out-of-syllabus rabbit holes slow down your momentum today. Jump into Taxtron AI, generate 5 targeted high-yield integration questions or clear up that tricky organic reaction mechanism in seconds. Let's get to work.
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                
+                // Format the timestamp
+                let dateString = "Just now";
+                if(data.createdAt) {
+                    const date = data.createdAt.toDate();
+                    dateString = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                }
 
-Strategic Update (Trademark & Ecosystem Security)
-🔒 Official Notice: Securing the Taxtron Universe
-To ensure a premium, secure, and ad-free ecosystem for all serious engineering students, "Taxtron" and "Taxtron Universe" are officially undergoing formal proprietary registration. Thank you for making us your core AI-powered learning hub!
-    </p>
+                // Create a CSS class friendly version of the category
+                const cssClass = "cat-" + data.category.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
 
-    <ul>
-      <li><b>taxtron.in/universe</b> → Feel us</li>
-      <li><b>taxtron.in/aboutus</b> → About us</li>
-      <li><b>taxtron.in/explore</b> → New AI with full combo study sessions</li>
-      <li><b>content.taxtron.in</b> → theory, notes, concepts</li>
-      <li><b>music.taxtron.in</b> → devotional & focus music</li>
-    </ul>
-
-    <p>New clarification are made regarding taxtron universe[ check taxtron.in/universe and about page for understanding]</p>
-
-    <p>
-      👉 Use new AI page:
-      <a href="https://taxtron.in/explore" target="_blank">
-        taxtron.in/explore
-      </a>
-    </p>
-  </div>
-   <div class="card">
-    <div class="date">📅 01/05/2026 — Friday</div>
-    <p>
-      Taxtron Universe is now little clear for users please check taxtron.in/universe and about page:
-    </p>
-
-    <ul>
-      <li><b>taxtron.in/universe</b> → Feel us</li>
-      <li><b>taxtron.in/aboutus</b> → About us</li>
-      <li><b>taxtron.in</b> → AI tools & core platform</li>
-      <li><b>content.taxtron.in</b> → theory, notes, concepts</li>
-      <li><b>music.taxtron.in</b> → devotional & focus music</li>
-    </ul>
-
-    <p>New clarification are made regarding taxtron universe[ check taxtron.in/universe and about page for understanding]</p>
-
-    <p>
-      👉 Use new AI page:
-      <a href="https://taxtron.in/ai" target="_blank">
-        taxtron.in/ai
-      </a>
-    </p>
-  </div>
-  <div class="card">
-    <div class="date">📅 18/04/2026 — Saturday</div>
-    <p>
-      Taxtron Universe is now divided into dedicated platforms for better experience:
-    </p>
-
-    <ul>
-      <li><b>taxtron.in</b> → AI tools & core platform</li>
-      <li><b>content.taxtron.in</b> → theory, notes, concepts</li>
-      <li><b>music.taxtron.in</b> → devotional & focus music</li>
-    </ul>
-
-    <p>⚠️ Some old links may not work after this update.</p>
-
-    <p>
-      👉 Use new AI page:
-      <a href="https://taxtron.in/ai" target="_blank">
-        taxtron.in/ai
-      </a>
-    </p>
-  </div>
-
-  <!-- UPDATE 2 -->
-  <div class="card">
-    <div class="date">📅 01/04/2026 — Wednesday</div>
-
-    <p><b>🔐 Login System Added to Taxtron AI</b></p>
-
-    <ul>
-      <li>Chat with AI seamlessly</li>
-      <li>Chats are saved automatically</li>
-      <li>Continue conversations anytime</li>
-    </ul>
-
-    <p>
-      👉 Access:
-      <a href="https://taxtron.in" target="_blank">
-        taxtron.in
-      </a>
-    </p>
-  </div>
-
-</div>
-
-<!-- FOOTER -->
-<div class="footer">
-  © 2026 Taxtron.in
-</div>
-
+                const div = document.createElement('div');
+                div.className = 'update-card';
+                div.innerHTML = `
+                    <span class="tag ${cssClass}">${data.category}</span>
+                    <p>${data.message}</p>
+                    <span class="date">${dateString}</span>
+                `;
+                feed.appendChild(div);
+            });
+        });
+    </script>
 </body>
 </html>
