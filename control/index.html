@@ -3,75 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Control | Taxtron Living</title>
+    <title>Admin Portal | Taxtron Ecosystem</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
         :root {
-            --bg-color: #0f172a; --card-bg: #1e293b; --text-main: #f8fafc;
-            --text-muted: #94a3b8; --accent: #3b82f6; --accent-hover: #2563eb;
-            --danger: #ef4444; --border-radius: 12px;
+            --bg-color: #0b0f19; --card-bg: #111827; --text-main: #f3f4f6;
+            --text-muted: #9ca3af; --accent: #6366f1; --accent-hover: #4f46e5;
+            --danger: #ef4444; --border-radius: 10px;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; padding: 20px; }
         .container { max-width: 800px; margin: 0 auto; }
-        header { text-align: center; padding: 30px 0; border-bottom: 1px solid #334155; margin-bottom: 30px; }
-        header img { max-width: 180px; margin-bottom: 15px; }
+        header { text-align: center; padding: 30px 0; border-bottom: 1px solid #1f2937; margin-bottom: 30px; }
+        header img { max-width: 150px; margin-bottom: 15px; }
         
-        .card { background-color: var(--card-bg); border-radius: var(--border-radius); padding: 25px; border: 1px solid #334155; margin-bottom: 20px; }
-        h2 { border-bottom: 2px solid #334155; padding-bottom: 8px; margin-bottom: 20px; }
+        .card { background-color: var(--card-bg); border-radius: var(--border-radius); padding: 25px; border: 1px solid #1f2937; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem; }
-        .form-control { width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: white; font-size: 1rem; }
-        .form-control:focus { outline: none; border-color: var(--accent); }
+        .form-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .form-control { width: 100%; padding: 12px; background: #0b0f19; border: 1px solid #374151; border-radius: 6px; color: white; font-size: 1rem; transition: 0.2s; }
+        .form-control:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); }
         
-        .submit-btn { background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .submit-btn { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .submit-btn:hover { background: var(--accent-hover); }
-        .delete-btn { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
         
-        .notice-item { background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        
-        footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #334155; color: var(--text-muted); font-size: 0.9rem; }
+        .update-item { background: #0b0f19; padding: 15px; border-radius: 8px; border: 1px solid #1f2937; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .delete-btn { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
+        .delete-btn:hover { background: var(--danger); color: white; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <img src="https://taxtron.in/logo1526tx.gif" alt="Taxtron Logo">
-            <h1>Control Panel</h1>
-            <p>Publish and manage notices for the Tenant Dashboard.</p>
+            <img src="https://taxtron.in/logo1526tx.gif" alt="Taxtron">
+            <h1>Platform Operations</h1>
+            <p style="color: var(--text-muted);">Manage updates for Taxtron AI, Music, and Content platforms.</p>
         </header>
 
         <div class="card">
-            <h2>📢 Create New Notification</h2>
-            <form id="noticeForm" onsubmit="publishNotice(event)">
+            <h2>🚀 Push New Update</h2>
+            <form id="updateForm" onsubmit="publishUpdate(event)">
                 <div class="form-group">
-                    <label>Notice Type</label>
-                    <select id="noticeType" class="form-control">
-                        <option value="Info">General Info</option>
-                        <option value="Warning">Important / Warning</option>
-                        <option value="Upgrade">System / Room Upgrade</option>
+                    <label>Platform / Category</label>
+                    <select id="updateCategory" class="form-control">
+                        <option value="AI Engine">Taxtron AI Engine</option>
+                        <option value="Education">Education & Research</option>
+                        <option value="Music">Taxtron Music</option>
+                        <option value="Content">Taxtron Content</option>
+                        <option value="System">System Maintenance</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Message</label>
-                    <textarea id="noticeMessage" class="form-control" rows="3" required placeholder="Type the announcement here..."></textarea>
+                    <label>Release Notes / Message</label>
+                    <textarea id="updateMessage" class="form-control" rows="4" required placeholder="Describe the new feature, tool, or fix..."></textarea>
                 </div>
-                <button type="submit" class="submit-btn">Publish Notification</button>
+                <button type="submit" class="submit-btn">Publish to Network</button>
             </form>
         </div>
 
         <div class="card">
-            <h2>Active Notifications</h2>
-            <div id="adminNoticeList">Loading...</div>
+            <h2>Active Deployments & Updates</h2>
+            <div id="adminUpdateList">Loading database...</div>
         </div>
-
-        <footer>
-            &copy; <span id="year"></span> Taxtron.in. All rights reserved.
-        </footer>
     </div>
 
     <script>
@@ -84,48 +81,43 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
-        document.getElementById("year").innerText = new Date().getFullYear();
-
-        // Publish Notice
-        function publishNotice(event) {
+        function publishUpdate(event) {
             event.preventDefault();
-            const type = document.getElementById('noticeType').value;
-            const message = document.getElementById('noticeMessage').value;
+            const category = document.getElementById('updateCategory').value;
+            const message = document.getElementById('updateMessage').value;
 
-            db.collection("tenant_notifications").add({
-                type: type,
+            db.collection("taxtron_updates").add({
+                category: category,
                 message: message,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
-                document.getElementById('noticeForm').reset();
-                alert("Notification published live!");
+                document.getElementById('updateForm').reset();
             }).catch(error => console.error("Error: ", error));
         }
 
-        // Read and Delete Notices
-        db.collection("tenant_notifications").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
-            const list = document.getElementById('adminNoticeList');
+        db.collection("taxtron_updates").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+            const list = document.getElementById('adminUpdateList');
             list.innerHTML = '';
-            if (snapshot.empty) { list.innerHTML = '<p style="color:#94a3b8">No active notifications.</p>'; return; }
+            if (snapshot.empty) { list.innerHTML = '<p style="color:var(--text-muted)">No active updates.</p>'; return; }
             
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 const div = document.createElement('div');
-                div.className = 'notice-item';
+                div.className = 'update-item';
                 div.innerHTML = `
                     <div>
-                        <strong style="color:var(--accent)">[${data.type}]</strong> 
+                        <strong style="color:var(--accent); font-size: 0.85rem; text-transform: uppercase;">${data.category}</strong> 
                         <p style="margin-top:5px; font-size:0.95rem;">${data.message}</p>
                     </div>
-                    <button class="delete-btn" onclick="deleteNotice('${doc.id}')">Delete</button>
+                    <button class="delete-btn" onclick="deleteUpdate('${doc.id}')">Revoke</button>
                 `;
                 list.appendChild(div);
             });
         });
 
-        function deleteNotice(id) {
-            if(confirm("Remove this notice from tenant portal?")) {
-                db.collection("tenant_notifications").doc(id).delete();
+        function deleteUpdate(id) {
+            if(confirm("Remove this update from the public feed?")) {
+                db.collection("taxtron_updates").doc(id).delete();
             }
         }
     </script>
