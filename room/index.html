@@ -190,7 +190,7 @@
             font-weight: 600;
         }
 
-        /* Complaint Form */
+        /* Forms */
         .form-group {
             margin-bottom: 15px;
         }
@@ -225,6 +225,62 @@
             font-weight: 600;
         }
         .submit-btn:hover { background: var(--accent-hover); }
+
+        /* Public Read-Only Complaints List */
+        .full-width-card {
+            grid-column: 1 / -1;
+        }
+        .complaints-container {
+            max-height: 400px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-right: 5px;
+        }
+        .complaint-item {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .complaint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .complaint-author {
+            font-weight: 600;
+            color: #f8fafc;
+        }
+        .complaint-badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fef08a;
+            border: 1px solid #f59e0b;
+        }
+        .badge-resolved {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid #10b981;
+        }
+        .complaint-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .complaint-body {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+        }
 
         /* AI Quick Action Button */
         .ai-btn-container {
@@ -368,17 +424,18 @@
                     </tbody>
                 </table>
             </div>
+
             <div class="card" style="text-align: center;">
-    <h2>💳 Secure Rent Payment</h2>
-    <p style="color: var(--text-muted); margin-bottom: 10px;">Scan below to settle your monthly dues instantly.</p>
-    <div class="payment-zone">
-        <img src="https://taxtron.in/qr-room.png" alt="Payment QR Code" style="width: 160px; height: 160px; object-fit: contain;">
-        <p>Scan to Pay via UPI / Netbanking or UPI ID - 7000358208@ptyes</p>
-    </div>
-    <p style="font-size: 0.85rem; margin-top: 10px; color: var(--text-muted)">
-        Direct Link: <a href="https://taxtron.in/qr-room.png" target="_blank" style="color: var(--accent);">taxtron.in/qr-room.png</a>
-    </p>
-</div>
+                <h2>💳 Secure Rent Payment</h2>
+                <p style="color: var(--text-muted); margin-bottom: 10px;">Scan below to settle your monthly dues instantly.</p>
+                <div class="payment-zone">
+                    <img src="https://taxtron.in/qr-room.png" alt="Payment QR Code" style="width: 160px; height: 160px; object-fit: contain;">
+                    <p>Scan to Pay via UPI / Netbanking or UPI ID - 7000358208@ptyes</p>
+                </div>
+                <p style="font-size: 0.85rem; margin-top: 10px; color: var(--text-muted)">
+                    Direct Link: <a href="https://taxtron.in/qr-room.png" target="_blank" style="color: var(--accent);">taxtron.in/qr-room.png</a>
+                </p>
+            </div>
 
             <div class="card">
                 <h2>🛠️ Raise a Complaint / Request</h2>
@@ -409,32 +466,40 @@
                     <button type="submit" class="submit-btn">Submit Request</button>
                 </form>
             </div>
+
             <div class="card">
-                <h2>🛠️ Rent & Security Payment</h2>
-                <form id="complaintForm" onsubmit="handleComplaintSubmit(event)">
+                <h2>🛠️ Rent & Security Payment Notice</h2>
+                <form id="paymentNoticeForm" onsubmit="handlePaymentNoticeSubmit(event)">
                     <div class="form-group">
-                        <label for="tenantName">Name</label>
-                        <input type="text" id="tenantName" class="form-control" required placeholder="Your full name">
+                        <label for="payTenantName">Name</label>
+                        <input type="text" id="payTenantName" class="form-control" required placeholder="Your full name">
                     </div>
                     <div class="form-group">
-                        <label for="roomNo">Room Number</label>
-                        <input type="text" id="roomNo" class="form-control" required placeholder="e.g., 102-B">
+                        <label for="payRoomNo">Room Number</label>
+                        <input type="text" id="payRoomNo" class="form-control" required placeholder="e.g., 102-B">
                     </div>
-            <div class="form-group">
-                        <label for="issueType">Notify Rent Paid By You</label>
-                        <select id="issueType" class="form-control">
-                           
+                    <div class="form-group">
+                        <label for="payNoticeType">Notify Rent Paid By You</label>
+                        <select id="payNoticeType" class="form-control">
                             <option value="Room Rent">Room Rent Paid By You </option>
                             <option value="Room Security">Ask Security Money </option>
-                            
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="message">Give Date And Month Info</label>
-                        <textarea id="message" class="form-control" rows="3" required placeholder="Provide clear details... [ No need to give screenshot !!! ]"></textarea>
+                        <label for="payMessage">Give Date And Month Info</label>
+                        <textarea id="payMessage" class="form-control" rows="3" required placeholder="Provide clear details... [ No need to give screenshot !!! ]"></textarea>
                     </div>
                     <button type="submit" class="submit-btn">Submit Request</button>
                 </form>
+            </div>
+
+            <!-- Read-Only Public Complaints Board -->
+            <div class="card full-width-card">
+                <h2>📋 Registered Complaints & Requests (Read-Only)</h2>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Real-time feed of all complaints logged across the building:</p>
+                <div id="publicComplaintsList" class="complaints-container">
+                    <p style="color: var(--text-muted);">Loading complaints...</p>
+                </div>
             </div>
 
             <div class="ai-btn-container">
@@ -447,21 +512,21 @@
     </div>
 
     <script>
-        // 1. Paste your actual Firebase project configuration here
+        // 1. Firebase configuration
         const firebaseConfig = {
-    apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
-    authDomain: "taxtron-ai.firebaseapp.com",
-    projectId: "taxtron-ai",
-    appId: "1:1009675616284:web:27c8e67f2107d9a4255fd9"
+            apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
+            authDomain: "taxtron-ai.firebaseapp.com",
+            projectId: "taxtron-ai",
+            appId: "1:1009675616284:web:27c8e67f2107d9a4255fd9"
         };
         
-        // 2. Initialize Firebase if it hasn't been initialized yet
+        // 2. Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.firestore();
 
-        // Copy WiFi Password functionality
+        // Copy WiFi Password
         function copyPassword() {
             const passwordText = document.getElementById('wifi-pass').innerText;
             navigator.clipboard.writeText(passwordText).then(() => {
@@ -471,7 +536,7 @@
             });
         }
 
-        // Handle Complaints Submission Form 
+        // Handle Complaints Form Submission
         function handleComplaintSubmit(event) {
             event.preventDefault();
             
@@ -497,6 +562,96 @@
                 alert("Failed to submit. Please try again.");
             });
         }
+
+        // Handle Rent/Security Payment Notice Submission
+        function handlePaymentNoticeSubmit(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('payTenantName').value;
+            const room = document.getElementById('payRoomNo').value;
+            const category = document.getElementById('payNoticeType').value;
+            const details = document.getElementById('payMessage').value;
+
+            db.collection("tenant_complaints").add({
+                tenantName: name,
+                roomNumber: room,
+                issueCategory: category,
+                description: details,
+                status: "Pending",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                alert("Payment notice submitted successfully!");
+                document.getElementById('paymentNoticeForm').reset();
+            })
+            .catch((error) => {
+                console.error("Error submitting notice: ", error);
+                alert("Failed to submit. Please try again.");
+            });
+        }
+
+        // Load Read-Only Complaints Real-Time Feed
+        function loadPublicComplaints() {
+            const listContainer = document.getElementById('publicComplaintsList');
+
+            db.collection("tenant_complaints")
+                .orderBy("createdAt", "desc")
+                .onSnapshot((snapshot) => {
+                    if (snapshot.empty) {
+                        listContainer.innerHTML = '<p style="color: var(--text-muted);">No complaints or requests registered yet.</p>';
+                        return;
+                    }
+
+                    let html = '';
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const statusClass = (data.status === 'Resolved') ? 'badge-resolved' : 'badge-pending';
+                        
+                        // Handle date display gracefully
+                        let dateStr = 'Just now';
+                        if (data.createdAt && data.createdAt.toDate) {
+                            dateStr = data.createdAt.toDate().toLocaleDateString('en-IN', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                        }
+
+                        html += `
+                            <div class="complaint-item">
+                                <div class="complaint-header">
+                                    <span class="complaint-author">${escapeHtml(data.tenantName || 'Anonymous')} (Room: ${escapeHtml(data.roomNumber || 'N/A')})</span>
+                                    <span class="complaint-badge ${statusClass}">${escapeHtml(data.status || 'Pending')}</span>
+                                </div>
+                                <div class="complaint-meta">
+                                    <strong>Category:</strong> ${escapeHtml(data.issueCategory || 'General')} | <strong>Logged:</strong> ${dateStr}
+                                </div>
+                                <div class="complaint-body">${escapeHtml(data.description || '')}</div>
+                            </div>
+                        `;
+                    });
+
+                    listContainer.innerHTML = html;
+                }, (error) => {
+                    console.error("Error fetching complaints: ", error);
+                    listContainer.innerHTML = '<p style="color: var(--danger);">Failed to load complaints feed.</p>';
+                });
+        }
+
+        // Utility helper to prevent HTML injection in user input
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Initialize Realtime Feed
+        document.addEventListener('DOMContentLoaded', loadPublicComplaints);
     </script>
 </body>
 </html>
