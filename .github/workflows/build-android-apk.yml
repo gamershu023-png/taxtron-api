@@ -1,0 +1,48 @@
+name: Build Android Preview APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "taxtron-app/**"
+      - ".github/workflows/build-android-apk.yml"
+
+jobs:
+  build:
+    name: EAS Build (preview APK)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: taxtron-app
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: taxtron-app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build preview APK
+        run: eas build --platform android --profile preview --non-interactive
+
+      - name: Get build URL
+        run: |
+          BUILD_URL=$(eas build:list --platform android --status finished --limit 1 --json | jq -r '.[0].artifacts.buildUrl // empty')
+          echo "APK download URL: $BUILD_URL"
+          echo "build_url=$BUILD_URL" >> "$GITHUB_STEP_SUMMARY"
