@@ -9,7 +9,9 @@
     "scheme": "taxtron",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
-    "platforms": ["android"],
+    "platforms": [
+      "android"
+    ],
     "android": {
       "package": "in.taxtron.app",
       "versionCode": 1,
@@ -24,13 +26,15 @@
       "targetSdkVersion": 36,
       "minSdkVersion": 24
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false
     },
     "extra": {
       "eas": {
-        "projectId": "3a6a75bd-7488-4f30-8612-126df7bebf8d"
+        "projectId": "e0ee06f5-558d-42b7-a438-b05acb5508c7"
       }
     }
   }
