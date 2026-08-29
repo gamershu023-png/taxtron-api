@@ -109,6 +109,11 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+                ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+        }
+
         // Stream complaints in real-time from the database
         db.collection("tenant_complaints")
           .orderBy("createdAt", "desc")
@@ -125,17 +130,21 @@
                   const data = doc.data();
                   const id = doc.id;
                   const dateStr = data.createdAt ? data.createdAt.toDate().toLocaleString() : "Just now";
-                  
+                  const tenantName = esc(data.tenantName);
+                  const roomNumber = esc(data.roomNumber);
+                  const issueCategory = esc(data.issueCategory);
+                  const description = esc(data.description);
+                  const status = esc(data.status);
                   const isPending = data.status === "Pending";
 
                   listContainer.innerHTML += `
                       <div class="complaint-card" id="card-${id}">
                           <div class="details">
-                              <h3>${data.tenantName} <span class="room-badge">Room ${data.roomNumber}</span></h3>
-                              <p style="color: var(--text-muted); font-size: 0.9rem; margin: 4px 0;"><strong>[${data.issueCategory}]</strong></p>
-                              <p style="margin-top: 8px;">${data.description}</p>
+                              <h3>${tenantName} <span class="room-badge">Room ${roomNumber}</span></h3>
+                              <p style="color: var(--text-muted); font-size: 0.9rem; margin: 4px 0;"><strong>[${issueCategory}]</strong></p>
+                              <p style="margin-top: 8px;">${description}</p>
                               <div class="meta">Filed: ${dateStr} | Status: 
-                                  <span class="status-badge ${isPending ? 'status-pending' : 'status-resolved'}">${data.status}</span>
+                                  <span class="status-badge ${isPending ? 'status-pending' : 'status-resolved'}">${status}</span>
                               </div>
                           </div>
                           <div class="actions">

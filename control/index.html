@@ -81,6 +81,11 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
 
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+                ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+        }
+
         function publishUpdate(event) {
             event.preventDefault();
             const category = document.getElementById('updateCategory').value;
@@ -106,8 +111,8 @@
                 div.className = 'update-item';
                 div.innerHTML = `
                     <div>
-                        <strong style="color:var(--accent); font-size: 0.85rem; text-transform: uppercase;">${data.category}</strong> 
-                        <p style="margin-top:5px; font-size:0.95rem;">${data.message}</p>
+                        <strong style="color:var(--accent); font-size: 0.85rem; text-transform: uppercase;">${esc(data.category)}</strong> 
+                        <p style="margin-top:5px; font-size:0.95rem;">${esc(data.message)}</p>
                     </div>
                     <button class="delete-btn" onclick="deleteUpdate('${doc.id}')">Revoke</button>
                 `;

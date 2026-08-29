@@ -416,6 +416,11 @@ let currentBase64Image = null;
 
 marked.setOptions({ breaks: true });
 
+function escHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+        ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
 /* --- IMAGE HANDLING --- */
 function handleImageSelect(event) {
     const file = event.target.files[0];
@@ -655,7 +660,7 @@ function loadChatList() {
         snap.forEach(doc => {
             const div = document.createElement("div");
             div.className = `chat-item ${doc.id === currentChatId ? 'active' : ''}`;
-            div.innerHTML = `<span>${doc.data().title || "New Chat"}</span><span class="delete-btn" onclick="event.stopPropagation(); deleteChat('${doc.id}')">🗑️</span>`;
+            div.innerHTML = `<span>${escHtml(doc.data().title || "New Chat")}</span><span class="delete-btn" onclick="event.stopPropagation(); deleteChat('${doc.id}')">🗑️</span>`;
             div.onclick = () => openChat(doc.id, div);
             list.appendChild(div);
         });
