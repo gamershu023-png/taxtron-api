@@ -2,6 +2,7 @@
   "expo": {
     "name": "Taxtron",
     "slug": "taxtron-app",
+    "owner": "taxtronofficials-team",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -29,7 +30,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "3a6a75bd-7488-4f30-8612-126df7bebf8d"
+        "projectId": "e0ee06f5-558d-42b7-a438-b05acb5508c7"
       }
     }
   }
