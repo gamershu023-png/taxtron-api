@@ -6,6 +6,9 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "splash": {
+      "backgroundColor": "#020617"
+    },
     "scheme": "taxtron",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
