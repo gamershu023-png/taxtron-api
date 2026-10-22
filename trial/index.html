@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taxtron AI: Digital Tools &amp; AI Assistant for Everyone | Create, Learn, Build</title>
+
+  <meta name="description" content="Taxtron AI is a general-purpose digital tools and AI platform for everyone — creators, developers, students, and professionals. Get instant answers, generate content, and explore powerful utilities. No distractions, no ads.">
+  <meta name="keywords" content="AI assistant, digital tools, content creation, learning platform, productivity tools, AI for creators, AI for developers, AI for students, AI for professionals, Taxtron AI">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+  <link rel="canonical" href="https://taxtron.in/">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+  <meta property="og:title" content="Taxtron AI: Digital Tools &amp; AI Assistant for Everyone">
+  <meta property="og:description" content="A general-purpose AI platform for creators, developers, students, and professionals. Instant answers, content generation, and smart utilities — no distractions, no ads.">
+  <meta property="og:url" content="https://taxtron.in/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Taxtron AI">
+  <meta property="og:image" content="https://taxtron.in/∫ (1).png">
+  <meta property="og:image:alt" content="Taxtron AI logo and branding">
+  <meta property="og:locale" content="en_IN">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Taxtron AI: Digital Tools &amp; AI Assistant for Everyone">
+  <meta name="twitter:description" content="A general-purpose AI platform for creators, developers, students, and professionals. No distractions, no ads.">
+  <meta name="twitter:image" content="https://taxtron.in/∫ (1).png">
+
+  <link rel="icon" href="/∫ (1).png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Taxtron AI",
+    "url": "https://taxtron.in/",
+    "description": "AI-powered digital tools and assistant platform for creators, developers, students, and professionals.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://taxtron.in/explore?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Taxtron AI",
+    "url": "https://taxtron.in/",
+    "logo": "https://taxtron.in/logo1526tx.gif",
+    "description": "A general-purpose digital tools and AI platform for everyone — creators, developers, students, and professionals.",
+    "sameAs": [],
+    "areaServed": {
+      "@type": "Country",
+      "name": "India"
+    },
+    "knowsAbout": ["Artificial Intelligence", "Digital Tools", "Content Creation", "Productivity", "Learning", "Development"]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* VARIABLES */
+    :root {
+      --bg-color: #020617;
+      --card-bg: rgba(15, 23, 42, 0.6);
+      --border-color: rgba(30, 41, 59, 0.8);
+      --primary: #38bdf8;
+      --primary-hover: #0ea5e9;
+      --secondary: #818cf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    /* GLOBAL */
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-main);
+      overflow-x: hidden;
+      line-height: 1.6;
+      scroll-behavior: smooth;
+    }
+
+    /* CUSTOM SCROLLBAR */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-color); }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+    /* KEYFRAME ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }
+      70% { box-shadow: 0 0 0 15px rgba(56, 189, 248, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+    }
+
+    @keyframes gradientSweep {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes floatOrb {
+      0%, 100% { transform: translate(-50%, 0) scale(1); }
+      50% { transform: translate(-50%, 40px) scale(1.1); }
+    }
+
+    @keyframes gridMove {
+      0% { background-position: 0 0; }
+      100% { background-position: 50px 50px; }
+    }
+
+    /* BACKGROUND GLOW EFFECTS & GRID */
+    .bg-grid {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: -2;
+      animation: gridMove 20s linear infinite;
+      pointer-events: none;
+    }
+
+    .bg-glow {
+      position: fixed;
+      top: -15%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(2, 6, 23, 0) 65%);
+      z-index: -1;
+      pointer-events: none;
+      animation: floatOrb 8s ease-in-out infinite;
+    }
+
+    .bg-glow-2 {
+      position: fixed;
+      bottom: -20%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(129, 140, 248, 0.1) 0%, rgba(2, 6, 23, 0) 60%);
+      z-index: -1;
+      pointer-events: none;
+      border-radius: 50%;
+      animation: floatOrb 12s ease-in-out infinite reverse;
+    }
+
+    /* NAV */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 50px;
+      background: rgba(2, 6, 23, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: -0.5px;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+    .logo:hover {
+      transform: scale(1.08) rotate(-3deg);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 5px 0;
+    }
+    
+    .nav a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 50%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 0.3s ease, left 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .nav a:hover {
+      color: var(--text-main);
+      text-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+    .nav a:hover::after {
+      width: 100%;
+      left: 0;
+    }
+
+    .user-btn {
+      background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+      padding: 8px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      color: var(--text-main);
+      backdrop-filter: blur(5px);
+    }
+    .user-btn:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--primary);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(56, 189, 248, 0.2);
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      padding: 120px 20px 80px;
+      text-align: center;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      font-weight: 800;
+      margin-bottom: 25px;
+      letter-spacing: -2px;
+      background: linear-gradient(to right, #ffffff, #38bdf8, #818cf8, #ffffff);
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientSweep 6s linear infinite;
+      filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.3));
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.15rem;
+      max-width: 600px;
+      margin: 0 auto 35px;
+    }
+
+    /* SEARCH BOX */
+    .search-box {
+      margin: auto;
+      display: flex;
+      width: 700px;
+      max-width: 95%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 10px;
+      backdrop-filter: blur(20px);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 40px -10px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .search-box:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 20px 50px -10px rgba(56, 189, 248, 0.3);
+      transform: translateY(-3px) scale(1.01);
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    .search-box input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      padding: 0 20px;
+      outline: none;
+      font-family: inherit;
+    }
+    .search-box input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-box button {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      border: none;
+      border-radius: 14px;
+      padding: 14px 30px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+    }
+
+    .search-box button:hover {
+      transform: scale(1.05) translateY(-2px);
+      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.5);
+    }
+
+    /* SECTIONS */
+    .section {
+      padding: 60px 20px;
+      max-width: 1200px;
+      margin: auto;
+      position: relative;
+      z-index: 10;
+    }
+
+    .section h2 {
+      font-size: 2rem;
+      margin-bottom: 40px;
+      font-weight: 800;
+      text-align: center;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* CARDS GRID */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 25px;
+      perspective: 1000px;
+    }
+
+    .card {
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.4), rgba(2, 6, 23, 0.7));
+      backdrop-filter: blur(12px);
+      padding: 30px 25px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.05);
+      cursor: pointer;
+      opacity: 0;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transition: transform 0.1s, border-color 0.4s, box-shadow 0.4s;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 50%; height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
+      transform: skewX(-20deg);
+      transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 20px 40px -10px rgba(56, 189, 248, 0.2);
+    }
+    .card:hover::before {
+      left: 150%;
+    }
+
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateZ(20px);
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 14.5px;
+      line-height: 1.7;
+      transform: translateZ(10px);
+    }
+
+    /* SHOW MORE CONTAINER & REMOTE CARDS AREA */
+    .show-more-container {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .show-more-btn {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--primary);
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .show-more-btn:hover {
+      background: var(--primary);
+      color: #020617;
+      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3);
+      transform: translateY(-2px);
+    }
+
+    #subIndexSection {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #subIndexSection.visible {
+      max-height: 2000px;
+      opacity: 1;
+      margin-top: 50px;
+    }
+
+    /* EXPLORE TRANSITION OVERLAY */
+    .explore-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(2, 6, 23, 0.95);
+      backdrop-filter: blur(30px);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    
+    .explore-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .explore-loader {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 4px solid transparent;
+      border-top-color: var(--primary);
+      border-right-color: var(--secondary);
+      animation: spinLoader 1s linear infinite;
+      margin-bottom: 25px;
+    }
+
+    .explore-text {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+    }
+
+    @keyframes spinLoader {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* FOOTER */
+    .footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(2, 6, 23, 0.8);
+      backdrop-filter: blur(20px);
+      padding: 50px 20px 30px;
+      text-align: center;
+      margin-top: 60px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px 30px;
+      margin-bottom: 25px;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .footer p {
+      color: rgba(148, 163, 184, 0.5);
+      font-size: 13.5px;
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      .nav { padding: 15px 20px; flex-direction: column; gap: 15px; }
+      .nav-right { flex-wrap: wrap; justify-content: center; gap: 12px; }
+      .hero h1 { font-size: 2.6rem; }
+      .hero { padding: 70px 15px 40px; }
+      .search-box { flex-direction: column; border-radius: 16px; padding: 10px; }
+      .search-box input { margin-bottom: 12px; text-align: center; padding: 10px; }
+      .search-box button { width: 100%; border-radius: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Background Elements -->
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="bg-glow-2"></div>
+
+<!-- Transition Overlay -->
+<div class="explore-overlay" id="exploreOverlay">
+  <div class="explore-loader"></div>
+  <div class="explore-text" id="overlayText">INITIALIZING TAXTRON...</div>
+</div>
+
+<nav class="nav">
+  <div class="logo" onclick="location.href='/'" style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+    <img src="/logo1526tx.gif" style="height:30px; border-radius: 6px; box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);" alt="Taxtron Logo" onerror="this.style.display='none'">
+    <span>Taxtron</span>
+  </div>
+
+  <div class="nav-right">
+    <a href="/explore">Students Hub</a>
+    <a href="/create">Creator Suite</a>
+    <a href="/notifications" target="_blank">Updates</a>
+    <a href="/why-Taxtron">Why Taxtron</a>
+    <div id="userArea">
+      <div class="user-btn">Loading...</div>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <h1>Digital Tools &amp; AI for Everyone</h1>
+  <p>Instant answers, intelligent utilities, and platform suites built for creators, students, developers, and professionals.</p>
+  <div class="search-box">
+    <input id="q" type="text" placeholder="Ask anything — ideas, concepts, code, writing..." onkeydown="if(event.key === 'Enter') triggerRedirect('/explore?q=' + encodeURIComponent(document.getElementById('q').value), 'EXPLORING AI...')">
+    <button onclick="triggerRedirect('/explore?q=' + encodeURIComponent(document.getElementById('q').value), 'EXPLORING AI...')">Ask Taxtron</button>
+  </div>
+</header>
+
+<main>
+  <!-- CORE PLATFORM HUBS -->
+  <section class="section">
+    <h2>Platform Hubs</h2>
+    <div class="cards">
+      <div class="card" onclick="triggerRedirect('/explore', 'LOADING STUDENTS HUB...')">
+        <h3>🎓 Students Hub</h3>
+        <p>Access curated JEE notes, exam prep kits, structured study case studies, and instant concept solvers.</p>
+      </div>
+      <div class="card" onclick="triggerRedirect('/create', 'LOADING CREATOR SUITE...')">
+        <h3>✨ Creator Suite (v1)</h3>
+        <p>Supercharge your workflow with instant viral title generators and realistic simulated reel/YouTube comments.</p>
+      </div>
+      <div class="card" onclick="triggerRedirect('/explore?q=code', 'LOADING DEVELOPER TOOLS...')">
+        <h3>⚡ Developer &amp; Logic</h3>
+        <p>Debug code snippets, analyze algorithms, and work through complex technical logic seamlessly.</p>
+      </div>
+      <div class="card" onclick="triggerRedirect('/explore?q=summaries', 'LOADING UTILITIES...')">
+        <h3>📐 Smart Utilities</h3>
+        <p>Summarize long articles, structure data notes, and format content effortlessly in seconds.</p>
+      </div>
+    </div>
+
+    <!-- SHOW MORE SUB-PAGE BUTTON -->
+    <div class="show-more-container">
+      <button class="show-more-btn" id="showMoreToggle" onclick="toggleSubIndex()">Explore More Tools &amp; Features ↓</button>
+    </div>
+
+    <!-- SUB-PAGE SECTION (Extendable & Remote Card Ready) -->
+    <div id="subIndexSection">
+      <div style="margin-top: 40px;">
+        <h2>Advanced &amp; Specialized Utilities</h2>
+        <div class="cards" id="remoteCardsContainer">
+          <!-- Default fallback sub-cards, can be populated or appended from /card-ssrtx93 -->
+          <div class="card" onclick="triggerRedirect('/universe', 'OPENING UNIVERSE...')">
+            <h3>🌌 Taxtron Universe</h3>
+            <p>Explore interconnected web applications, experiments, and secondary modules built by the Taxtron ecosystem.</p>
+          </div>
+          <div class="card" onclick="triggerRedirect('/search', 'OPENING DIRECTORY...')">
+            <h3>🔍 Page Directory</h3>
+            <p>Search across all hidden or auxiliary landing pages, utilities, and document repositories on Taxtron.</p>
+          </div>
+          <div class="card" onclick="fetchRemoteCards()">
+            <h3>🚀 Remote Card Sync</h3>
+            <p>Click to fetch and inject latest dynamic feature cards directly from <code>/card-ssrtx93</code>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY TAXTRON SECTION -->
+  <section class="section">
+    <h2>Why Taxtron?</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>🧠 Intelligence First</h3>
+        <p>Engineered for precision—delivering accurate answers without hallucinations or clutter.</p>
+      </div>
+      <div class="card">
+        <h3>🎯 Tailored For You</h3>
+        <p>Custom workflows adapted specifically for creators, learners, and technical professionals.</p>
+      </div>
+      <div class="card">
+        <h3>⚡ Clean &amp; Distraction Free</h3>
+        <p>No pop-ups, no ads, no bloatware—pure, focused utility design.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-links">
+    <a href="/aboutus">About Us</a>
+    <a href="/terms">Terms of Service</a>
+    <a href="/privacy">Privacy Policy</a>
+    <a href="/universe">Taxtron Universe</a>
+    <a href="/contact">Contact Us</a>
+    <a href="/why-Taxtron">Why Taxtron</a>
+    <a href="/search">All Pages</a>
+  </div>
+  <p>&copy; 2026 Taxtron.in. Digital tools for everyone.</p>
+</footer>
+
+<!-- Firebase Scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<script>
+// FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
+  authDomain: "taxtron-ai.firebaseapp.com",
+  projectId: "taxtron-ai"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+// USER AUTH LISTENER (Name / Profile display)
+firebase.auth().onAuthStateChanged(user => {
+  const box = document.getElementById("userArea");
+  if(user) {
+    box.innerHTML = `<div class="user-btn" onclick="location.href='/profile.html'">
+      👤 ${user.displayName || 'Profile'}
+    </div>`;
+  } else {
+    box.innerHTML = `<div class="user-btn" onclick="location.href='/login2.html'">
+      Sign In
+    </div>`;
+  }
+});
+
+// SMOOTH TRANSITION OVERLAY REDIRECT
+function triggerRedirect(url, message = 'INITIALIZING...') {
+  const overlay = document.getElementById('exploreOverlay');
+  const overlayText = document.getElementById('overlayText');
+  overlayText.textContent = message;
+  overlay.classList.add('active');
+  
+  setTimeout(() => {
+    window.location.href = url;
+  }, 900); 
+}
+
+// SHOW MORE SUB-PAGE TOGGLE
+function toggleSubIndex() {
+  const subSection = document.getElementById('subIndexSection');
+  const toggleBtn = document.getElementById('showMoreToggle');
+  
+  subSection.classList.toggle('visible');
+  if (subSection.classList.contains('visible')) {
+    toggleBtn.textContent = 'Collapse Tools ↑';
+    subSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } else {
+    toggleBtn.textContent = 'Explore More Tools &amp; Features ↓';
+  }
+}
+
+// REMOTE CARD LOADER HOOK (For /card-ssrtx93 integration)
+async function fetchRemoteCards() {
+  try {
+    // You can point this to your backend endpoint or JSON source at /card-ssrtx93
+    const response = await fetch('/card-ssrtx93');
+    if (!response.ok) throw new Error('Endpoint not ready');
+    const htmlSnippet = await response.text();
+    document.getElementById('remoteCardsContainer').innerHTML += htmlSnippet;
+  } catch (e) {
+    alert('Remote card endpoint /card-ssrtx93 is ready to be configured. Once created, cards will load here dynamically!');
+  }
+}
+
+// 3D TILT EFFECT ON CARDS
+const cards = document.querySelectorAll('.card');
+cards.forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const rotateX = ((y - centerY) / centerY) * -6;
+    const rotateY = ((x - centerX) / centerX) * 6;
+    
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+  });
+  
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+  });
+});
+
+// DYNAMIC PLACEHOLDER TYPING EFFECT
+const placeholders = [
+  "Ask anything — ideas, concepts, code, writing...",
+  "Search JEE notes, case studies & exams...",
+  "Generate viral titles and reel comments...",
+  "Explain a concept in simple terms...",
+  "Help me debug this code snippet..."
+];
+
+let pIndex = 0;
+let charIndex = 0;
+let isDeleting = false;
+const inputEl = document.getElementById("q");
+
+function typeEffect() {
+  const currentText = placeholders[pIndex];
+  
+  if (isDeleting) {
+    inputEl.setAttribute('placeholder', currentText.substring(0, charIndex - 1));
+    charIndex--;
+  } else {
+    inputEl.setAttribute('placeholder', currentText.substring(0, charIndex + 1));
+    charIndex++;
+  }
+
+  let typingSpeed = isDeleting ? 25 : 55;
+
+  if (!isDeleting && charIndex === currentText.length) {
+    typingSpeed = 2200;
+    isDeleting = true;
+  } else if (isDeleting && charIndex === 0) {
+    isDeleting = false;
+    pIndex = (pIndex + 1) % placeholders.length;
+    typingSpeed = 350;
+  }
+
+  setTimeout(typeEffect, typingSpeed);
+}
+
+setTimeout(typeEffect, 1000);
+</script>
+
+</body>
+</html>
