@@ -270,7 +270,6 @@
 </div>
 
 <script>
-  // DEFAULT INITIAL CARDS
   const defaultCards = [
     {
       id: "card_1",
@@ -290,7 +289,6 @@
     }
   ];
 
-  // LOAD CARDS
   function getStoredCards() {
     const data = localStorage.getItem('taxtron_remote_cards');
     return data ? JSON.parse(data) : defaultCards;
@@ -301,7 +299,6 @@
     renderCards();
   }
 
-  // RENDER CARDS TO PREVIEW
   function renderCards() {
     const cards = getStoredCards();
     const container = document.getElementById('cardsPreview');
@@ -327,7 +324,6 @@
     exportHTML();
   }
 
-  // ADD CARD
   function addCard(e) {
     e.preventDefault();
     const cards = getStoredCards();
@@ -344,27 +340,23 @@
     cards.push(newCard);
     saveCards(cards);
 
-    // Reset Form
     document.getElementById('cardForm').reset();
     document.getElementById('icon').value = '⚡';
     document.getElementById('tag').value = 'Utility';
   }
 
-  // DELETE CARD
   function deleteCard(id) {
     let cards = getStoredCards();
     cards = cards.filter(c => c.id !== id);
     saveCards(cards);
   }
 
-  // CLEAR ALL CARDS
   function clearCards() {
     if(confirm("Are you sure you want to clear all dynamic cards?")) {
       saveCards([]);
     }
   }
 
-  // EXPORT HTML SNIPPET FOR INDEX.HTML
   function exportHTML() {
     const cards = getStoredCards();
     let htmlSnippet = '';
@@ -379,7 +371,6 @@
     document.getElementById('exportBox').textContent = htmlSnippet || '<!-- No cards available -->';
   }
 
-  // INITIALIZE ON LOAD
   renderCards();
 </script>
 
