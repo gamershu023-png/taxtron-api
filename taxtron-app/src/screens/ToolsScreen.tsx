@@ -9,7 +9,7 @@ const tools: ToolItem[] = [
   { id: '2', title: 'Chemistry Equation Balancer', description: 'Balance chemical equations instantly.', icon: '⚗️', available: false },
   { id: '3', title: 'Math Solver', description: 'Step-by-step solutions for calculus, algebra, and more.', icon: '📐', available: false },
   { id: '4', title: 'Unit Converter', description: 'Convert between SI and common engineering units.', icon: '🔄', available: false },
-  { id: '5', title: 'Formula Reference', description: 'Quick access to JEE physics, chemistry, and maths formulas.', icon: '📚', available: false },
+  { id: '5', title: 'Formula Reference', description: 'Quick access to physics, chemistry, and maths formulas.', icon: '📚', available: false },
   { id: '6', title: 'Mock Test Generator', description: 'Generate custom practice tests by topic and difficulty.', icon: '📝', available: false },
 ];
 
@@ -43,7 +43,7 @@ export function ToolsScreen() {
         ListHeaderComponent={
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Tools</Text>
-            <Text style={styles.headerSubtitle}>Educational calculators and utilities</Text>
+            <Text style={styles.headerSubtitle}>Calculators and utilities for everyone</Text>
           </View>
         }
         ListEmptyComponent={
