@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxtron AI Creator Studio - Viral Titles & Comments</title>
+    
+    <!-- Tailwind CSS for Layout & Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#020617',
+                        darkPanel: '#0f172a',
+                        darkHover: '#1e293b',
+                        accent: '#38bdf8',
+                        accentGlow: '#0284c7',
+                        brandPurple: '#8b5cf6'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Animations & FX */
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.4); }
+        }
+        .glow-box { animation: pulseGlow 4s infinite ease-in-out; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        /* Custom Typo Styling for Rendered Markdown */
+        .markdown-body { color: #e2e8f0; font-size: 0.95rem; line-height: 1.6; }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 { color: #38bdf8; font-weight: 700; margin-top: 1em; margin-bottom: 0.5em; }
+        .markdown-body h1 { font-size: 1.4rem; border-bottom: 1px solid #334155; padding-bottom: 0.3em; }
+        .markdown-body h2 { font-size: 1.2rem; }
+        .markdown-body h3 { font-size: 1.05rem; }
+        .markdown-body ul, .markdown-body ol { padding-left: 1.4em; margin-bottom: 0.75em; list-style-type: disc; }
+        .markdown-body li { margin-bottom: 0.25em; }
+        .markdown-body code { background: #1e293b; color: #f43f5e; padding: 0.2em 0.4em; border-radius: 0.25rem; font-size: 0.85em; font-family: monospace; }
+        .markdown-body pre { background: #090d16; padding: 1em; border-radius: 0.5rem; overflow-x: auto; border: 1px solid #1e293b; margin: 0.8em 0; }
+        .markdown-body pre code { background: transparent; color: #e2e8f0; padding: 0; }
+        .markdown-body blockquote { border-left: 3px solid #38bdf8; padding-left: 0.8em; color: #94a3b8; font-style: italic; margin: 0.8em 0; }
+        .markdown-body p { margin-bottom: 0.75em; }
+        .markdown-body strong { color: #ffffff; font-weight: 600; }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 font-sans h-screen w-screen overflow-hidden flex flex-col">
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center p-4">
+        <div class="login-box bg-darkPanel border border-slate-800 p-8 rounded-2xl max-w-md w-full text-center shadow-2xl glow-box">
+            <div class="w-16 h-16 bg-gradient-to-tr from-sky-400 to-indigo-600 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg">
+                <i data-lucide="sparkles" class="w-9 h-9 text-slate-900 stroke-[2.5]"></i>
+            </div>
+            <h1 class="text-3xl font-extrabold text-white mb-2 tracking-tight">Taxtron <span class="text-accent">Creator Studio</span></h1>
+            <p class="text-slate-400 text-sm mb-6">Generate hyper-viral titles & realistic family/friend comments for Shorts & Reels.</p>
+            
+            <button onclick="signInWithGoogle()" class="w-full bg-white hover:bg-slate-100 text-slate-900 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-transform active:scale-[0.98] shadow-md mb-3">
+                <svg class="w-5 h-5" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.73 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                Sign in with Google
+            </button>
+
+            <button onclick="continueAsGuest()" class="w-full bg-transparent hover:bg-slate-800/60 text-accent border border-accent/40 hover:border-accent font-semibold py-3 px-4 rounded-xl transition-all active:scale-[0.98]">
+                Continue as Guest
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <div id="app" class="hidden flex-1 h-full w-full overflow-hidden flex flex-row relative">
+        
+        <!-- MOBILE OVERLAY -->
+        <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="w-72 bg-darkPanel/90 border-r border-slate-800/80 flex flex-col z-50 fixed md:relative h-full transition-all duration-300 -translate-x-full md:translate-x-0">
+            <!-- Logo area -->
+            <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-accent rounded-xl flex items-center justify-center text-slate-950 font-black shadow-md shadow-sky-500/20">
+                        <i data-lucide="clapperboard" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-white leading-tight">Taxtron AI</h2>
+                        <span class="text-[10px] text-accent font-semibold tracking-wider uppercase">Creator Studio</span>
+                    </div>
+                </div>
+                <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- New Session Button -->
+            <div class="p-4">
+                <button onclick="newChat()" class="w-full bg-accent/10 hover:bg-accent/20 border border-accent/40 text-accent hover:text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 transition-all group">
+                    <i data-lucide="plus" class="w-4 h-4 transition-transform group-hover:rotate-90"></i>
+                    <span>New Generation Studio</span>
+                </button>
+            </div>
+
+            <!-- Session History List -->
+            <div class="px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Saved Creations</div>
+            <div id="chatList" class="flex-1 overflow-y-auto px-3 space-y-1">
+                <!-- History Items injected dynamically -->
+            </div>
+
+            <!-- User Auth Footer -->
+            <div class="p-4 border-t border-slate-800/80 bg-slate-950/40">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5 overflow-hidden">
+                        <div id="userAvatar" class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-white shrink-0">G</div>
+                        <div class="truncate">
+                            <p id="userName" class="text-xs font-semibold text-white truncate">Guest User</p>
+                            <p id="userBadge" class="text-[10px] text-slate-400">Temporary Session</p>
+                        </div>
+                    </div>
+                    <button id="authLink" onclick="handleAuthAction()" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors" title="Logout">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 flex flex-col h-full bg-darkBg relative overflow-hidden">
+            
+            <!-- Mobile Header -->
+            <header class="md:hidden flex items-center justify-between px-4 py-3 bg-darkPanel border-b border-slate-800 z-10">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleSidebar()" class="text-slate-300 p-1 rounded-lg hover:bg-slate-800">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                    <span class="font-bold text-white text-base">Taxtron Creator Studio</span>
+                </div>
+                <button onclick="newChat()" class="text-accent p-1">
+                    <i data-lucide="plus-circle" class="w-6 h-6"></i>
+                </button>
+            </header>
+
+            <!-- CHAT / WORKSPACE VIEW -->
+            <div id="chat" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 scroll-smooth">
+                <!-- WELCOME HERO (Visible on Empty State) -->
+                <div id="welcome-hero" class="max-w-3xl mx-auto my-6 text-center animate-slide-up space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-medium">
+                        <i data-lucide="flame" class="w-3.5 h-3.5"></i>
+                        <span>Supercharge Viral Retention & Engagement</span>
+                    </div>
+
+                    <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
+                        Create High-Retention <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-400">Titles & Realistic Comments</span>
+                    </h1>
+                    
+                    <p class="text-slate-400 text-sm md:text-base max-w-xl mx-auto">
+                        Stop getting standard boring AI responses. Get authentic viral hooks, relatable uncle/friend reactions, top banter, and meme comment packs designed specifically for Reels & Shorts.
+                    </p>
+
+                    <!-- PRESET PROMPT CARDS -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-2xl mx-auto pt-2">
+                        <button onclick="triggerPreset('viral-titles')" class="bg-darkPanel/80 hover:bg-darkHover border border-slate-800 hover:border-accent/50 p-4 rounded-xl transition-all group shadow-sm hover:shadow-sky-500/10">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="p-2 rounded-lg bg-sky-500/10 text-sky-400 group-hover:bg-sky-500/20"><i data-lucide="video" class="w-4 h-4"></i></span>
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-500 group-hover:text-accent"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-sm mb-1">Viral Reel Titles & Hooks</h3>
+                            <p class="text-xs text-slate-400">Generate high-CTR hooks, titles, and caption triggers tailored to your video topic.</p>
+                        </button>
+
+                        <button onclick="triggerPreset('family-relatives')" class="bg-darkPanel/80 hover:bg-darkHover border border-slate-800 hover:border-emerald-500/50 p-4 rounded-xl transition-all group shadow-sm hover:shadow-emerald-500/10">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500/20"><i data-lucide="users" class="w-4 h-4"></i></span>
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-500 group-hover:text-emerald-400"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-sm mb-1">Relatable Relatives & Friends</h3>
+                            <p class="text-xs text-slate-400">Fake Sharma Ji uncle, concerned mom, jealous friends, and desi relative comments.</p>
+                        </button>
+
+                        <button onclick="triggerPreset('hype-vibe')" class="bg-darkPanel/80 hover:bg-darkHover border border-slate-800 hover:border-purple-500/50 p-4 rounded-xl transition-all group shadow-sm hover:shadow-purple-500/10">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="p-2 rounded-lg bg-purple-500/10 text-purple-400 group-hover:bg-purple-500/20"><i data-lucide="zap" class="w-4 h-4"></i></span>
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-500 group-hover:text-purple-400"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-sm mb-1">Top Vibe & Fan Hype Pack</h3>
+                            <p class="text-xs text-slate-400">Gen-Z slang, top pinned comment vibes, subscriber appreciation, and viral energy.</p>
+                        </button>
+
+                        <button onclick="triggerPreset('roast-banter')" class="bg-darkPanel/80 hover:bg-darkHover border border-slate-800 hover:border-rose-500/50 p-4 rounded-xl transition-all group shadow-sm hover:shadow-rose-500/10">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="p-2 rounded-lg bg-rose-500/10 text-rose-400 group-hover:bg-rose-500/20"><i data-lucide="smile" class="w-4 h-4"></i></span>
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-500 group-hover:text-rose-400"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-sm mb-1">Funny Roasts & Banter</h3>
+                            <p class="text-xs text-slate-400">Playful sarcastic roasts, background details callouts, and meme banter comments.</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INPUT CONTROL PANEL -->
+            <div class="p-3 md:p-4 bg-darkPanel/90 border-t border-slate-800/80">
+                <div class="max-w-3xl mx-auto space-y-3">
+                    
+                    <!-- Image Preview Badge -->
+                    <div id="imagePreviewContainer" class="hidden relative inline-block bg-slate-900 p-1.5 rounded-lg border border-slate-700">
+                        <img id="imagePreview" src="" alt="Upload preview" class="h-14 rounded object-cover">
+                        <button onclick="removeSelectedImage()" class="absolute -top-2 -right-2 bg-rose-500 hover:bg-rose-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md">
+                            &times;
+                        </button>
+                    </div>
+
+                    <!-- Input Box -->
+                    <div class="flex items-center gap-2 bg-slate-900 border border-slate-700/80 focus-within:border-accent rounded-xl p-2 transition-all shadow-lg">
+                        
+                        <label for="imageUpload" class="p-2 text-slate-400 hover:text-accent rounded-lg cursor-pointer hover:bg-slate-800 transition-colors" title="Attach screenshot or thumbnail">
+                            <i data-lucide="image" class="w-5 h-5"></i>
+                        </label>
+                        <input type="file" id="imageUpload" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
+
+                        <input id="input" type="text" placeholder="Describe your Reel/Short topic or paste concept..." class="flex-1 bg-transparent text-white placeholder-slate-500 focus:outline-none text-sm px-1" autocomplete="off">
+
+                        <button id="sendBtn" onclick="send()" class="bg-accent hover:bg-sky-400 text-slate-950 font-bold px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span>Generate</span>
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="flex justify-between items-center text-[11px] text-slate-500 px-1">
+                        <span>Tip: Press <kbd class="px-1 bg-slate-800 rounded border border-slate-700">Enter</kbd> to submit</span>
+                        <span class="text-accent/80 font-medium">Powered by Taxtron Engine</span>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Firebase Compatibility Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // --- FIREBASE INITIALIZATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
+            authDomain: "taxtron-ai.firebaseapp.com",
+            projectId: "taxtron-ai",
+            appId: "1:1009675616284:web:27c8e67f2107d9a4255fd9"
+        };
+
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // App Global State
+        let currentChatId = null;
+        let unsubscribe = null;
+        let sending = false;
+        let isGuest = false;
+        let currentBase64Image = null;
+
+        // Initialize Lucide Icons
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+            if (window.marked && typeof marked.setOptions === "function") {
+                marked.setOptions({ breaks: true });
+            }
+        });
+
+        function escHtml(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+                ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+        }
+
+        /* --- AUTHENTICATION LOGIC --- */
+        function signInWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(err => {
+                alert("Login failed: " + err.message);
+            });
+        }
+
+        function continueAsGuest() {
+            isGuest = true;
+            showApp();
+            updateUserUI("Guest User", "Temporary Mode", "G");
+            checkUrlParams();
+        }
+
+        function handleAuthAction() {
+            if (isGuest) {
+                location.reload();
+            } else {
+                auth.signOut().then(() => location.reload());
+            }
+        }
+
+        function showApp() {
+            document.getElementById("login-screen").classList.add("hidden");
+            document.getElementById("app").classList.remove("hidden");
+            document.getElementById("app").classList.add("flex");
+        }
+
+        function updateUserUI(name, badge, initial) {
+            document.getElementById("userName").innerText = name;
+            document.getElementById("userBadge").innerText = badge;
+            document.getElementById("userAvatar").innerText = initial || name.charAt(0).toUpperCase();
+        }
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                isGuest = false;
+                showApp();
+                updateUserUI(user.displayName || "Creator", user.email, user.displayName ? user.displayName.charAt(0) : "U");
+                loadChatList();
+                loadLastChat(user);
+                checkUrlParams();
+            } else if (!isGuest) {
+                const params = new URLSearchParams(window.location.search);
+                if (params.get("q")) {
+                    continueAsGuest();
+                } else {
+                    document.getElementById("login-screen").classList.remove("hidden");
+                    document.getElementById("app").classList.add("hidden");
+                }
+            }
+        });
+
+        function checkUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            const q = params.get("q");
+            if (q) {
+                window.history.replaceState({}, document.title, "/");
+                setTimeout(() => {
+                    newChat();
+                    send(q);
+                }, 400);
+            }
+        }
+
+        /* --- IMAGE ATTACHMENT --- */
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentBase64Image = e.target.result;
+                document.getElementById("imagePreview").src = currentBase64Image;
+                document.getElementById("imagePreviewContainer").classList.remove("hidden");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeSelectedImage() {
+            currentBase64Image = null;
+            document.getElementById("imageUpload").value = "";
+            document.getElementById("imagePreviewContainer").classList.add("hidden");
+        }
+
+        /* --- UI SIDEBAR CONTROLS --- */
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+            const isOpen = !sidebar.classList.contains("-translate-x-full");
+
+            if (isOpen) {
+                sidebar.classList.add("-translate-x-full");
+                overlay.classList.add("hidden");
+            } else {
+                sidebar.classList.remove("-translate-x-full");
+                overlay.classList.remove("hidden");
+            }
+        }
+
+        function scrollToBottom() {
+            const chat = document.getElementById("chat");
+            chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+        }
+
+        /* --- PRESET SHORTCUTS --- */
+        function triggerPreset(type) {
+            let promptText = "";
+            switch (type) {
+                case 'viral-titles':
+                    promptText = "Generate 5 ultra-catchy viral titles & 3 high-retention opening hooks for a Short/Reel about: ";
+                    break;
+                case 'family-relatives':
+                    promptText = "Generate 8 realistic, funny comments from relatives (Sharma Ji uncle, concerned mom, jealous cousin, NRI aunty) reacting to a video about: ";
+                    break;
+                case 'hype-vibe':
+                    promptText = "Generate 10 top-vibe subscriber hype comments, gen-z slang reactions, and top pinned comment ideas for: ";
+                    break;
+                case 'roast-banter':
+                    promptText = "Generate 8 hilarious sarcastic roast comments, background detail callouts, and meme banter reactions for: ";
+                    break;
+            }
+            const input = document.getElementById("input");
+            input.value = promptText;
+            input.focus();
+        }
+
+        /* --- GENERATION & SEND LOGIC --- */
+        async function send(prefill = null) {
+            if (sending) return;
+
+            const input = document.getElementById("input");
+            const sendBtn = document.getElementById("sendBtn");
+            const text = prefill || input.value.trim();
+
+            if (!text && !currentBase64Image) return;
+
+            // Hide welcome hero on first message
+            const hero = document.getElementById("welcome-hero");
+            if (hero) hero.style.display = "none";
+
+            sending = true;
+            input.value = "";
+            sendBtn.disabled = true;
+
+            const payloadImage = currentBase64Image;
+            removeSelectedImage();
+
+            if (!currentChatId && !isGuest) {
+                currentChatId = Date.now().toString();
+                await saveChatMeta(text || "Image Upload");
+                loadChatList();
+            } else if (!currentChatId && isGuest) {
+                currentChatId = "guest_" + Date.now();
+            }
+
+            addMessage(text, "user", payloadImage);
+            if (!isGuest) saveMessage("user", text, payloadImage);
+
+            // Bot response loading bubble
+            const botWrapper = document.createElement("div");
+            botWrapper.className = "flex w-full mb-4 animate-slide-up";
+            const botMsg = document.createElement("div");
+            botMsg.className = "max-w-[85%] md:max-w-[78%] bg-darkPanel border border-slate-800 rounded-2xl p-4 text-slate-200 relative shadow-xl rounded-tl-xs";
+            botMsg.innerHTML = `
+                <div class="flex items-center gap-2 text-accent text-xs font-semibold mb-2">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 animate-spin"></i>
+                    <span>Taxtron Studio AI Thinking...</span>
+                </div>
+                <div class="flex gap-1.5 py-2">
+                    <div class="w-2 h-2 bg-accent rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-accent rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                    <div class="w-2 h-2 bg-accent rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                </div>
+            `;
+            botWrapper.appendChild(botMsg);
+            document.getElementById("chat").appendChild(botWrapper);
+            scrollToBottom();
+            lucide.createIcons();
+
+            try {
+                // Formulate system-prompt reinforced query for high creator realism
+                const structuredTopic = `You are Taxtron AI Content Studio. Generate specialized viral content for Reels/Shorts. 
+Task Query: "${text}"
+
+Provide structured markdown formatted output with:
+1. 🎬 **Viral Titles & High-Retention Hooks** (Punchy, under 60 chars)
+2. 💬 **Realistic Relative & Friend Comments** (Desi/Global uncle, mom, jealous friend, aunties - hilarious & authentic)
+3. 🔥 **Top Vibe & Meme Banter Comments** (Subscriber hype, sarcastic background observations, high-engagement comment triggers)`;
+
+                let finalResult = "";
+
+                // Call Primary Endpoint
+                try {
+                    const reqBody = { topic: structuredTopic };
+                    if (payloadImage) reqBody.image = payloadImage;
+
+                    const res = await fetch("https://project-0wxuy.vercel.app/api/generate", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(reqBody)
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.result) finalResult = data.result;
+                    }
+                } catch (e) {
+                    console.log("Custom API unreachable, falling back to direct engine generation.");
+                }
+
+                // Fallback to direct Gemini API call if primary failed or empty
+                if (!finalResult) {
+                    finalResult = await callDirectGeminiAPI(structuredTopic, payloadImage);
+                }
+
+                botMsg.innerHTML = "";
+                await streamText(botMsg, finalResult, botWrapper);
+                if (!isGuest) saveMessage("bot", finalResult);
+
+            } catch (error) {
+                botMsg.innerHTML = `<div class="text-rose-400 font-medium">⚠️ Error: ${escHtml(error.message)}</div>`;
+            }
+
+            sending = false;
+            sendBtn.disabled = false;
+            input.focus();
+        }
+
+        /* Direct Gemini Client Engine Fallback */
+        async function callDirectGeminiAPI(prompt, base64Image) {
+            const apiKey = ""; // Canvas runtime auto-injects key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const parts = [{ text: prompt }];
+            if (base64Image) {
+                const partsData = base64Image.split(",");
+                const mime = partsData[0].match(/:(.*?);/)[1];
+                parts.push({
+                    inlineData: {
+                        mimeType: mime,
+                        data: partsData[1]
+                    }
+                });
+            }
+
+            const payload = {
+                contents: [{ parts: parts }],
+                systemInstruction: {
+                    parts: [{ text: "You are Taxtron AI, an expert YouTube Shorts & Instagram Reels creator assistant specializing in viral titles, authentic comments, and engaging relative/friend reactions." }]
+                }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) throw new Error("API request failed with status " + response.status);
+            const result = await response.json();
+            return result.candidates?.[0]?.content?.parts?.[0]?.text || "Unable to generate content at this time.";
+        }
+
+        /* --- STREAMING TEXT EFFECT & COPY FEATURE --- */
+        async function streamText(el, text, wrapper) {
+            const safeParse = (t) => (window.marked && marked.parse) ? marked.parse(t) : escHtml(t);
+            let currentText = "";
+            const chunkSize = 4;
+            
+            const contentHolder = document.createElement("div");
+            contentHolder.className = "markdown-body";
+            el.appendChild(contentHolder);
+
+            for (let i = 0; i < text.length; i += chunkSize) {
+                currentText += text.substring(i, i + chunkSize);
+                contentHolder.innerHTML = safeParse(currentText);
+                if (i % 20 === 0) scrollToBottom();
+                await new Promise(r => setTimeout(r, 6));
+            }
+            contentHolder.innerHTML = safeParse(text);
+            scrollToBottom();
+            addCopyButton(wrapper, text);
+        }
+
+        function addMessage(text, type, imgData = null) {
+            const wrapper = document.createElement("div");
+            wrapper.className = `flex w-full mb-4 animate-slide-up ${type === 'user' ? 'justify-end' : 'justify-start'}`;
+
+            const div = document.createElement("div");
+            div.className = type === 'user' 
+                ? "max-w-[85%] md:max-w-[75%] bg-accent text-slate-950 rounded-2xl p-4 font-medium shadow-lg rounded-tr-xs"
+                : "max-w-[85%] md:max-w-[78%] bg-darkPanel border border-slate-800 rounded-2xl p-4 text-slate-200 relative shadow-xl rounded-tl-xs";
+
+            if (type === "bot") {
+                const safeParse = (t) => (window.marked && marked.parse) ? marked.parse(t) : escHtml(t || "");
+                const holder = document.createElement("div");
+                holder.className = "markdown-body";
+                holder.innerHTML = safeParse(text);
+                div.appendChild(holder);
+                if (text) addCopyButton(wrapper, text);
+            } else {
+                if (text) {
+                    const span = document.createElement("p");
+                    span.innerText = text;
+                    div.appendChild(span);
+                }
+                if (imgData) {
+                    const img = document.createElement("img");
+                    img.src = imgData;
+                    img.className = "max-w-xs w-full rounded-lg mt-2 border border-slate-900 shadow-md";
+                    div.appendChild(img);
+                }
+            }
+
+            wrapper.appendChild(div);
+            document.getElementById("chat").appendChild(wrapper);
+            scrollToBottom();
+            return div;
+        }
+
+        function addCopyButton(wrapper, rawText) {
+            if (wrapper.querySelector('.copy-btn')) return;
+            const container = wrapper.querySelector('.bg-darkPanel');
+            if (!container) return;
+
+            const copyBtn = document.createElement("button");
+            copyBtn.className = "copy-btn absolute top-3 right-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-2.5 py-1 rounded-lg text-xs font-semibold border border-slate-700 flex items-center gap-1 transition-all opacity-80 hover:opacity-100";
+            copyBtn.innerHTML = `<i data-lucide="copy" class="w-3 h-3"></i> <span>Copy</span>`;
+            copyBtn.onclick = () => {
+                navigator.clipboard.writeText(rawText);
+                copyBtn.innerHTML = `<i data-lucide="check" class="w-3 h-3 text-emerald-400"></i> <span class="text-emerald-400">Copied!</span>`;
+                setTimeout(() => {
+                    copyBtn.innerHTML = `<i data-lucide="copy" class="w-3 h-3"></i> <span>Copy</span>`;
+                    lucide.createIcons();
+                }, 2000);
+            };
+            container.appendChild(copyBtn);
+            lucide.createIcons();
+        }
+
+        /* --- FIRESTORE PERSISTENCE --- */
+        function saveMessage(role, text, imgData = null) {
+            if (isGuest) return;
+            const user = auth.currentUser;
+            if (!user || !currentChatId) return;
+            const payload = { role, text, time: Date.now() };
+            if (imgData) payload.image = imgData;
+            db.collection("chats").doc(user.uid).collection("sessions").doc(currentChatId).collection("messages").add(payload);
+        }
+
+        function saveChatMeta(text) {
+            if (isGuest) return;
+            const user = auth.currentUser;
+            if (!user) return;
+            return db.collection("chats").doc(user.uid).collection("sessions").doc(currentChatId).set({
+                title: text.substring(0, 30) + (text.length > 30 ? "..." : ""),
+                created: Date.now()
+            });
+        }
+
+        function loadChatList() {
+            if (isGuest) return;
+            const user = auth.currentUser;
+            if (!user) return;
+            const list = document.getElementById("chatList");
+            list.innerHTML = "";
+
+            db.collection("chats").doc(user.uid).collection("sessions").orderBy("created", "desc").get().then(snap => {
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    const item = document.createElement("div");
+                    const isActive = doc.id === currentChatId;
+                    item.className = `group flex items-center justify-between p-2.5 rounded-xl text-xs cursor-pointer transition-colors ${isActive ? 'bg-slate-800 text-accent font-semibold' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'}`;
+                    item.innerHTML = `
+                        <div class="flex items-center gap-2 overflow-hidden">
+                            <i data-lucide="message-square" class="w-3.5 h-3.5 shrink-0"></i>
+                            <span class="truncate">${escHtml(data.title || "Untitled Session")}</span>
+                        </div>
+                        <button onclick="event.stopPropagation(); deleteChat('${doc.id}')" class="opacity-0 group-hover:opacity-100 p-1 hover:text-rose-400 rounded transition-opacity" title="Delete session">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    `;
+                    item.onclick = () => openChat(doc.id, item);
+                    list.appendChild(item);
+                });
+                lucide.createIcons();
+            });
+        }
+
+        function openChat(id, el) {
+            if (sending || isGuest) return;
+            const user = auth.currentUser;
+            if (!user) return;
+
+            currentChatId = id;
+            document.getElementById("chat").innerHTML = "";
+
+            const hero = document.getElementById("welcome-hero");
+            if (hero) hero.style.display = "none";
+
+            if (unsubscribe) unsubscribe();
+
+            unsubscribe = db.collection("chats").doc(user.uid).collection("sessions").doc(id).collection("messages").orderBy("time").onSnapshot(snap => {
+                document.getElementById("chat").innerHTML = "";
+                snap.forEach(d => {
+                    const data = d.data();
+                    addMessage(data.text || "", data.role, data.image);
+                });
+                setTimeout(scrollToBottom, 100);
+            });
+
+            loadChatList();
+        }
+
+        function newChat() {
+            if (sending) return;
+            currentChatId = null;
+            if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+
+            const chat = document.getElementById("chat");
+            chat.innerHTML = `
+                <div id="welcome-hero" class="max-w-3xl mx-auto my-6 text-center animate-slide-up space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-medium">
+                        <i data-lucide="flame" class="w-3.5 h-3.5"></i>
+                        <span>Supercharge Viral Retention & Engagement</span>
+                    </div>
+
+                    <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
+                        Create High-Retention <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-400">Titles & Realistic Comments</span>
+                    </h1>
+                    
+                    <p class="text-slate-400 text-sm md:text-base max-w-xl mx-auto">
+                        Stop getting standard boring AI responses. Get authentic viral hooks, relatable uncle/friend reactions, top banter, and meme comment packs designed specifically for Reels & Shorts.
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left max-w-2xl mx-auto pt-2">
+                        <button onclick="triggerPreset('viral-titles')" class="bg-darkPanel/80 hover:bg-darkHover border border-slate-800 hover:border-accent/50 p-4 rounded-xl transition-all group shadow-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="p-2 rounded-lg bg-sky-500/10 text-sky-400"><i data-lucide="video" class="w-4 h-4"></i></span>
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-500 group-hover:text-accent"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-sm mb-1">Viral Reel Titles & Hooks</h3>
+                            <p class="text-xs text-slate-400">Generate high-CTR hooks, titles, and caption triggers tailored to your video topic.</p>
+                        </button>
+
+                        <button onclick="triggerPreset('family-relatives')" class="bg-darkPanel/80 hover:bg-darkHover border border-slate-800 hover:border-emerald-500/50 p-4 rounded-xl transition-all group shadow-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="users" class="w-4 h-4"></i></span>
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-500 group-hover:text-emerald-400"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-sm mb-1">Relatable Relatives & Friends</h3>
+                            <p class="text-xs text-slate-400">Fake Sharma Ji uncle, concerned mom, jealous friends, and desi relative comments.</p>
+                        </button>
+
+                        <button onclick="triggerPreset('hype-vibe')" class="bg-darkPanel/80 hover:bg-darkHover border border-slate-800 hover:border-purple-500/50 p-4 rounded-xl transition-all group shadow-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="p-2 rounded-lg bg-purple-500/10 text-purple-400"><i data-lucide="zap" class="w-4 h-4"></i></span>
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-500 group-hover:text-purple-400"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-sm mb-1">Top Vibe & Fan Hype Pack</h3>
+                            <p class="text-xs text-slate-400">Gen-Z slang, top pinned comment vibes, subscriber appreciation, and viral energy.</p>
+                        </button>
+
+                        <button onclick="triggerPreset('roast-banter')" class="bg-darkPanel/80 hover:bg-darkHover border border-slate-800 hover:border-rose-500/50 p-4 rounded-xl transition-all group shadow-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="p-2 rounded-lg bg-rose-500/10 text-rose-400"><i data-lucide="smile" class="w-4 h-4"></i></span>
+                                <i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-500 group-hover:text-rose-400"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-sm mb-1">Funny Roasts & Banter</h3>
+                            <p class="text-xs text-slate-400">Playful sarcastic roasts, background details callouts, and meme banter comments.</p>
+                        </button>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+            loadChatList();
+        }
+
+        function deleteChat(id) {
+            if (!confirm("Are you sure you want to delete this session?")) return;
+            const user = auth.currentUser;
+            if (!user) return;
+
+            db.collection("chats").doc(user.uid).collection("sessions").doc(id).delete()
+                .then(() => {
+                    if (currentChatId === id) newChat();
+                    loadChatList();
+                })
+                .catch(err => alert("Failed to delete session: " + err.message));
+        }
+
+        function loadLastChat(user) {
+            if (!user) return;
+            db.collection("chats").doc(user.uid).collection("sessions").orderBy("created", "desc").limit(1).get().then(snap => {
+                if (!snap.empty) {
+                    const lastId = snap.docs[0].id;
+                    openChat(lastId);
+                }
+            }).catch(() => {});
+        }
+
+        // Enter key shortcut
+        document.getElementById("input").addEventListener("keypress", e => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                send();
+            }
+        });
+    </script>
+</body>
+</html>
