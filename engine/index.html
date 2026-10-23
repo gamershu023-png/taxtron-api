@@ -1,0 +1,767 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#020617">
+  <meta name="description" content="Taxtron AI — ask anything, get useful answers, and discover the right tools.">
+  <title>Taxtron AI — Ask Anything</title>
+
+  <style>
+    :root {
+      --bg: #020617;
+      --panel: #0b1224;
+      --panel2: #101a30;
+      --border: rgba(148,163,184,.18);
+      --text: #e5edf9;
+      --muted: #94a3b8;
+      --cyan: #38bdf8;
+      --violet: #a78bfa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 50% -15%, rgba(56,189,248,.13), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+
+    button, textarea { font: inherit; }
+
+    a { color: inherit; text-decoration: none; }
+
+    .topbar {
+      height: 72px;
+      padding: 0 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(2,6,23,.78);
+      backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -.6px;
+    }
+
+    .brand img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+
+    .brand span {
+      background: linear-gradient(90deg, var(--cyan), var(--violet));
+      color: transparent;
+      background-clip: text;
+    }
+
+    .nav {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav a:hover { color: white; }
+
+    .nav .home {
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 66px 20px 45px;
+    }
+
+    .intro { text-align: center; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid rgba(56,189,248,.25);
+      background: rgba(56,189,248,.07);
+      color: #7dd3fc;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #38bdf8;
+      box-shadow: 0 0 12px #38bdf8;
+    }
+
+    h1 {
+      font-size: clamp(37px, 7vw, 65px);
+      letter-spacing: -2.8px;
+      line-height: 1.08;
+      margin: 23px 0 17px;
+    }
+
+    h1 span {
+      background: linear-gradient(100deg, #38bdf8, #a78bfa);
+      color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      max-width: 600px;
+      margin: 0 auto;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    .chat {
+      margin-top: 42px;
+      border: 1px solid var(--border);
+      background: rgba(11,18,36,.85);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 25px 90px rgba(0,0,0,.22);
+    }
+
+    .chat-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 17px 20px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status .dot {
+      background: #4ade80;
+      box-shadow: 0 0 10px #4ade80;
+    }
+
+    #messages {
+      padding: 23px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-height: 100px;
+    }
+
+    .welcome {
+      text-align: center;
+      padding: 25px 10px 20px;
+    }
+
+    .welcome .symbol {
+      width: 57px;
+      height: 57px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 15px;
+      font-size: 25px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(56,189,248,.18), rgba(167,139,250,.18));
+      border: 1px solid var(--border);
+    }
+
+    .welcome h2 {
+      font-size: 20px;
+      margin: 0 0 9px;
+    }
+
+    .welcome p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .message {
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      max-width: 85%;
+      background: #17243a;
+      border: 1px solid var(--border);
+      border-radius: 17px 17px 4px 17px;
+      padding: 13px 16px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.65;
+    }
+
+    .answer-label {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+      font-weight: 750;
+      font-size: 13px;
+      margin-bottom: 12px;
+      color: #7dd3fc;
+    }
+
+    .answer-label .mini {
+      width: 26px;
+      height: 26px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      background: rgba(56,189,248,.12);
+    }
+
+    .answer-text {
+      font-size: 15px;
+      line-height: 1.85;
+      overflow-wrap: anywhere;
+      color: #dbe7f7;
+    }
+
+    .answer-text p { margin: 0 0 12px; }
+    .answer-text p:last-child { margin-bottom: 0; }
+    .answer-text ul, .answer-text ol { padding-left: 23px; }
+    .answer-text li { margin: 5px 0; }
+    .answer-text strong { color: #fff; }
+
+    .destination {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(56,189,248,.24);
+      background: linear-gradient(120deg, rgba(56,189,248,.07), rgba(167,139,250,.07));
+    }
+
+    .destination small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 7px;
+    }
+
+    .destination h3 {
+      font-size: 15px;
+      margin: 0 0 6px;
+    }
+
+    .destination p {
+      margin: 0 0 13px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .destination a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: linear-gradient(100deg, #0284c7, #6366f1);
+      color: white;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .destination a:hover { filter: brightness(1.15); }
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      justify-content: center;
+      padding: 0 20px 22px;
+    }
+
+    .suggestion {
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      background: rgba(16,26,48,.7);
+      padding: 10px 13px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: .2s;
+    }
+
+    .suggestion:hover {
+      border-color: rgba(56,189,248,.6);
+      color: white;
+      background: rgba(56,189,248,.08);
+    }
+
+    .composer {
+      border-top: 1px solid var(--border);
+      padding: 17px;
+      background: rgba(2,6,23,.45);
+    }
+
+    .input-wrap {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      padding: 12px;
+      border: 1px solid rgba(148,163,184,.23);
+      border-radius: 16px;
+      background: #080f20;
+      transition: border-color .2s;
+    }
+
+    .input-wrap:focus-within {
+      border-color: rgba(56,189,248,.65);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 48px;
+      max-height: 180px;
+      resize: vertical;
+      border: none;
+      outline: none;
+      color: white;
+      background: transparent;
+      padding: 12px 5px;
+      line-height: 1.6;
+    }
+
+    textarea::placeholder { color: #64748b; }
+
+    #send {
+      width: 47px;
+      height: 47px;
+      flex-shrink: 0;
+      border: 0;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      color: white;
+      cursor: pointer;
+      font-size: 20px;
+      transition: .2s;
+    }
+
+    #send:hover { transform: translateY(-1px); }
+    #send:disabled { opacity: .5; cursor: wait; transform: none; }
+
+    .hint {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+      padding: 0 4px;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .typing {
+      color: var(--muted);
+      font-size: 14px;
+      padding: 8px 0;
+    }
+
+    .typing::after {
+      content: "...";
+      animation: dots 1.2s infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { opacity: .2; }
+      50% { opacity: 1; }
+      100% { opacity: .2; }
+    }
+
+    footer {
+      text-align: center;
+      color: #64748b;
+      font-size: 12px;
+      padding: 25px 10px 0;
+      line-height: 1.8;
+    }
+
+    footer a:hover { color: var(--cyan); }
+
+    @media (max-width: 600px) {
+      .topbar { padding: 0 17px; height: 64px; }
+      .brand { font-size: 18px; }
+      .nav { gap: 12px; font-size: 12px; }
+      .nav .home { padding: 8px 10px; }
+      main { padding: 46px 13px 30px; }
+      h1 { letter-spacing: -1.8px; }
+      .subtitle { font-size: 14px; }
+      .chat { margin-top: 28px; border-radius: 17px; }
+      #messages { padding: 17px; }
+      .chat-head { padding: 14px; }
+      .suggestions { padding: 0 12px 17px; }
+      .suggestion { font-size: 11px; }
+      .composer { padding: 12px; }
+      .message.user { max-width: 95%; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">
+      <img src="/logo1526tx.gif" alt="Taxtron" onerror="this.style.display='none'">
+      <span>Taxtron</span>
+    </a>
+
+    <nav class="nav">
+      <a href="/explore/">Explore</a>
+      <a href="/create/">Create</a>
+      <a class="home" href="/">Home ↗</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div class="eyebrow"><span class="dot"></span> Your central AI assistant</div>
+      <h1>Ask anything.<br><span>Go further.</span></h1>
+      <p class="subtitle">
+        Ask a question, explore an idea, solve a problem, or create something.
+        Taxtron helps you find answers and directs you to the right tools when useful.
+      </p>
+    </section>
+
+    <section class="chat">
+      <div class="chat-head">
+        <span>Taxtron AI</span>
+        <span class="status"><span class="dot"></span> Ready to help</span>
+      </div>
+
+      <div id="messages" aria-live="polite">
+        <div class="welcome" id="welcome">
+          <div class="symbol">✦</div>
+          <h2>What can I help you with?</h2>
+          <p>Ask in your own words. You don't need to choose a category first.</p>
+        </div>
+      </div>
+
+      <div class="suggestions" id="suggestions">
+        <button class="suggestion" data-prompt="Explain a difficult concept in simple language.">💡 Explain something</button>
+        <button class="suggestion" data-prompt="Help me write a C program and explain how it works.">💻 Write code</button>
+        <button class="suggestion" data-prompt="Help me create a catchy title and description for a video about technology.">✍️ Create content</button>
+        <button class="suggestion" data-prompt="Help me research a topic and organize the important information.">🔎 Research a topic</button>
+      </div>
+
+      <form class="composer" id="chatForm">
+        <div class="input-wrap">
+          <textarea id="prompt" maxlength="8000" rows="2"
+            placeholder="Ask Taxtron anything..." aria-label="Your question" required></textarea>
+          <button id="send" type="submit" aria-label="Send message">↑</button>
+        </div>
+        <div class="hint">
+          <span>Enter to send · Shift + Enter for a new line</span>
+          <span id="counter">0 / 8000</span>
+        </div>
+      </form>
+    </section>
+
+    <footer>
+      Taxtron brings answers and useful tools together.<br>
+      <a href="/explore/">Explore tools</a> ·
+      <a href="/create/">Creator tools</a> ·
+      <a href="/">Taxtron Home</a>
+    </footer>
+  </main>
+
+  <script>
+    /*
+      Uses your existing Vercel API.
+      The Gemini API key remains on the server in Vercel environment variables.
+    */
+    const API_URL = "https://project-0wxuy.vercel.app/api/generate";
+
+    const form = document.getElementById("chatForm");
+    const input = document.getElementById("prompt");
+    const sendButton = document.getElementById("send");
+    const messages = document.getElementById("messages");
+    const welcome = document.getElementById("welcome");
+    const suggestions = document.getElementById("suggestions");
+    const counter = document.getElementById("counter");
+
+    let conversation = [];
+    let busy = false;
+
+    input.addEventListener("input", () => {
+      counter.textContent = input.value.length + " / 8000";
+    });
+
+    input.addEventListener("keydown", event => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.requestSubmit();
+      }
+    });
+
+    suggestions.addEventListener("click", event => {
+      const button = event.target.closest("[data-prompt]");
+      if (!button || busy) return;
+      input.value = button.dataset.prompt;
+      counter.textContent = input.value.length + " / 8000";
+      input.focus();
+      form.requestSubmit();
+    });
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      const question = input.value.trim();
+      if (!question || busy) return;
+
+      busy = true;
+      sendButton.disabled = true;
+      sendButton.textContent = "…";
+      input.value = "";
+      counter.textContent = "0 / 8000";
+
+      if (welcome) welcome.remove();
+      suggestions.style.display = "none";
+
+      addUserMessage(question);
+
+      const loading = document.createElement("div");
+      loading.className = "typing";
+      loading.textContent = "Taxtron is thinking";
+      messages.appendChild(loading);
+      scrollToBottom();
+
+      try {
+        /*
+          Include recent conversation turns in the prompt so follow-up
+          questions have context, without changing your existing API.
+        */
+        const history = conversation.slice(-8).map(item =>
+          item.role.toUpperCase() + ": " + item.text
+        ).join("\n\n");
+
+        const fullPrompt =
+          "You are Taxtron AI, a helpful general-purpose assistant on taxtron.in. " +
+          "Taxtron serves everyone and is not limited to exams or students. " +
+          "Answer the user's question directly, accurately, and in a useful format. " +
+          "Use clear headings or numbered steps when helpful. If information is uncertain, say so. " +
+          "Do not claim to have performed actions you have not performed.\n\n" +
+          (history ? "RECENT CONVERSATION:\n" + history + "\n\n" : "") +
+          "CURRENT QUESTION:\n" + question;
+
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ topic: fullPrompt })
+        });
+
+        if (!response.ok) {
+          throw new Error("The AI service returned an error (" + response.status + ").");
+        }
+
+        const data = await response.json();
+        const answer = data.result || data.answer;
+
+        if (!answer) throw new Error("The AI returned an empty response.");
+
+        loading.remove();
+
+        conversation.push({ role: "User", text: question });
+        conversation.push({ role: "Assistant", text: answer });
+        conversation = conversation.slice(-12);
+
+        addAssistantMessage(answer, question);
+      } catch (error) {
+        loading.remove();
+
+        const errorBox = document.createElement("div");
+        errorBox.className = "message";
+        errorBox.innerHTML =
+          '<div class="answer-label"><span class="mini">!</span> Could not get an answer</div>';
+
+        const text = document.createElement("p");
+        text.className = "answer-text";
+        text.textContent =
+          "Please try again in a moment. If the problem continues, check that your existing /api/generate endpoint is deployed and working.";
+        errorBox.appendChild(text);
+        messages.appendChild(errorBox);
+        console.error("Taxtron AI error:", error);
+      } finally {
+        busy = false;
+        sendButton.disabled = false;
+        sendButton.textContent = "↑";
+        input.focus();
+        scrollToBottom();
+      }
+    });
+
+    function addUserMessage(text) {
+      const item = document.createElement("div");
+      item.className = "message user";
+      item.textContent = text;
+      messages.appendChild(item);
+    }
+
+    function addAssistantMessage(answer, question) {
+      const item = document.createElement("div");
+      item.className = "message";
+
+      const label = document.createElement("div");
+      label.className = "answer-label";
+      label.innerHTML = '<span class="mini">✦</span> Taxtron AI';
+      item.appendChild(label);
+
+      const body = document.createElement("div");
+      body.className = "answer-text";
+      body.innerHTML = formatAnswer(answer);
+      item.appendChild(body);
+
+      const destination = chooseDestination(question);
+      const card = document.createElement("div");
+      card.className = "destination";
+
+      const small = document.createElement("small");
+      small.textContent = "Continue with Taxtron";
+      card.appendChild(small);
+
+      const heading = document.createElement("h3");
+      heading.textContent = destination.title;
+      card.appendChild(heading);
+
+      const description = document.createElement("p");
+      description.textContent = destination.reason;
+      card.appendChild(description);
+
+      const link = document.createElement("a");
+      link.href = destination.url;
+      link.textContent = destination.button + " →";
+      card.appendChild(link);
+
+      item.appendChild(card);
+      messages.appendChild(item);
+    }
+
+    /*
+      Destination suggestion:
+      /create = writing, social media, titles, scripts and creator work.
+      /explore = learning, coding, research, explanations and general tools.
+
+      This routing is a practical keyword-based suggestion. The answer itself
+      comes from your existing AI API.
+    */
+    function chooseDestination(question) {
+      const q = question.toLowerCase();
+
+      const creatorTerms = [
+        "youtube", "instagram", "reel", "shorts", "thumbnail",
+        "caption", "hashtag", "video title", "video description",
+        "script for", "content creator", "social media",
+        "brand post", "marketing copy", "hook for my video",
+        "write a post", "generate title"
+      ];
+
+      const isCreator = creatorTerms.some(term => q.includes(term));
+
+      if (isCreator) {
+        return {
+          title: "Taxtron Create",
+          reason: "Continue with tools for titles, writing and creator-focused work.",
+          url: "/create/",
+          button: "Open Creator Tools"
+        };
+      }
+
+      return {
+        title: "Explore Taxtron Tools",
+        reason: "Explore tools and workflows that can help you investigate, learn, calculate, code and solve problems.",
+        url: "/explore/",
+        button: "Explore Tools"
+      };
+    }
+
+    /*
+      Safe lightweight Markdown formatting.
+      Raw HTML from the AI is escaped before formatting.
+    */
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[character]);
+    }
+
+    function formatAnswer(text) {
+      let safe = escapeHTML(text);
+
+      safe = safe.replace(/```([\s\S]*?)```/g, (_, code) =>
+        "<pre style='white-space:pre-wrap;overflow-wrap:anywhere;background:#020617;padding:13px;border-radius:10px;overflow-x:auto'><code>" +
+        code.trim() + "</code></pre>"
+      );
+
+      safe = safe.replace(/^### (.*)$/gm, "<h3>$1</h3>");
+      safe = safe.replace(/^## (.*)$/gm, "<h3>$1</h3>");
+      safe = safe.replace(/^# (.*)$/gm, "<h3>$1</h3>");
+      safe = safe.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+      safe = safe.replace(/`([^`]+)`/g, "<code>$1</code>");
+      safe = safe.replace(/^\s*[-*] (.*)$/gm, "<li>$1</li>");
+      safe = safe.replace(/(<li>.*<\/li>\n?)+/g, match => "<ul>" + match + "</ul>");
+      safe = safe.split(/\n{2,}/).map(block => {
+        block = block.trim();
+        if (!block) return "";
+        if (/^<(h3|ul|pre|ol)/i.test(block)) return block;
+        return "<p>" + block.replace(/\n/g, "<br>") + "</p>";
+      }).join("");
+
+      return safe;
+    }
+
+    function scrollToBottom() {
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: "smooth"
+        });
+      });
+    }
+
+    // Support links such as /engine/?q=Explain%20quantum%20computing
+    const initialQuestion = new URLSearchParams(location.search).get("q");
+    if (initialQuestion) {
+      input.value = initialQuestion.slice(0, 8000);
+      counter.textContent = input.value.length + " / 8000";
+      form.requestSubmit();
+    }
+  </script>
+</body>
+</html>
