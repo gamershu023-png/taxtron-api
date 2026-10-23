@@ -719,7 +719,6 @@ const CATEGORY_ROUTES = {
   // 'DEVELOPER': '/developer',
   // 'BUSINESS': '/business'
 };
-
 async function triggerExplore(query) {
   const q = query.trim();
   if (!q) return;
@@ -755,12 +754,18 @@ User Query: "${q}"`
     if (response.ok) {
       const data = await response.json();
       const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      const cleaned = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-      const parsed = JSON.parse(cleaned);
+      console.log("Raw AI Response:", rawText); // Check F12 Console to see this!
 
-      if (parsed && parsed.category && CATEGORY_ROUTES[parsed.category.toUpperCase()]) {
-        detectedCategory = parsed.category.toUpperCase();
+      // Robustly extract the JSON object using regex (ignores any markdown text or backticks)
+      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        if (parsed && parsed.category && CATEGORY_ROUTES[parsed.category.toUpperCase()]) {
+          detectedCategory = parsed.category.toUpperCase();
+        }
       }
+    } else {
+      console.error("API Error Response:", await response.text());
     }
   } catch (err) {
     console.warn('AI Router Network/Parse issue, taking default route:', err);
@@ -773,7 +778,6 @@ User Query: "${q}"`
     window.location.href = targetPage + "?q=" + encodeURIComponent(q);
   }, 700);
 }
-
 // SHOW MORE SUB-PAGE TOGGLE
 function toggleSubIndex() {
   const subSection = document.getElementById('subIndexSection');
