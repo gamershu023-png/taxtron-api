@@ -107,6 +107,12 @@
       to { opacity: 1; }
     }
 
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }
+      70% { box-shadow: 0 0 0 15px rgba(56, 189, 248, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+    }
+
     @keyframes gradientSweep {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
@@ -578,8 +584,8 @@
   <h1>Digital Tools &amp; AI for Everyone</h1>
   <p>Instant answers, intelligent utilities, and platform suites built for creators, students, developers, and professionals.</p>
   <div class="search-box">
-    <input id="q" type="text" placeholder="Ask anything — ideas, concepts, code, writing..." onkeydown="if(event.key === 'Enter') triggerExplore(document.getElementById('q').value)">
-    <button onclick="triggerExplore(document.getElementById('q').value)">Ask Taxtron</button>
+    <input id="q" type="text" placeholder="Ask anything — ideas, concepts, code, writing..." onkeydown="if(event.key === 'Enter') triggerRedirect('/explore?q=' + encodeURIComponent(document.getElementById('q').value), 'EXPLORING AI...')">
+    <button onclick="triggerRedirect('/explore?q=' + encodeURIComponent(document.getElementById('q').value), 'EXPLORING AI...')">Ask Taxtron</button>
   </div>
 </header>
 
@@ -616,6 +622,7 @@
       <div style="margin-top: 40px;">
         <h2>Advanced &amp; Specialized Utilities</h2>
         <div class="cards" id="remoteCardsContainer">
+          <!-- Default fallback sub-cards, can be populated or appended from /card-ssrtx93 -->
           <div class="card" onclick="triggerRedirect('/universe', 'OPENING UNIVERSE...')">
             <h3>🌌 Taxtron Universe</h3>
             <p>Explore interconnected web applications, experiments, and secondary modules built by the Taxtron ecosystem.</p>
@@ -682,7 +689,7 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-// USER AUTH LISTENER
+// USER AUTH LISTENER (Name / Profile display)
 firebase.auth().onAuthStateChanged(user => {
   const box = document.getElementById("userArea");
   if(user) {
@@ -696,7 +703,7 @@ firebase.auth().onAuthStateChanged(user => {
   }
 });
 
-// DIRECT REDIRECT HELPER WITH OVERLAY
+// SMOOTH TRANSITION OVERLAY REDIRECT
 function triggerRedirect(url, message = 'INITIALIZING...') {
   const overlay = document.getElementById('exploreOverlay');
   const overlayText = document.getElementById('overlayText');
@@ -705,79 +712,9 @@ function triggerRedirect(url, message = 'INITIALIZING...') {
   
   setTimeout(() => {
     window.location.href = url;
-  }, 800); 
+  }, 900); 
 }
 
-// -------------------------------------------------------------
-// DYNAMIC AI ROUTING ENGINE (EXTENDABLE FOR FUTURE AI PAGES)
-// -------------------------------------------------------------
-// Map category tokens to target page URLs. Easily add future routes here!
-const CATEGORY_ROUTES = {
-  'STUDENT': '/explore',
-  'CREATOR': '/create'
-  // Future examples:
-  // 'DEVELOPER': '/developer',
-  // 'BUSINESS': '/business'
-};
-async function triggerExplore(query) {
-  const q = query.trim();
-  if (!q) return;
-
-  const overlay = document.getElementById('exploreOverlay');
-  const overlayText = document.getElementById('overlayText');
-  
-  overlayText.textContent = 'ANALYZING INTENT...';
-  overlay.classList.add('active');
-
-  let detectedCategory = 'STUDENT'; // Safe default fallback
-
-  try {
-    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + firebaseConfig.apiKey, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: `System Instruction: Analyze the user query intent and classify it strictly into ONE of these categories:
-- 'STUDENT': case studies, notes, JEE, studying, exams, academic topics, math, science, history, summaries.
-- 'CREATOR': video titles, fake comments, reels, shorts, YouTube, social media, thumbnail ideas, content creation.
-
-Output format requirement: Return ONLY a raw JSON object with no markdown formatting:
-{"category": "STUDENT"} or {"category": "CREATOR"}
-
-User Query: "${q}"`
-          }]
-        }]
-      })
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      console.log("Raw AI Response:", rawText); // Check F12 Console to see this!
-
-      // Robustly extract the JSON object using regex (ignores any markdown text or backticks)
-      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        if (parsed && parsed.category && CATEGORY_ROUTES[parsed.category.toUpperCase()]) {
-          detectedCategory = parsed.category.toUpperCase();
-        }
-      }
-    } else {
-      console.error("API Error Response:", await response.text());
-    }
-  } catch (err) {
-    console.warn('AI Router Network/Parse issue, taking default route:', err);
-  }
-
-  overlayText.textContent = `ROUTING TO ${detectedCategory}...`;
-
-  const targetPage = CATEGORY_ROUTES[detectedCategory] || '/explore';
-  setTimeout(() => {
-    window.location.href = targetPage + "?q=" + encodeURIComponent(q);
-  }, 700);
-}
 // SHOW MORE SUB-PAGE TOGGLE
 function toggleSubIndex() {
   const subSection = document.getElementById('subIndexSection');
@@ -788,19 +725,20 @@ function toggleSubIndex() {
     toggleBtn.textContent = 'Collapse Tools ↑';
     subSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   } else {
-    toggleBtn.textContent = 'Explore More Tools & Features ↓';
+    toggleBtn.textContent = 'Explore More Tools &amp; Features ↓';
   }
 }
 
-// REMOTE CARD LOADER HOOK
+// REMOTE CARD LOADER HOOK (For /card-ssrtx93 integration)
 async function fetchRemoteCards() {
   try {
-    const response = await fetch('/card-ssrtx93.html');
+    // You can point this to your backend endpoint or JSON source at /card-ssrtx93
+    const response = await fetch('/card-ssrtx93');
     if (!response.ok) throw new Error('Endpoint not ready');
     const htmlSnippet = await response.text();
     document.getElementById('remoteCardsContainer').innerHTML += htmlSnippet;
   } catch (e) {
-    alert('Remote card endpoint /card-ssrtx93.html is ready to be configured.');
+    alert('Remote card endpoint /card-ssrtx93 is ready to be configured. Once created, cards will load here dynamically!');
   }
 }
 
