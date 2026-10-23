@@ -52,5 +52,19 @@
 <url>
   <loc>https://taxtron.in/terms</loc>
 </url>
+  
+<url>
+  <loc>https://taxtron.in/create</loc>
+</url>
+  
+<url>
+  <loc>https://taxtron.in/explore</loc>
+</url>
+
+<url>
+  <loc>https://taxtron.in/engine</loc>
+</url>
+
+
 
 </urlset>
