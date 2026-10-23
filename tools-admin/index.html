@@ -1,1 +1,346 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#020617">
+<title>Taxtron Tools Admin</title>
+<style>
+:root{--bg:#020617;--panel:#0b1224;--line:#1e293b;--text:#e5edf9;--muted:#94a3b8;--cyan:#38bdf8}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#10213c,var(--bg) 50%);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif;min-height:100vh}
+header{height:68px;padding:0 6%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.logo{font-size:21px;font-weight:850;color:var(--cyan);text-decoration:none}
+a{color:var(--cyan);text-decoration:none}
+main{max-width:920px;margin:auto;padding:40px 18px}
+h1{font-size:32px;letter-spacing:-1px;margin:0 0 8px}
+.sub{color:var(--muted);font-size:14px;line-height:1.7;margin:0 0 25px}
+.panel{padding:23px;background:#0b1224e8;border:1px solid var(--line);border-radius:18px;margin-bottom:22px}
+h2{font-size:17px;margin:0 0 18px}
+label{display:block;color:#cbd5e1;font-size:12px;margin:13px 0 7px}
+input,textarea,select{width:100%;padding:12px 13px;border:1px solid #26354c;border-radius:10px;background:#060d1c;color:white;outline:none;font:inherit;font-size:14px}
+input:focus,textarea:focus,select:focus{border-color:var(--cyan)}
+textarea{resize:vertical;min-height:75px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+button{cursor:pointer;border:0;border-radius:10px;padding:11px 15px;font-weight:750;font-size:13px}
+.primary{background:linear-gradient(100deg,#0284c7,#6366f1);color:white}
+.secondary{background:#17243a;color:#e2e8f0;border:1px solid var(--line)}
+.danger{background:#451a24;color:#fecdd3;border:1px solid #7f1d1d}
+.actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+.status{font-size:13px;color:var(--muted);line-height:1.6;margin-top:13px;overflow-wrap:anywhere}
+.hidden{display:none!important}
+.toolrow{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:15px 0;border-top:1px solid var(--line)}
+.toolinfo{min-width:0}
+.toolinfo strong{display:block;font-size:14px;overflow-wrap:anywhere}
+.toolinfo small{display:block;color:var(--muted);font-size:12px;margin-top:5px}
+.pill{display:inline-block;padding:5px 8px;border-radius:7px;background:#082f49;color:#7dd3fc;font-size:10px;margin-top:8px}
+@media(max-width:600px){.fields{grid-template-columns:1fr}.panel{padding:17px}.toolrow{align-items:flex-start}}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="/">TAXTRON / ADMIN</a>
+  <a href="/tools/">View public page ↗</a>
+</header>
+
+<main>
+  <h1>Tools dashboard</h1>
+  <p class="sub">Manage the tools people can use today and the ideas you're planning to launch.</p>
+
+  <section class="panel" id="loginPanel">
+    <h2>Admin sign in</h2>
+    <form id="loginForm">
+      <label for="email">Admin email</label>
+      <input id="email" type="email" autocomplete="username" required>
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+      <div class="actions"><button class="primary" type="submit">Sign in</button></div>
+    </form>
+    <div class="status" id="loginStatus">Sign in with the admin account you created in Firebase Authentication.</div>
+  </section>
+
+  <div id="dashboard" class="hidden">
+    <section class="panel">
+      <h2>Add a tool</h2>
+      <form id="toolForm">
+        <label for="title">Tool name *</label>
+        <input id="title" maxlength="70" placeholder="Scientific Calculator" required>
+
+        <label for="description">Short description *</label>
+        <textarea id="description" maxlength="240" placeholder="Calculate expressions and solve problems." required></textarea>
+
+        <div class="fields">
+          <div>
+            <label for="icon">Icon / emoji</label>
+            <input id="icon" maxlength="8" value="✦" placeholder="🧮">
+          </div>
+          <div>
+            <label for="category">Category</label>
+            <input id="category" maxlength="35" placeholder="Productivity">
+          </div>
+          <div>
+            <label for="status">Availability</label>
+            <select id="status">
+              <option value="current">Available now</option>
+              <option value="future">Coming soon</option>
+            </select>
+          </div>
+          <div>
+            <label for="order">Display order</label>
+            <input id="order" type="number" value="0" min="0" max="9999">
+          </div>
+        </div>
+
+        <label for="url">Tool URL (required for available tools)</label>
+        <input id="url" type="text" maxlength="500" placeholder="/explore/ or https://example.com/tool">
+
+        <div class="actions">
+          <button class="primary" id="saveButton" type="submit">Add tool</button>
+          <button class="secondary hidden" id="cancelEdit" type="button">Cancel edit</button>
+        </div>
+        <div class="status" id="formStatus"></div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Existing tools</h2>
+      <div class="status" id="listStatus">Loading tools…</div>
+      <div id="toolList"></div>
+    </section>
+
+    <div class="actions" style="margin-bottom:35px">
+      <button class="secondary" id="logoutButton" type="button">Sign out</button>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import {
+  getFirestore, collection, addDoc, doc, updateDoc, deleteDoc,
+  onSnapshot, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+/* Use the same Firebase project as the public page. */
+const firebaseConfig = {
+  apiKey: "YOUR_FIREBASE_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_FIREBASE_APP_ID"
+};
+
+/* Replace with your actual Firebase Authentication user UID. */
+const ADMIN_UID = "PASTE_ADMIN_UID_HERE";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const toolsRef = collection(db, "tools");
+
+const loginPanel = document.getElementById("loginPanel");
+const dashboard = document.getElementById("dashboard");
+const loginStatus = document.getElementById("loginStatus");
+const formStatus = document.getElementById("formStatus");
+const listStatus = document.getElementById("listStatus");
+const toolList = document.getElementById("toolList");
+const toolForm = document.getElementById("toolForm");
+const saveButton = document.getElementById("saveButton");
+const cancelEdit = document.getElementById("cancelEdit");
+
+let editingId = null;
+let stopListening = null;
+
+document.getElementById("loginForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  loginStatus.textContent = "Signing in…";
+
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      document.getElementById("email").value.trim(),
+      document.getElementById("password").value
+    );
+  } catch (error) {
+    loginStatus.textContent = "Sign-in failed: " + error.message;
+  }
+});
+
+onAuthStateChanged(auth, user => {
+  if (stopListening) {
+    stopListening();
+    stopListening = null;
+  }
+
+  const isAdmin = !!user && user.uid === ADMIN_UID;
+
+  loginPanel.classList.toggle("hidden", isAdmin);
+  dashboard.classList.toggle("hidden", !isAdmin);
+
+  if (user && !isAdmin) {
+    loginStatus.textContent = "This account is not authorized as the Taxtron admin.";
+    signOut(auth);
+    return;
+  }
+
+  if (isAdmin) {
+    stopListening = onSnapshot(toolsRef, snapshot => {
+      const tools = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+
+      renderTools(tools);
+      listStatus.textContent = tools.length + " tool(s) in your catalogue.";
+    }, error => {
+      listStatus.textContent = "Couldn't load tools: " + error.message;
+    });
+  }
+});
+
+function renderTools(tools) {
+  toolList.replaceChildren();
+
+  if (!tools.length) {
+    listStatus.textContent = "No tools yet. Add your first tool above.";
+    return;
+  }
+
+  for (const tool of tools) {
+    const row = document.createElement("div");
+    row.className = "toolrow";
+
+    const info = document.createElement("div");
+    info.className = "toolinfo";
+
+    const name = document.createElement("strong");
+    name.textContent = (tool.icon || "✦") + " " + (tool.title || "Untitled");
+
+    const desc = document.createElement("small");
+    desc.textContent = tool.description || "";
+
+    const badge = document.createElement("span");
+    badge.className = "pill";
+    badge.textContent = tool.status === "future" ? "COMING SOON" : "AVAILABLE";
+
+    info.append(name, desc, badge);
+
+    const buttons = document.createElement("div");
+    buttons.className = "actions";
+
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.className = "secondary";
+    edit.textContent = "Edit";
+    edit.addEventListener("click", () => startEdit(tool));
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "danger";
+    remove.textContent = "Remove";
+    remove.addEventListener("click", async () => {
+      if (!confirm('Remove "' + tool.title + '" from the catalogue?')) return;
+      try {
+        await deleteDoc(doc(db, "tools", tool.id));
+      } catch (error) {
+        alert("Delete failed: " + error.message);
+      }
+    });
+
+    buttons.append(edit, remove);
+    row.append(info, buttons);
+    toolList.appendChild(row);
+  }
+}
+
+function startEdit(tool) {
+  editingId = tool.id;
+  document.getElementById("title").value = tool.title || "";
+  document.getElementById("description").value = tool.description || "";
+  document.getElementById("icon").value = tool.icon || "✦";
+  document.getElementById("category").value = tool.category || "";
+  document.getElementById("status").value = tool.status || "current";
+  document.getElementById("order").value = Number(tool.order) || 0;
+  document.getElementById("url").value = tool.url || "";
+  saveButton.textContent = "Save changes";
+  cancelEdit.classList.remove("hidden");
+  formStatus.textContent = "Editing: " + (tool.title || "Untitled");
+  document.getElementById("title").focus();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function resetForm() {
+  editingId = null;
+  toolForm.reset();
+  document.getElementById("icon").value = "✦";
+  document.getElementById("order").value = "0";
+  saveButton.textContent = "Add tool";
+  cancelEdit.classList.add("hidden");
+  formStatus.textContent = "";
+}
+
+cancelEdit.addEventListener("click", resetForm);
+
+function validateUrl(value, status) {
+  if (!value && status === "future") return "";
+  if (!value) throw new Error("Add a URL for an available tool.");
+
+  const url = new URL(value, location.origin);
+  if (!["https:", "http:"].includes(url.protocol)) {
+    throw new Error("Use an HTTP or HTTPS URL.");
+  }
+  return url.href;
+}
+
+toolForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  if (!auth.currentUser || auth.currentUser.uid !== ADMIN_UID) {
+    formStatus.textContent = "Not authorized.";
+    return;
+  }
+
+  try {
+    const status = document.getElementById("status").value;
+    const payload = {
+      title: document.getElementById("title").value.trim(),
+      description: document.getElementById("description").value.trim(),
+      icon: document.getElementById("icon").value.trim() || "✦",
+      category: document.getElementById("category").value.trim() || "Taxtron",
+      status,
+      url: validateUrl(document.getElementById("url").value.trim(), status),
+      order: Number(document.getElementById("order").value) || 0,
+      updatedAt: serverTimestamp()
+    };
+
+    if (!payload.title || !payload.description) {
+      throw new Error("Please enter a name and description.");
+    }
+
+    saveButton.disabled = true;
+    formStatus.textContent = editingId ? "Saving changes…" : "Adding tool…";
+
+    if (editingId) {
+      await updateDoc(doc(db, "tools", editingId), payload);
+    } else {
+      await addDoc(toolsRef, { ...payload, createdAt: serverTimestamp() });
+    }
+
+    resetForm();
+    formStatus.textContent = "Saved successfully.";
+  } catch (error) {
+    formStatus.textContent = error.message;
+  } finally {
+    saveButton.disabled = false;
+  }
+});
+
+document.getElementById("logoutButton").addEventListener("click", async () => {
+  await signOut(auth);
+});
+</script>
+</body>
+</html>
+
