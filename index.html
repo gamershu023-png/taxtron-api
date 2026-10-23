@@ -168,7 +168,7 @@
       animation: floatOrb 12s ease-in-out infinite reverse;
     }
 
-    /* NAV (Glassmorphism & Sticky) */
+    /* NAV */
     .nav {
       position: sticky;
       top: 0;
@@ -254,15 +254,15 @@
     /* HERO */
     .hero {
       position: relative;
-      padding: 140px 20px 100px;
+      padding: 120px 20px 80px;
       text-align: center;
       animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     .hero h1 {
-      font-size: 4.5rem;
+      font-size: 4rem;
       font-weight: 800;
-      margin-bottom: 40px;
+      margin-bottom: 25px;
       letter-spacing: -2px;
       background: linear-gradient(to right, #ffffff, #38bdf8, #818cf8, #ffffff);
       background-size: 300% auto;
@@ -272,15 +272,23 @@
       filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.3));
     }
 
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.15rem;
+      max-width: 600px;
+      margin: 0 auto 35px;
+    }
+
+    /* SEARCH BOX */
     .search-box {
       margin: auto;
       display: flex;
-      width: 750px;
+      width: 700px;
       max-width: 95%;
       background: rgba(15, 23, 42, 0.6);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 24px;
-      padding: 12px;
+      border-radius: 20px;
+      padding: 10px;
       backdrop-filter: blur(20px);
       transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
       box-shadow: 0 10px 40px -10px rgba(0,0,0,0.6);
@@ -288,29 +296,10 @@
       overflow: hidden;
     }
 
-    .search-box::before {
-      content: '';
-      position: absolute;
-      top: -50%; left: -50%; width: 200%; height: 200%;
-      background: conic-gradient(transparent, var(--primary), transparent 30%);
-      animation: rotateBorder 4s linear infinite;
-      opacity: 0;
-      transition: opacity 0.4s ease;
-      z-index: -1;
-    }
-
-    @keyframes rotateBorder {
-      100% { transform: rotate(1turn); }
-    }
-
-    .search-box:focus-within::before {
-      opacity: 0.15;
-    }
-
     .search-box:focus-within {
       border-color: var(--primary);
       box-shadow: 0 20px 50px -10px rgba(56, 189, 248, 0.3);
-      transform: translateY(-5px) scale(1.02);
+      transform: translateY(-3px) scale(1.01);
       background: rgba(15, 23, 42, 0.85);
     }
 
@@ -319,53 +308,36 @@
       background: none;
       border: none;
       color: white;
-      font-size: 18px;
-      padding: 0 25px;
+      font-size: 16px;
+      padding: 0 20px;
       outline: none;
       font-family: inherit;
     }
     .search-box input::placeholder {
       color: var(--text-muted);
-      transition: opacity 0.3s;
     }
 
     .search-box button {
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: #fff;
       font-weight: 700;
-      font-size: 16px;
+      font-size: 15px;
       border: none;
-      border-radius: 16px;
-      padding: 16px 36px;
+      border-radius: 14px;
+      padding: 14px 30px;
       cursor: pointer;
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      letter-spacing: 0.5px;
       box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .search-box button::after {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-      transition: 0.5s;
     }
 
     .search-box button:hover {
-      transform: scale(1.06) translateY(-2px);
+      transform: scale(1.05) translateY(-2px);
       box-shadow: 0 10px 30px rgba(56, 189, 248, 0.5);
-      animation: pulseGlow 1.5s infinite;
-    }
-    .search-box button:hover::after {
-      left: 100%;
     }
 
     /* SECTIONS */
     .section {
-      padding: 70px 20px;
+      padding: 60px 20px;
       max-width: 1200px;
       margin: auto;
       position: relative;
@@ -373,8 +345,8 @@
     }
 
     .section h2 {
-      font-size: 2.2rem;
-      margin-bottom: 50px;
+      font-size: 2rem;
+      margin-bottom: 40px;
       font-weight: 800;
       text-align: center;
       color: var(--text-main);
@@ -384,19 +356,19 @@
       -webkit-text-fill-color: transparent;
     }
 
-    /* CARDS */
+    /* CARDS GRID */
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 30px;
+      gap: 25px;
       perspective: 1000px;
     }
 
     .card {
       background: linear-gradient(145deg, rgba(15, 23, 42, 0.4), rgba(2, 6, 23, 0.7));
       backdrop-filter: blur(12px);
-      padding: 35px 30px;
-      border-radius: 24px;
+      padding: 30px 25px;
+      border-radius: 20px;
       border: 1px solid rgba(255,255,255,0.05);
       cursor: pointer;
       opacity: 0;
@@ -407,7 +379,6 @@
       transform-style: preserve-3d;
     }
 
-    /* Interactive Light Sweep on Cards */
     .card::before {
       content: '';
       position: absolute;
@@ -417,16 +388,6 @@
       transform: skewX(-20deg);
       transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
-    /* Staggered delays */
-    .section:nth-of-type(1) .card:nth-child(1) { animation-delay: 0.1s; }
-    .section:nth-of-type(1) .card:nth-child(2) { animation-delay: 0.2s; }
-    .section:nth-of-type(1) .card:nth-child(3) { animation-delay: 0.3s; }
-    .section:nth-of-type(1) .card:nth-child(4) { animation-delay: 0.4s; }
-
-    .section:nth-of-type(2) .card:nth-child(1) { animation-delay: 0.2s; }
-    .section:nth-of-type(2) .card:nth-child(2) { animation-delay: 0.3s; }
-    .section:nth-of-type(2) .card:nth-child(3) { animation-delay: 0.4s; }
 
     .card:hover {
       border-color: rgba(56, 189, 248, 0.4);
@@ -438,22 +399,61 @@
 
     .card h3 {
       margin-top: 0;
-      margin-bottom: 15px;
-      font-size: 1.4rem;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
       font-weight: 700;
       color: var(--primary);
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       transform: translateZ(20px);
     }
 
     .card p {
       margin: 0;
       color: var(--text-muted);
-      font-size: 15px;
-      line-height: 1.8;
+      font-size: 14.5px;
+      line-height: 1.7;
       transform: translateZ(10px);
+    }
+
+    /* SHOW MORE CONTAINER & REMOTE CARDS AREA */
+    .show-more-container {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .show-more-btn {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--primary);
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .show-more-btn:hover {
+      background: var(--primary);
+      color: #020617;
+      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3);
+      transform: translateY(-2px);
+    }
+
+    #subIndexSection {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #subIndexSection.visible {
+      max-height: 2000px;
+      opacity: 1;
+      margin-top: 50px;
     }
 
     /* EXPLORE TRANSITION OVERLAY */
@@ -479,33 +479,27 @@
     }
 
     .explore-loader {
-      width: 80px;
-      height: 80px;
+      width: 70px;
+      height: 70px;
       border-radius: 50%;
       border: 4px solid transparent;
       border-top-color: var(--primary);
       border-right-color: var(--secondary);
-      animation: spinLoader 1s linear infinite, glowLoader 2s ease-in-out infinite alternate;
-      margin-bottom: 30px;
+      animation: spinLoader 1s linear infinite;
+      margin-bottom: 25px;
     }
 
     .explore-text {
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 800;
       background: linear-gradient(to right, var(--primary), var(--secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      letter-spacing: 2px;
-      animation: fadeIn 0.5s ease forwards 0.3s;
-      opacity: 0;
+      letter-spacing: 1px;
     }
 
     @keyframes spinLoader {
       100% { transform: rotate(360deg); }
-    }
-    @keyframes glowLoader {
-      0% { box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
-      100% { box-shadow: 0 0 40px rgba(129, 140, 248, 0.6); }
     }
 
     /* FOOTER */
@@ -513,7 +507,7 @@
       border-top: 1px solid rgba(255, 255, 255, 0.05);
       background: rgba(2, 6, 23, 0.8);
       backdrop-filter: blur(20px);
-      padding: 60px 20px 40px;
+      padding: 50px 20px 30px;
       text-align: center;
       margin-top: 60px;
     }
@@ -523,7 +517,7 @@
       justify-content: center;
       flex-wrap: wrap;
       gap: 15px 30px;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     .footer-links a {
@@ -536,23 +530,21 @@
 
     .footer-links a:hover {
       color: var(--primary);
-      transform: translateY(-2px);
     }
 
     .footer p {
       color: rgba(148, 163, 184, 0.5);
-      font-size: 14px;
+      font-size: 13.5px;
       margin: 0;
     }
 
-    /* RESPONSIVE DESIGN */
     @media (max-width: 768px) {
-      .nav { padding: 15px 20px; flex-direction: column; gap: 20px; }
-      .nav-right { flex-wrap: wrap; justify-content: center; gap: 15px; }
-      .hero h1 { font-size: 2.8rem; }
-      .hero { padding: 80px 15px 40px; }
-      .search-box { flex-direction: column; border-radius: 20px; padding: 12px; }
-      .search-box input { margin-bottom: 15px; text-align: center; }
+      .nav { padding: 15px 20px; flex-direction: column; gap: 15px; }
+      .nav-right { flex-wrap: wrap; justify-content: center; gap: 12px; }
+      .hero h1 { font-size: 2.6rem; }
+      .hero { padding: 70px 15px 40px; }
+      .search-box { flex-direction: column; border-radius: 16px; padding: 10px; }
+      .search-box input { margin-bottom: 12px; text-align: center; padding: 10px; }
       .search-box button { width: 100%; border-radius: 12px; }
     }
   </style>
@@ -560,80 +552,109 @@
 
 <body>
 
-<!-- Animated Background Elements -->
+<!-- Background Elements -->
 <div class="bg-grid"></div>
 <div class="bg-glow"></div>
 <div class="bg-glow-2"></div>
 
-<!-- Transition Overlay for Explore Feature -->
+<!-- Transition Overlay -->
 <div class="explore-overlay" id="exploreOverlay">
   <div class="explore-loader"></div>
-  <div class="explore-text">INITIALIZING EXPLORE...</div>
+  <div class="explore-text" id="overlayText">INITIALIZING TAXTRON...</div>
 </div>
 
 <nav class="nav">
-  <div class="logo" onclick="location.href='/'" style="display:flex;align-items:center;gap:12px;cursor:pointer;">
-    <img src="/logo1526tx.gif" style="height:32px; border-radius: 6px; box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);" alt="Taxtron Logo" onerror="this.style.display='none'">
+  <div class="logo" onclick="location.href='/'" style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+    <img src="/logo1526tx.gif" style="height:30px; border-radius: 6px; box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);" alt="Taxtron Logo" onerror="this.style.display='none'">
     <span>Taxtron</span>
   </div>
 
   <div class="nav-right">
-    <a href="/explore">Taxtron AI</a>
+    <a href="/explore">Students Hub</a>
+    <a href="/create">Creator Suite</a>
     <a href="/notifications" target="_blank">Updates</a>
     <a href="/why-Taxtron">Why Taxtron</a>
-    <a href="/search">Search Pages 🔍</a>
     <div id="userArea">
-      <!-- Fallback button while Firebase loads -->
       <div class="user-btn">Loading...</div>
     </div>
   </div>
 </nav>
 
 <header class="hero">
-  <h1>Ask Taxtron AI </h1>
+  <h1>Digital Tools &amp; AI for Everyone</h1>
+  <p>Instant answers, intelligent utilities, and platform suites built for creators, students, developers, and professionals.</p>
   <div class="search-box">
-    <input id="q" type="text" placeholder="Ask anything — ideas, concepts, code, writing..." onkeydown="if(event.key === 'Enter') triggerExplore(document.getElementById('q').value)">
-    <button onclick="triggerExplore(document.getElementById('q').value)">Explore AI</button>
+    <input id="q" type="text" placeholder="Ask anything — ideas, concepts, code, writing..." onkeydown="if(event.key === 'Enter') triggerRedirect('/explore?q=' + encodeURIComponent(document.getElementById('q').value), 'EXPLORING AI...')">
+    <button onclick="triggerRedirect('/explore?q=' + encodeURIComponent(document.getElementById('q').value), 'EXPLORING AI...')">Ask Taxtron</button>
   </div>
 </header>
 
 <main>
+  <!-- CORE PLATFORM HUBS -->
   <section class="section">
-    <h2>Popular Tools</h2>
+    <h2>Platform Hubs</h2>
     <div class="cards">
-      <div class="card" onclick="triggerExplore('Explain rotational motion')">
-        <h3>⚛️ Concept Explainer</h3>
-        <p>Get instant, clear explanations and step-by-step breakdowns for any topic or concept.</p>
+      <div class="card" onclick="triggerRedirect('/explore', 'LOADING STUDENTS HUB...')">
+        <h3>🎓 Students Hub</h3>
+        <p>Access curated JEE notes, exam prep kits, structured study case studies, and instant concept solvers.</p>
       </div>
-      <div class="card" onclick="triggerExplore('Generate creative ideas')">
-        <h3>📝 Content Generator</h3>
-        <p>Generate fresh ideas, titles, and creative content for any project or platform instantly.</p>
+      <div class="card" onclick="triggerRedirect('/create', 'LOADING CREATOR SUITE...')">
+        <h3>✨ Creator Suite (v1)</h3>
+        <p>Supercharge your workflow with instant viral title generators and realistic simulated reel/YouTube comments.</p>
       </div>
-      <div class="card" onclick="triggerExplore('Help me debug code')">
-        <h3>🧪 Code & Logic</h3>
-        <p>Break down complex problems, debug code, and work through logic step by step.</p>
+      <div class="card" onclick="triggerRedirect('/explore?q=code', 'LOADING DEVELOPER TOOLS...')">
+        <h3>⚡ Developer &amp; Logic</h3>
+        <p>Debug code snippets, analyze algorithms, and work through complex technical logic seamlessly.</p>
       </div>
-      <div class="card" onclick="triggerExplore('Summarize this for me')">
-        <h3>📐 Smart Summaries</h3>
-        <p>Summarize, organize, and structure information quickly for any subject or purpose.</p>
+      <div class="card" onclick="triggerRedirect('/explore?q=summaries', 'LOADING UTILITIES...')">
+        <h3>📐 Smart Utilities</h3>
+        <p>Summarize long articles, structure data notes, and format content effortlessly in seconds.</p>
+      </div>
+    </div>
+
+    <!-- SHOW MORE SUB-PAGE BUTTON -->
+    <div class="show-more-container">
+      <button class="show-more-btn" id="showMoreToggle" onclick="toggleSubIndex()">Explore More Tools &amp; Features ↓</button>
+    </div>
+
+    <!-- SUB-PAGE SECTION (Extendable & Remote Card Ready) -->
+    <div id="subIndexSection">
+      <div style="margin-top: 40px;">
+        <h2>Advanced &amp; Specialized Utilities</h2>
+        <div class="cards" id="remoteCardsContainer">
+          <!-- Default fallback sub-cards, can be populated or appended from /card-ssrtx93 -->
+          <div class="card" onclick="triggerRedirect('/universe', 'OPENING UNIVERSE...')">
+            <h3>🌌 Taxtron Universe</h3>
+            <p>Explore interconnected web applications, experiments, and secondary modules built by the Taxtron ecosystem.</p>
+          </div>
+          <div class="card" onclick="triggerRedirect('/search', 'OPENING DIRECTORY...')">
+            <h3>🔍 Page Directory</h3>
+            <p>Search across all hidden or auxiliary landing pages, utilities, and document repositories on Taxtron.</p>
+          </div>
+          <div class="card" onclick="fetchRemoteCards()">
+            <h3>🚀 Remote Card Sync</h3>
+            <p>Click to fetch and inject latest dynamic feature cards directly from <code>/card-ssrtx93</code>.</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- WHY TAXTRON SECTION -->
   <section class="section">
     <h2>Why Taxtron?</h2>
     <div class="cards">
       <div class="card">
-        <h3>🧠 AI Powered</h3>
-        <p>Trained to give smart, accurate answers instantly without hallucinating formulas or misguiding logic.</p>
+        <h3>🧠 Intelligence First</h3>
+        <p>Engineered for precision—delivering accurate answers without hallucinations or clutter.</p>
       </div>
       <div class="card">
-        <h3>🎯 Built for Everyone</h3>
-        <p>Built for creators, developers, students, and professionals. Adapts to whatever you need — no generic answers.</p>
+        <h3>🎯 Tailored For You</h3>
+        <p>Custom workflows adapted specifically for creators, learners, and technical professionals.</p>
       </div>
       <div class="card">
-        <h3>⚡ Fast & Clean</h3>
-        <p>A minimalist interface. No distractions, no ads, no clutter—just pure, focused learning.</p>
+        <h3>⚡ Clean &amp; Distraction Free</h3>
+        <p>No pop-ups, no ads, no bloatware—pure, focused utility design.</p>
       </div>
     </div>
   </section>
@@ -647,7 +668,7 @@
     <a href="/universe">Taxtron Universe</a>
     <a href="/contact">Contact Us</a>
     <a href="/why-Taxtron">Why Taxtron</a>
-    <a href="/search">Other Pages</a>
+    <a href="/search">All Pages</a>
   </div>
   <p>&copy; 2026 Taxtron.in. Digital tools for everyone.</p>
 </footer>
@@ -668,7 +689,7 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-// USER UI AUTH LISTENER
+// USER AUTH LISTENER (Name / Profile display)
 firebase.auth().onAuthStateChanged(user => {
   const box = document.getElementById("userArea");
   if(user) {
@@ -682,19 +703,43 @@ firebase.auth().onAuthStateChanged(user => {
   }
 });
 
-// HIGHLY ANIMATED EXPLORE TRANSITION LOGIC
-function triggerExplore(query) {
-  const q = query.trim();
-  if(!q) return;
-  
-  // Activate full-screen overlay transition
+// SMOOTH TRANSITION OVERLAY REDIRECT
+function triggerRedirect(url, message = 'INITIALIZING...') {
   const overlay = document.getElementById('exploreOverlay');
+  const overlayText = document.getElementById('overlayText');
+  overlayText.textContent = message;
   overlay.classList.add('active');
   
-  // Navigate to explore feature after animation plays out
   setTimeout(() => {
-    window.location.href = "/explore?q=" + encodeURIComponent(q);
-  }, 1200); 
+    window.location.href = url;
+  }, 900); 
+}
+
+// SHOW MORE SUB-PAGE TOGGLE
+function toggleSubIndex() {
+  const subSection = document.getElementById('subIndexSection');
+  const toggleBtn = document.getElementById('showMoreToggle');
+  
+  subSection.classList.toggle('visible');
+  if (subSection.classList.contains('visible')) {
+    toggleBtn.textContent = 'Collapse Tools ↑';
+    subSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } else {
+    toggleBtn.textContent = 'Explore More Tools &amp; Features ↓';
+  }
+}
+
+// REMOTE CARD LOADER HOOK (For /card-ssrtx93 integration)
+async function fetchRemoteCards() {
+  try {
+    // You can point this to your backend endpoint or JSON source at /card-ssrtx93
+    const response = await fetch('/card-ssrtx93');
+    if (!response.ok) throw new Error('Endpoint not ready');
+    const htmlSnippet = await response.text();
+    document.getElementById('remoteCardsContainer').innerHTML += htmlSnippet;
+  } catch (e) {
+    alert('Remote card endpoint /card-ssrtx93 is ready to be configured. Once created, cards will load here dynamically!');
+  }
 }
 
 // 3D TILT EFFECT ON CARDS
@@ -708,8 +753,8 @@ cards.forEach(card => {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     
-    const rotateX = ((y - centerY) / centerY) * -8; // Max rotation 8deg
-    const rotateY = ((x - centerX) / centerX) * 8;
+    const rotateX = ((y - centerY) / centerY) * -6;
+    const rotateY = ((x - centerX) / centerX) * 6;
     
     card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
   });
@@ -722,10 +767,10 @@ cards.forEach(card => {
 // DYNAMIC PLACEHOLDER TYPING EFFECT
 const placeholders = [
   "Ask anything — ideas, concepts, code, writing...",
+  "Search JEE notes, case studies & exams...",
+  "Generate viral titles and reel comments...",
   "Explain a concept in simple terms...",
-  "Generate creative titles for my video...",
-  "Help me debug this code...",
-  "Summarize this topic for me..."
+  "Help me debug this code snippet..."
 ];
 
 let pIndex = 0;
@@ -744,21 +789,20 @@ function typeEffect() {
     charIndex++;
   }
 
-  let typingSpeed = isDeleting ? 25 : 60;
+  let typingSpeed = isDeleting ? 25 : 55;
 
   if (!isDeleting && charIndex === currentText.length) {
-    typingSpeed = 2500; // Pause at end of sentence
+    typingSpeed = 2200;
     isDeleting = true;
   } else if (isDeleting && charIndex === 0) {
     isDeleting = false;
     pIndex = (pIndex + 1) % placeholders.length;
-    typingSpeed = 400; // Pause before typing next word
+    typingSpeed = 350;
   }
 
   setTimeout(typeEffect, typingSpeed);
 }
 
-// Start typing effect after initial load
 setTimeout(typeEffect, 1000);
 </script>
 
