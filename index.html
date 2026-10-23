@@ -36,7 +36,7 @@
     "description": "AI-powered digital tools and assistant platform for creators, developers, students, and professionals.",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://taxtron.in/explore?q={search_term_string}",
+      "target": "https://taxtron.in/engine?q={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   }
@@ -585,7 +585,7 @@
   <p>Instant answers, intelligent utilities, and platform suites built for creators, students, developers, and professionals.</p>
   <div class="search-box">
     <input id="q" type="text" placeholder="Ask anything — ideas, concepts, code, writing..." onkeydown="if(event.key === 'Enter') triggerRedirect('/explore?q=' + encodeURIComponent(document.getElementById('q').value), 'EXPLORING AI...')">
-    <button onclick="triggerRedirect('/explore?q=' + encodeURIComponent(document.getElementById('q').value), 'EXPLORING AI...')">Ask Taxtron</button>
+    <button onclick="triggerRedirect('/engine?q=' + encodeURIComponent(document.getElementById('q').value), 'EXPLORING AI...')">Ask Taxtron</button>
   </div>
 </header>
 
