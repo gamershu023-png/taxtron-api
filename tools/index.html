@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,44 +5,377 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#020617">
 <title>Taxtron Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#020617;--panel:#0b1224;--line:#1e293b;--text:#e5edf9;--muted:#94a3b8;--cyan:#38bdf8}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at 50% 0%,#10213c 0%,var(--bg) 48%);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif;min-height:100vh}
-header{height:70px;padding:0 7%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
-.logo{font-size:22px;font-weight:850;letter-spacing:-.7px;color:var(--cyan);text-decoration:none}
-nav a{color:var(--muted);text-decoration:none;margin-left:20px;font-size:14px}
-nav a:hover{color:white}
-main{max-width:1100px;margin:auto;padding:58px 22px}
-.hero{text-align:center;margin-bottom:48px}
-.pill{display:inline-block;padding:7px 12px;border:1px solid #164e63;background:#08334455;color:#7dd3fc;border-radius:99px;font-size:12px}
-h1{font-size:clamp(36px,6vw,58px);letter-spacing:-2px;margin:18px 0 12px}
-h1 span{color:var(--cyan)}
-.hero p{color:var(--muted);line-height:1.7;max-width:560px;margin:auto}
-.section{margin-top:38px}
-.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
-h2{font-size:21px;margin:0}
-.count{font-size:12px;color:var(--muted)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:15px}
-.card{position:relative;min-height:200px;padding:21px;background:linear-gradient(145deg,#0e1930,#080f20);border:1px solid var(--line);border-radius:19px;display:flex;flex-direction:column;transition:.2s}
-.card:hover{transform:translateY(-3px);border-color:#2563a0}
-.icon{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:#132640;font-size:24px;margin-bottom:17px}
-.card h3{font-size:17px;margin:0 0 9px}
-.card p{font-size:13px;line-height:1.7;color:var(--muted);margin:0 0 22px}
-.card-bottom{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px}
-.tag{font-size:11px;color:#7dd3fc;background:#082f49;padding:6px 9px;border-radius:8px}
-.open{font-size:13px;color:white;text-decoration:none;background:#0284c7;padding:9px 12px;border-radius:10px}
-.open:hover{background:#0369a1}
-.soon{font-size:12px;color:#c4b5fd;background:#2e1065;padding:8px 10px;border-radius:9px}
-.empty{grid-column:1/-1;padding:25px;border:1px dashed #334155;border-radius:16px;color:var(--muted);text-align:center;font-size:14px}
-footer{text-align:center;padding:28px;color:#64748b;font-size:12px}
-@media(max-width:500px){header{padding:0 17px}nav a{margin-left:10px;font-size:12px}main{padding:40px 15px}.section-head{align-items:flex-start}}
+:root {
+  --bg: #030712;
+  --panel: rgba(15, 23, 42, 0.65);
+  --panel-hover: rgba(30, 41, 59, 0.7);
+  --line: rgba(51, 65, 85, 0.5);
+  --line-bright: rgba(56, 189, 248, 0.3);
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --cyan: #38bdf8;
+  --cyan-glow: rgba(56, 189, 248, 0.15);
+  --blue-accent: #0284c7;
+  --blue-hover: #0369a1;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 20% 80%, rgba(14, 165, 233, 0.05) 0%, transparent 40%);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Subtle background grid noise */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+header {
+  height: 72px;
+  padding: 0 8%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(12px);
+  background: rgba(3, 7, 18, 0.75);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--cyan);
+}
+
+nav a {
+  color: var(--muted);
+  text-decoration: none;
+  margin-left: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+nav a:hover {
+  color: var(--cyan);
+}
+
+main {
+  max-width: 1140px;
+  width: 100%;
+  margin: auto;
+  padding: 60px 24px 80px;
+  flex: 1;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 56px;
+  position: relative;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  background: rgba(8, 51, 68, 0.4);
+  color: var(--cyan);
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+}
+
+h1 {
+  font-size: clamp(38px, 6vw, 62px);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  margin: 20px 0 14px;
+  line-height: 1.1;
+}
+
+h1 span {
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero p {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 16px;
+  max-width: 580px;
+  margin: auto;
+}
+
+/* Dynamic Filter Bar */
+.search-bar {
+  max-width: 460px;
+  margin: 32px auto 0;
+  position: relative;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 13px 20px 13px 44px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.search-bar input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.search-bar svg {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  stroke: var(--muted);
+}
+
+.section {
+  margin-top: 50px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  background: rgba(30, 41, 59, 0.6);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  position: relative;
+  min-height: 220px;
+  padding: 24px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(16px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  background: var(--panel-hover);
+  border-color: var(--line-bright);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px var(--cyan-glow);
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  font-size: 24px;
+  margin-bottom: 18px;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .icon {
+  transform: scale(1.08);
+  background: rgba(56, 189, 248, 0.15);
+}
+
+.card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 10px;
+  letter-spacing: -0.2px;
+  color: #fff;
+}
+
+.card p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0 0 24px;
+  flex: 1;
+}
+
+.card-bottom {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--cyan);
+  background: rgba(56, 189, 248, 0.1);
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.open {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none;
+  background: linear-gradient(135deg, var(--blue-accent), var(--blue-hover));
+  padding: 8px 14px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.open:hover {
+  background: linear-gradient(135deg, #0389cf, #02527e);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.4);
+}
+
+.soon {
+  font-size: 11px;
+  font-weight: 600;
+  color: #c4b5fd;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.empty {
+  grid-column: 1 / -1;
+  padding: 40px 20px;
+  border: 1px dashed var(--line);
+  border-radius: 16px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 14px;
+  background: rgba(15, 23, 42, 0.3);
+}
+
+footer {
+  text-align: center;
+  padding: 32px;
+  color: #64748b;
+  font-size: 13px;
+  border-top: 1px solid var(--line);
+  background: rgba(3, 7, 18, 0.6);
+}
+
+footer a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+footer a:hover {
+  color: var(--cyan);
+}
+
+@media (max-width: 640px) {
+  header { padding: 0 20px; }
+  nav a { margin-left: 14px; font-size: 13px; }
+  main { padding: 36px 16px 60px; }
+  .grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 <header>
-  <a class="logo" href="/">TAXTRON</a>
-  <nav><a href="/">Home</a><a href="/explore/">Explore</a></nav>
+  <a class="logo" href="/"><span class="logo-dot"></span>TAXTRON</a>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/explore/">Explore</a>
+  </nav>
 </header>
 
 <main>
@@ -51,6 +383,12 @@ footer{text-align:center;padding:28px;color:#64748b;font-size:12px}
     <span class="pill">✦ THE TAXTRON ECOSYSTEM</span>
     <h1>Tools for your <span>next idea.</span></h1>
     <p>Explore what you can use today and discover what we're building next. One growing collection, powered by Taxtron.</p>
+    
+    <!-- Instant Search Bar -->
+    <div class="search-bar">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+      <input type="text" id="searchInput" placeholder="Search tools or categories..." oninput="filterTools()">
+    </div>
   </section>
 
   <section class="section">
@@ -70,13 +408,15 @@ footer{text-align:center;padding:28px;color:#64748b;font-size:12px}
   </section>
 </main>
 
-<footer>Built with curiosity by Taxtron · <a href="/tools-admin/" style="color:#64748b">Admin</a></footer>
+<footer>
+  Built with curiosity by Taxtron · <a href="/tools-admin/">Admin</a>
+</footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-/* Replace with your existing Firebase web config. */
+/* Existing Firebase web config */
 const firebaseConfig = {
     apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
     authDomain: "taxtron-ai.firebaseapp.com",
@@ -89,6 +429,8 @@ const db = getFirestore(app);
 
 const currentGrid = document.getElementById("currentGrid");
 const futureGrid = document.getElementById("futureGrid");
+
+let allTools = { current: [], future: [] };
 
 function safeUrl(value) {
   if (!value) return null;
@@ -136,7 +478,7 @@ function makeCard(tool, upcoming) {
       const link = document.createElement("a");
       link.className = "open";
       link.href = url;
-      link.textContent = "Open tool ↗";
+      link.innerHTML = 'Open tool <span style="font-size:11px">↗</span>';
       if (new URL(url).origin !== location.origin) {
         link.target = "_blank";
         link.rel = "noopener noreferrer";
@@ -156,24 +498,43 @@ function showEmpty(grid, text) {
   grid.replaceChildren(empty);
 }
 
-onSnapshot(collection(db, "tools"), snapshot => {
-  const tools = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
-    .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+// Optional instant search filter functionality
+window.filterTools = function() {
+  const query = document.getElementById("searchInput").value.toLowerCase();
+  
+  const filteredCurrent = allTools.current.filter(t => 
+    (t.title && t.title.toLowerCase().includes(query)) || 
+    (t.description && t.description.toLowerCase().includes(query)) ||
+    (t.category && t.category.toLowerCase().includes(query))
+  );
 
-  const current = tools.filter(t => t.status === "current");
-  const future = tools.filter(t => t.status === "future");
+  const filteredFuture = allTools.future.filter(t => 
+    (t.title && t.title.toLowerCase().includes(query)) || 
+    (t.description && t.description.toLowerCase().includes(query)) ||
+    (t.category && t.category.toLowerCase().includes(query))
+  );
 
   currentGrid.replaceChildren();
   futureGrid.replaceChildren();
 
-  current.forEach(t => currentGrid.appendChild(makeCard(t, false)));
-  future.forEach(t => futureGrid.appendChild(makeCard(t, true)));
+  filteredCurrent.forEach(t => currentGrid.appendChild(makeCard(t, false)));
+  filteredFuture.forEach(t => futureGrid.appendChild(makeCard(t, true)));
 
-  if (!current.length) showEmpty(currentGrid, "New tools will appear here soon.");
-  if (!future.length) showEmpty(futureGrid, "No upcoming tools announced yet.");
+  if (!filteredCurrent.length) showEmpty(currentGrid, query ? "No matching available tools found." : "New tools will appear here soon.");
+  if (!filteredFuture.length) showEmpty(futureGrid, query ? "No matching upcoming tools found." : "No upcoming tools announced yet.");
 
-  document.getElementById("currentCount").textContent = current.length + " tools";
-  document.getElementById("futureCount").textContent = future.length + " planned";
+  document.getElementById("currentCount").textContent = filteredCurrent.length + " tools";
+  document.getElementById("futureCount").textContent = filteredFuture.length + " planned";
+};
+
+onSnapshot(collection(db, "tools"), snapshot => {
+  const tools = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+
+  allTools.current = tools.filter(t => t.status === "current");
+  allTools.future = tools.filter(t => t.status === "future");
+
+  filterTools();
 }, error => {
   console.error(error);
   showEmpty(currentGrid, "Couldn't load tools. Check your Firebase configuration and Firestore rules.");
