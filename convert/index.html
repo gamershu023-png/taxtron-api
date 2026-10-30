@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#020617">
+
+  <title>Taxtron Convert - Free Online File Tools</title>
+  <meta name="description" content="Convert, compress and manage PDF and image files online with Taxtron Convert. Free, private browser-based tools.">
+  <link rel="canonical" href="https://taxtron.in/convert.html">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/convert.css">
+
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script defer src="/convert.js"></script>
+</head>
+
+<body>
+
+<header class="header">
+  <a class="brand" href="/">
+    TAXTRON<span>.</span>
+    <small>CONVERT</small>
+  </a>
+
+  <nav>
+    <a href="/">Home</a>
+    <a href="/p/explore.html">Explore</a>
+    <a href="/p/create.html">Create</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="eyebrow">
+      <span class="live-dot"></span>
+      YOUR UNIVERSAL FILE TOOLKIT
+    </div>
+
+    <h1>Files, <span>simplified.</span></h1>
+
+    <p>
+      Convert, compress and manage your files.
+      Everything you need, in one place.
+    </p>
+
+    <a href="#tools" class="primary-btn">Explore tools <span>→</span></a>
+
+    <div class="privacy-note">
+      <span>🔒</span> Private processing. Your files stay on your device.
+    </div>
+  </section>
+
+  <section class="tools-section" id="tools">
+
+    <div class="section-top">
+      <div>
+        <div class="eyebrow">THE TOOLBOX</div>
+        <h2>What do you need to do?</h2>
+        <p>Choose a tool and get started instantly.</p>
+      </div>
+
+      <div class="tool-count">05 TOOLS</div>
+    </div>
+
+    <div class="tool-grid">
+
+      <!-- PDF MERGER -->
+      <article class="tool-card">
+        <div class="tool-icon purple">▤</div>
+        <div class="tool-category">PDF TOOLS</div>
+        <h3>PDF Merger</h3>
+        <p>Combine multiple PDF files into a single document.</p>
+
+        <label class="file-label" for="mergeFiles">Choose PDF files</label>
+        <input id="mergeFiles" type="file" accept=".pdf,application/pdf" multiple>
+
+        <div id="mergeInfo" class="file-info"></div>
+        <button class="tool-btn" id="mergeBtn">Merge PDFs →</button>
+        <div id="mergeStatus" class="status" aria-live="polite"></div>
+      </article>
+
+      <!-- PDF SPLITTER -->
+      <article class="tool-card">
+        <div class="tool-icon blue">✂</div>
+        <div class="tool-category">PDF TOOLS</div>
+        <h3>PDF Splitter</h3>
+        <p>Extract selected pages from your PDF document.</p>
+
+        <label class="file-label" for="splitFile">Choose PDF</label>
+        <input id="splitFile" type="file" accept=".pdf,application/pdf">
+
+        <div id="splitInfo" class="file-info"></div>
+
+        <input id="pageRange" type="text" placeholder="Pages: e.g. 1-3, 5, 8-10" aria-label="Pages to extract">
+
+        <button class="tool-btn" id="splitBtn">Extract Pages →</button>
+        <div id="splitStatus" class="status" aria-live="polite"></div>
+      </article>
+
+      <!-- IMAGE CONVERTER -->
+      <article class="tool-card">
+        <div class="tool-icon cyan">▧</div>
+        <div class="tool-category">IMAGE TOOLS</div>
+        <h3>Image Converter</h3>
+        <p>Convert images between PNG, JPG and WebP formats.</p>
+
+        <label class="file-label" for="convertFile">Choose image</label>
+        <input id="convertFile" type="file" accept="image/png,image/jpeg,image/webp">
+
+        <select id="convertFormat" aria-label="Output image format">
+          <option value="image/png">PNG</option>
+          <option value="image/jpeg">JPG</option>
+          <option value="image/webp">WebP</option>
+        </select>
+
+        <button class="tool-btn" id="convertBtn">Convert Image →</button>
+        <div id="convertStatus" class="status" aria-live="polite"></div>
+      </article>
+
+      <!-- IMAGE COMPRESSOR -->
+      <article class="tool-card">
+        <div class="tool-icon green">⚡</div>
+        <div class="tool-category">IMAGE TOOLS</div>
+        <h3>Image Compressor</h3>
+        <p>Reduce image file size with adjustable quality.</p>
+
+        <label class="file-label" for="compressFile">Choose image</label>
+        <input id="compressFile" type="file" accept="image/png,image/jpeg,image/webp">
+
+        <label class="range-label" for="quality">
+          Quality <span id="qualityValue">70%</span>
+        </label>
+        <input id="quality" type="range" min="10" max="95" value="70">
+
+        <button class="tool-btn" id="compressBtn">Compress Image →</button>
+        <div id="compressStatus" class="status" aria-live="polite"></div>
+      </article>
+
+      <!-- QR GENERATOR -->
+      <article class="tool-card">
+        <div class="tool-icon orange">▦</div>
+        <div class="tool-category">GENERATORS</div>
+        <h3>QR Generator</h3>
+        <p>Create downloadable QR codes for links or text.</p>
+
+        <input id="qrText" type="text" placeholder="Enter a URL or text" aria-label="QR code content">
+
+        <select id="qrSize" aria-label="QR code size">
+          <option value="180">Small · 180px</option>
+          <option value="256" selected>Medium · 256px</option>
+          <option value="400">Large · 400px</option>
+        </select>
+
+        <button class="tool-btn" id="qrBtn">Generate QR →</button>
+
+        <div id="qrOutput"></div>
+        <button class="download-btn hidden" id="qrDownload">Download QR ↓</button>
+        <div id="qrStatus" class="status" aria-live="polite"></div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="bottom-banner">
+    <div>
+      <div class="eyebrow">THE TAXTRON ECOSYSTEM</div>
+      <h2>More than just conversion.</h2>
+      <p>Discover, learn, create and simplify your digital life.</p>
+    </div>
+    <a href="/" class="secondary-btn">Explore Taxtron →</a>
+  </section>
+
+</main>
+
+<footer>
+  <a href="/" class="footer-brand">TAXTRON<span>.</span></a>
+  <p>Tools for everyone. Built for simplicity.</p>
+  <div class="footer-links">
+    <a href="/p/about-us.html">About</a>
+    <a href="/p/privacy-policy-taxtron-student-tools.html">Privacy</a>
+    <a href="/p/connect-with-us.html">Contact</a>
+  </div>
+  <small>© <span id="year"></span> Taxtron. All rights reserved.</small>
+</footer>
+
+</body>
+</html>
