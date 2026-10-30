@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Platform Updates | Taxtron Ecosystem</title>
     
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
     <style>
         :root {
             --bg-color: #0b0f19; --card-bg: #111827; --text-main: #f3f4f6;
@@ -57,23 +54,31 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyAi0b3zJoFQBt_9izjsbJTLvQh3ZQoOpuI",
             authDomain: "taxtron-ai.firebaseapp.com",
             projectId: "taxtron-ai",
             appId: "1:1009675616284:web:27c8e67f2107d9a4255fd9"
         };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const db = firebase.firestore();
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
         function esc(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
                 ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
         }
 
-        db.collection("taxtron_updates").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+        const q = query(collection(db, "taxtron_updates"), orderBy("createdAt", "desc"));
+
+        onSnapshot(q, (snapshot) => {
             const feed = document.getElementById('changelogFeed');
+            if (!feed) return;
+            
             feed.innerHTML = ''; 
             
             if (snapshot.empty) {
@@ -84,15 +89,13 @@
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 
-                // Format the timestamp
                 let dateString = "Just now";
-                if(data.createdAt) {
+                if (data.createdAt && typeof data.createdAt.toDate === 'function') {
                     const date = data.createdAt.toDate();
                     dateString = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
                 }
 
-                const category = esc(data.category);
-                // Create a CSS class friendly version of the category
+                const category = esc(data.category || "General");
                 const cssClass = "cat-" + category.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
 
                 const div = document.createElement('div');
@@ -104,6 +107,12 @@
                 `;
                 feed.appendChild(div);
             });
+        }, (error) => {
+            console.error("Error fetching updates:", error);
+            const feed = document.getElementById('changelogFeed');
+            if (feed) {
+                feed.innerHTML = '<div class="empty-state">Unable to connect to the Taxtron notification network.</div>';
+            }
         });
     </script>
 </body>
