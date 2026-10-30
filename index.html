@@ -36,7 +36,7 @@
     "description": "AI-powered digital tools and assistant platform for creators, developers, students, and professionals.",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://taxtron.in/engine?q={search_term_string}",
+      "target": "https://taxtron.in/explore?q={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   }
@@ -105,12 +105,6 @@
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
-    }
-
-    @keyframes pulseGlow {
-      0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }
-      70% { box-shadow: 0 0 0 15px rgba(56, 189, 248, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
     }
 
     @keyframes gradientSweep {
@@ -417,45 +411,6 @@
       transform: translateZ(10px);
     }
 
-    /* SHOW MORE CONTAINER & REMOTE CARDS AREA */
-    .show-more-container {
-      text-align: center;
-      margin-top: 40px;
-    }
-
-    .show-more-btn {
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      color: var(--primary);
-      padding: 12px 28px;
-      font-size: 15px;
-      font-weight: 600;
-      border-radius: 14px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-    }
-
-    .show-more-btn:hover {
-      background: var(--primary);
-      color: #020617;
-      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3);
-      transform: translateY(-2px);
-    }
-
-    #subIndexSection {
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    #subIndexSection.visible {
-      max-height: 2000px;
-      opacity: 1;
-      margin-top: 50px;
-    }
-
     /* EXPLORE TRANSITION OVERLAY */
     .explore-overlay {
       position: fixed;
@@ -585,8 +540,8 @@
   <h1>Digital Tools &amp; AI for Everyone</h1>
   <p>Instant answers, intelligent utilities, and platform suites built for creators, students, developers, and professionals.</p>
   <div class="search-box">
-    <input id="q" type="text" placeholder="Ask anything — ideas, concepts, code, writing..." onkeydown="if(event.key === 'Enter') triggerRedirect('/explore?q=' + encodeURIComponent(document.getElementById('q').value), 'EXPLORING AI...')">
-    <button onclick="triggerRedirect('/engine?q=' + encodeURIComponent(document.getElementById('q').value), 'EXPLORING AI...')">Ask Taxtron</button>
+    <input id="q" type="text" placeholder="Ask anything — ideas, concepts, code, writing..." onkeydown="if(event.key === 'Enter') triggerExplore(document.getElementById('q').value)">
+    <button onclick="triggerExplore(document.getElementById('q').value)">Ask Taxtron</button>
   </div>
 </header>
 
@@ -603,40 +558,13 @@
         <h3>✨ Creator Suite (v1)</h3>
         <p>Supercharge your workflow with instant viral title generators and realistic simulated reel/YouTube comments.</p>
       </div>
-      <div class="card" onclick="triggerRedirect('/explore?q=code', 'LOADING DEVELOPER TOOLS...')">
-        <h3>⚡ Developer &amp; Logic</h3>
-        <p>Debug code snippets, analyze algorithms, and work through complex technical logic seamlessly.</p>
+      <div class="card" onclick="triggerRedirect('/tools', 'LOADING USEFUL CRAFTS...')">
+        <h3>🛠️ Useful Crafts &amp; Tools</h3>
+        <p>Explore all new digital utilities, developer helpers, and productivity tools in one unified directory.</p>
       </div>
       <div class="card" onclick="triggerRedirect('/explore?q=summaries', 'LOADING UTILITIES...')">
         <h3>📐 Smart Utilities</h3>
         <p>Summarize long articles, structure data notes, and format content effortlessly in seconds.</p>
-      </div>
-    </div>
-
-    <!-- SHOW MORE SUB-PAGE BUTTON -->
-    <div class="show-more-container">
-      <button class="show-more-btn" id="showMoreToggle" onclick="toggleSubIndex()">Explore More Tools &amp; Features ↓</button>
-    </div>
-
-    <!-- SUB-PAGE SECTION (Extendable & Remote Card Ready) -->
-    <div id="subIndexSection">
-      <div style="margin-top: 40px;">
-        <h2>Advanced &amp; Specialized Utilities</h2>
-        <div class="cards" id="remoteCardsContainer">
-          <!-- Default fallback sub-cards, can be populated or appended from /card-ssrtx93 -->
-          <div class="card" onclick="triggerRedirect('/universe', 'OPENING UNIVERSE...')">
-            <h3>🌌 Taxtron Universe</h3>
-            <p>Explore interconnected web applications, experiments, and secondary modules built by the Taxtron ecosystem.</p>
-          </div>
-          <div class="card" onclick="triggerRedirect('/search', 'OPENING DIRECTORY...')">
-            <h3>🔍 Page Directory</h3>
-            <p>Search across all hidden or auxiliary landing pages, utilities, and document repositories on Taxtron.</p>
-          </div>
-          <div class="card" onclick="fetchRemoteCards()">
-            <h3>🚀 Remote Card Sync</h3>
-            <p>Click to fetch and inject latest dynamic feature cards directly from <code>/card-ssrtx93</code>.</p>
-          </div>
-        </div>
       </div>
     </div>
   </section>
@@ -704,7 +632,7 @@ firebase.auth().onAuthStateChanged(user => {
   }
 });
 
-// SMOOTH TRANSITION OVERLAY REDIRECT
+// DIRECT REDIRECT HELPER WITH OVERLAY
 function triggerRedirect(url, message = 'INITIALIZING...') {
   const overlay = document.getElementById('exploreOverlay');
   const overlayText = document.getElementById('overlayText');
@@ -713,34 +641,70 @@ function triggerRedirect(url, message = 'INITIALIZING...') {
   
   setTimeout(() => {
     window.location.href = url;
-  }, 900); 
+  }, 800); 
 }
 
-// SHOW MORE SUB-PAGE TOGGLE
-function toggleSubIndex() {
-  const subSection = document.getElementById('subIndexSection');
-  const toggleBtn = document.getElementById('showMoreToggle');
+// DYNAMIC AI ROUTING ENGINE
+const CATEGORY_ROUTES = {
+  'STUDENT': '/explore',
+  'CREATOR': '/create',
+  'TOOLS': '/tools'
+};
+
+async function triggerExplore(query) {
+  const q = query.trim();
+  if (!q) return;
+
+  const overlay = document.getElementById('exploreOverlay');
+  const overlayText = document.getElementById('overlayText');
   
-  subSection.classList.toggle('visible');
-  if (subSection.classList.contains('visible')) {
-    toggleBtn.textContent = 'Collapse Tools ↑';
-    subSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  } else {
-    toggleBtn.textContent = 'Explore More Tools &amp; Features ↓';
-  }
-}
+  overlayText.textContent = 'ANALYZING INTENT...';
+  overlay.classList.add('active');
 
-// REMOTE CARD LOADER HOOK (For /card-ssrtx93 integration)
-async function fetchRemoteCards() {
+  let detectedCategory = 'STUDENT'; // Safe default fallback
+
   try {
-    // You can point this to your backend endpoint or JSON source at /card-ssrtx93
-    const response = await fetch('/card-ssrtx93');
-    if (!response.ok) throw new Error('Endpoint not ready');
-    const htmlSnippet = await response.text();
-    document.getElementById('remoteCardsContainer').innerHTML += htmlSnippet;
-  } catch (e) {
-    alert('Remote card endpoint /card-ssrtx93 is ready to be configured. Once created, cards will load here dynamically!');
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + firebaseConfig.apiKey, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: `System Instruction: Analyze the user query intent and classify it strictly into ONE of these categories:
+- 'STUDENT': case studies, notes, JEE, studying, exams, academic topics, math, science, history, summaries.
+- 'CREATOR': video titles, fake comments, reels, shorts, YouTube, social media, thumbnail ideas, content creation.
+- 'TOOLS': digital tools, utilities, generators, general software or crafts.
+
+Output format requirement: Return ONLY a raw JSON object with no markdown formatting:
+{"category": "STUDENT"} or {"category": "CREATOR"} or {"category": "TOOLS"}
+
+User Query: "${q}"`
+          }]
+        }]
+      })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        if (parsed && parsed.category && CATEGORY_ROUTES[parsed.category.toUpperCase()]) {
+          detectedCategory = parsed.category.toUpperCase();
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('AI Router Network/Parse issue, taking default route:', err);
   }
+
+  overlayText.textContent = `ROUTING TO ${detectedCategory}...`;
+
+  const targetPage = CATEGORY_ROUTES[detectedCategory] || '/explore';
+  setTimeout(() => {
+    window.location.href = targetPage + "?q=" + encodeURIComponent(q);
+  }, 700);
 }
 
 // 3D TILT EFFECT ON CARDS
@@ -770,8 +734,7 @@ const placeholders = [
   "Ask anything — ideas, concepts, code, writing...",
   "Search JEE notes, case studies & exams...",
   "Generate viral titles and reel comments...",
-  "Explain a concept in simple terms...",
-  "Help me debug this code snippet..."
+  "Explore all new digital crafts and tools..."
 ];
 
 let pIndex = 0;
