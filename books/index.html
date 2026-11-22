@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raghav Shukla | Shiva Stotrams of Adi Shankaracharya — Volume 1 | Taxtron Books</title>
-    <meta name="description" content="Official showcase for 'Shiva Stotrams of Adi Shankaracharya — Volume 1' by Raghav Shukla (Founder of Taxtron,CSE Engineering, IIT Madras Data Science Scholar). Explore trilingual hymns in Devanagari, IAST, and English.">
+    <meta name="description" content="Official showcase for 'Shiva Stotrams of Adi Shankaracharya — Volume 1' by Raghav Shukla (Founder of Taxtron, CSE @ IIT Bhilai, IIT Madras Data Science Scholar & Documentarian). Explore trilingual hymns in Devanagari, IAST, and English.">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,9 +22,15 @@
                             700: '#A16207',
                             800: '#854D0E',
                         },
-                        obsidian: '#090A0F',
-                        sacredDark: '#0D0F17',
-                        cardDark: 'rgba(18, 22, 35, 0.75)',
+                        maroon: {
+                            900: '#2A080C',
+                            800: '#3D0C13',
+                            700: '#5A121D',
+                            600: '#7A1927',
+                        },
+                        obsidian: '#07080C',
+                        sacredDark: '#0B0D14',
+                        cardDark: 'rgba(15, 18, 28, 0.78)',
                     },
                     fontFamily: {
                         serif: ['Cinzel', 'serif'],
@@ -66,7 +72,7 @@
     <style>
         /* Custom styling for editorial sacred aesthetic */
         body {
-            background-color: #090A0F;
+            background-color: #07080C;
             color: #E2E8F0;
             overflow-x: hidden;
             font-family: 'Inter', sans-serif;
@@ -74,14 +80,14 @@
 
         /* Glassmorphism styling */
         .glass-panel {
-            background: rgba(15, 18, 28, 0.7);
+            background: rgba(13, 16, 26, 0.75);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(234, 179, 8, 0.15);
         }
 
         .glass-card {
-            background: linear-gradient(135deg, rgba(26, 31, 48, 0.6) 0%, rgba(13, 15, 23, 0.8) 100%);
+            background: linear-gradient(135deg, rgba(22, 27, 43, 0.65) 0%, rgba(11, 13, 20, 0.85) 100%);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
@@ -108,8 +114,8 @@
 
         .book-3d {
             transform-style: preserve-3d;
-            transition: transform 0.15s ease-out;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(234, 179, 8, 0.2);
+            transition: transform 0.2s ease-out;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 35px rgba(122, 25, 39, 0.35);
         }
 
         .book-spine {
@@ -119,7 +125,7 @@
             width: 38px;
             height: 100%;
             transform: rotateY(-90deg) translateZ(19px);
-            background: linear-gradient(90deg, #1e1b18 0%, #3a3225 50%, #1e1b18 100%);
+            background: linear-gradient(90deg, #180306 0%, #3D0C13 50%, #180306 100%);
             border-right: 1px solid rgba(234, 179, 8, 0.4);
         }
 
@@ -131,7 +137,21 @@
             height: calc(100% - 6px);
             transform: rotateY(90deg) translateZ(-16px);
             background: linear-gradient(90deg, #e2e2e2 0%, #f7f7f7 70%, #d4d4d4 100%);
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.25);
+        }
+
+        /* Tripundra SVG / Styling */
+        .tripundra-line {
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.9) 20%, rgba(255,255,255,0.9) 80%, transparent 100%);
+            border-radius: 2px;
+        }
+        .tripundra-dot {
+            width: 7px;
+            height: 7px;
+            background-color: #dc2626;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #ef4444;
         }
 
         /* Custom Scrollbar */
@@ -139,7 +159,7 @@
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #090A0F;
+            background: #07080C;
         }
         ::-webkit-scrollbar-thumb {
             background: #27272a;
@@ -157,33 +177,29 @@
         /* Ambient Glow Mesh */
         .ambient-glow {
             position: absolute;
-            width: 600px;
-            height: 600px;
+            width: 650px;
+            height: 650px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(234, 179, 8, 0.12) 0%, rgba(202, 138, 4, 0.04) 45%, rgba(0, 0, 0, 0) 70%);
+            background: radial-gradient(circle, rgba(234, 179, 8, 0.12) 0%, rgba(122, 25, 39, 0.1) 40%, rgba(0, 0, 0, 0) 70%);
             pointer-events: none;
             z-index: 0;
-        }
-
-        .gold-border-glow {
-            box-shadow: 0 0 15px rgba(234, 179, 8, 0.2);
         }
     </style>
 </head>
 <body class="relative">
 
     <!-- Scroll Progress Bar -->
-    <div id="progressBar" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-500 z-50 transition-all duration-150 w-0"></div>
+    <div id="progressBar" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-amber-600 via-yellow-400 to-red-600 z-50 transition-all duration-150 w-0"></div>
 
     <!-- Canvas Background for Sacred Aura & Devanagari Glyphs -->
-    <canvas id="auraCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-70"></canvas>
+    <canvas id="auraCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-75"></canvas>
 
     <!-- Top Navigation Header -->
     <header class="sticky top-0 z-40 glass-panel border-b border-amber-500/10 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <!-- Brand Logo -->
             <a href="https://taxtron.in" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-3 group">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center font-serif text-slate-950 font-bold text-xl shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 via-amber-600 to-red-700 flex items-center justify-center font-serif text-slate-950 font-bold text-xl shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
                     T
                 </div>
                 <div class="flex flex-col">
@@ -203,10 +219,10 @@
             <!-- CTA Header Button -->
             <div class="flex items-center space-x-3">
                 <a href="https://taxtron.in" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex items-center text-xs text-amber-300 hover:text-amber-200 px-3 py-1.5 rounded-lg border border-amber-500/30 hover:border-amber-400/60 bg-amber-500/5 transition-all">
-                    <i class="fa-solid font-sans fa-arrow-up-right-from-square mr-1.5 text-[10px]"></i> Visit taxtron.in
+                    <i class="fa-solid fa-arrow-up-right-from-square mr-1.5 text-[10px]"></i> taxtron.in
                 </a>
                 <a href="#purchase" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 font-semibold text-xs sm:text-sm tracking-wide shadow-lg shadow-amber-500/20 hover:brightness-110 hover:shadow-amber-500/40 transition-all flex items-center">
-                    <i class="fa-brands fa-amazon mr-2 text-base"></i> Buy Now
+                    <i class="fa-brands fa-amazon mr-2 text-base"></i> Buy Store
                 </a>
             </div>
         </div>
@@ -224,19 +240,20 @@
                 <div class="lg:col-span-7 text-center lg:text-left space-y-6">
                     <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs tracking-wider uppercase font-semibold">
                         <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-                        New Trilingual Publication
+                        Trilingual Critical Compiler Edition
                     </div>
 
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-serif font-extrabold tracking-tight text-white leading-tight">
+                    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-serif font-extrabold tracking-tight text-white leading-tight">
                         Shiva Stotrams <br>
                         <span class="gold-gradient-text">of Adi Shankaracharya</span>
                     </h1>
-                    <p class="font-serif italic text-amber-200/80 text-lg sm:text-xl">
-                        Volume 1 — Classical Devanagari Script, IAST Transliteration & English Exposition
+
+                    <p class="font-serif italic text-amber-200/90 text-base sm:text-lg max-w-2xl">
+                        Volume 1: Eighteen Classical Hymns in Original Sanskrit Devanagari with Romanized English (IAST) Transliteration and Verse-by-Verse English Meanings
                     </p>
 
-                    <p class="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
-                        Authored and computational-typeset by <strong class="text-white font-medium">Raghav Shukla</strong> — 18-year-old CSE scholar & Data Science student at IIT Madras, bridging ancient Vedic Sanskrit heritage with modern computational precision.
+                    <p class="text-slate-300 text-base max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
+                        Compiled, edited, and computationally typeset by <strong class="text-white font-medium">Raghav Shukla</strong> — 18-year-old CSE scholar at IIT Bhilai, Data Science BS student at IIT Madras, founder of Taxtron, and documentarian/filmmaker.
                     </p>
 
                     <!-- Features Pills -->
@@ -245,28 +262,28 @@
                             <i class="fa-solid fa-book-bookmark text-amber-400"></i> 18 Hymns & 289 Verses
                         </span>
                         <span class="px-3 py-1.5 rounded-lg glass-panel text-xs text-slate-200 flex items-center gap-2 border-amber-500/20">
-                            <i class="fa-solid fa-language text-amber-400"></i> Trilingual Edition
+                            <i class="fa-solid fa-language text-amber-400"></i> Sanskrit • IAST • English
                         </span>
                         <span class="px-3 py-1.5 rounded-lg glass-panel text-xs text-slate-200 flex items-center gap-2 border-amber-500/20">
-                            <i class="fa-solid fa-globe text-amber-400"></i> KDP Worldwide & Amazon India
+                            <i class="fa-solid fa-globe text-amber-400"></i> Amazon Global & India
                         </span>
                     </div>
 
                     <!-- Hero Actions -->
                     <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
-                        <a href="https://www.amazon.com/dp/B0HSK1F8BG" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-slate-950 font-bold text-base shadow-xl shadow-amber-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3">
-                            <i class="fa-brands fa-amazon text-xl"></i> Order on Amazon
+                        <a href="#purchase" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-slate-950 font-bold text-base shadow-xl shadow-amber-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+                            <i class="fa-brands fa-amazon text-xl"></i> View Purchase Options
                         </a>
                         <a href="#sample-verses" class="w-full sm:w-auto px-6 py-4 rounded-xl glass-panel hover:bg-amber-500/10 text-slate-200 hover:text-amber-300 font-semibold text-base border border-amber-500/30 transition-all flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-scroll text-amber-400"></i> Preview Verses
+                            <i class="fa-solid fa-scroll text-amber-400"></i> Read Sample Verses
                         </a>
                     </div>
                 </div>
 
-                <!-- 3D Book Interactive Cover Mockup -->
+                <!-- 3D Book Interactive Cover Mockup (Deep Maroon Aesthetic with Crescent Moon & Tripundra) -->
                 <div class="lg:col-span-5 flex justify-center items-center py-6">
                     <div class="book-stage">
-                        <div id="bookCard" class="book-3d relative w-[260px] sm:w-[300px] h-[380px] sm:h-[430px] rounded-r-lg cursor-pointer select-none">
+                        <div id="bookCard" class="book-3d relative w-[260px] sm:w-[300px] h-[390px] sm:h-[440px] rounded-r-lg cursor-pointer select-none">
                             <!-- Book Spine 3D Layer -->
                             <div class="book-spine flex flex-col justify-between items-center py-6 text-amber-400 text-xs font-serif tracking-widest" style="writing-mode: vertical-rl;">
                                 <span>SHIVA STOTRAMS — VOL 1</span>
@@ -276,36 +293,58 @@
                             <!-- Book Pages Depth Layer -->
                             <div class="book-pages-side"></div>
 
-                            <!-- Front Cover Design -->
-                            <div class="absolute inset-0 rounded-r-lg bg-gradient-to-br from-slate-900 via-sacredDark to-slate-950 border-2 border-amber-500/40 p-6 flex flex-col justify-between overflow-hidden text-center shadow-2xl">
-                                <!-- Subtle Background Mandala Overlay -->
-                                <div class="absolute -right-10 -bottom-10 w-64 h-64 opacity-10 rounded-full border-8 border-dashed border-amber-400 pointer-events-none"></div>
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none"></div>
+                            <!-- Front Cover Design (Deep Maroon + Tripundra + Crescent Moon) -->
+                            <div class="absolute inset-0 rounded-r-lg bg-gradient-to-br from-[#2D0C13] via-[#1A0507] to-[#0D0204] border-2 border-amber-500/50 p-6 flex flex-col justify-between overflow-hidden text-center shadow-2xl">
+                                
+                                <!-- Golden Filigree Outer Border Frame -->
+                                <div class="absolute inset-2 border border-amber-500/30 rounded-r-md pointer-events-none"></div>
 
                                 <!-- Cover Top Header -->
-                                <div class="relative z-10 pt-2">
-                                    <p class="text-[10px] tracking-[0.3em] uppercase text-amber-400/90 font-serif font-semibold">Classical Sanskrit Sacred Series</p>
-                                    <div class="w-12 h-0.5 bg-amber-500/50 mx-auto my-2"></div>
+                                <div class="relative z-10 pt-3">
+                                    <p class="text-[9px] tracking-[0.3em] uppercase text-amber-300 font-serif font-semibold">Classical Sanskrit Sacred Series</p>
+                                    <div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent mx-auto my-2"></div>
                                 </div>
 
-                                <!-- Center Emblem & Title -->
-                                <div class="relative z-10 my-auto space-y-3">
-                                    <div class="w-16 h-16 mx-auto rounded-full border border-amber-500/40 flex items-center justify-center bg-amber-500/10 text-amber-400 text-3xl font-devanagari shadow-inner">
-                                        ॐ
+                                <!-- Center Emblem: Tripundra, Crescent Moon & Om -->
+                                <div class="relative z-10 my-auto space-y-4">
+                                    
+                                    <!-- Sacred Crescent Moon & Tripundra Emblem Box -->
+                                    <div class="w-24 h-24 mx-auto rounded-full border border-amber-500/40 bg-gradient-to-b from-maroon-800/80 to-maroon-900/90 flex flex-col items-center justify-center relative shadow-lg shadow-black/80 p-2">
+                                        
+                                        <!-- Silver Crescent Moon Backdrop SVG -->
+                                        <svg class="absolute top-2 right-4 w-6 h-6 text-slate-200 opacity-80" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12.3 2a10 10 0 0 0 8.7 14 10 10 0 1 1-8.7-14z"/>
+                                        </svg>
+
+                                        <!-- Tripundra Lines -->
+                                        <div class="w-14 space-y-1 my-1">
+                                            <div class="tripundra-line"></div>
+                                            <div class="tripundra-line flex justify-center items-center">
+                                                <div class="tripundra-dot"></div>
+                                            </div>
+                                            <div class="tripundra-line"></div>
+                                        </div>
+
+                                        <!-- Devanagari OM Glyphs -->
+                                        <span class="font-devanagari text-2xl font-bold text-amber-300 -mt-1 drop-shadow">ॐ</span>
                                     </div>
-                                    <h2 class="font-serif font-bold text-xl sm:text-2xl text-amber-200 tracking-wide leading-snug">
-                                        SHIVA STOTRAMS
-                                    </h2>
-                                    <p class="font-serif italic text-xs text-amber-400/80 tracking-widest uppercase">Of Adi Shankaracharya</p>
-                                    <div class="inline-block px-3 py-1 rounded bg-amber-500/10 border border-amber-500/30 text-[11px] text-amber-300 font-serif">
+
+                                    <div class="space-y-1">
+                                        <h2 class="font-serif font-bold text-xl sm:text-2xl text-amber-100 tracking-wide leading-snug">
+                                            SHIVA STOTRAMS
+                                        </h2>
+                                        <p class="font-serif italic text-[11px] text-amber-300/90 tracking-widest uppercase">Of Adi Shankaracharya</p>
+                                    </div>
+
+                                    <div class="inline-block px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 text-[10px] text-amber-300 font-serif font-semibold tracking-wider">
                                         VOLUME 1
                                     </div>
                                 </div>
 
                                 <!-- Cover Footer -->
-                                <div class="relative z-10 pb-2">
-                                    <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Trilingual Critical Edition</p>
-                                    <p class="font-serif text-sm font-semibold text-amber-300 tracking-wider uppercase">Raghav Shukla</p>
+                                <div class="relative z-10 pb-2 space-y-1">
+                                    <p class="text-[9px] text-slate-400 uppercase tracking-widest">Trilingual Critical Edition</p>
+                                    <p class="font-serif text-xs font-semibold text-amber-300 tracking-wider uppercase">Raghav Shukla</p>
                                 </div>
                             </div>
                         </div>
@@ -319,7 +358,7 @@
         <section id="about-author" class="py-20 px-4 sm:px-6 lg:px-8 relative border-t border-amber-500/10 bg-slate-950/40">
             <div class="max-w-6xl mx-auto">
                 <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
-                    <span class="text-xs font-semibold uppercase tracking-widest text-amber-400">Scholar & Creator</span>
+                    <span class="text-xs font-semibold uppercase tracking-widest text-amber-400">Scholar, Author & Documentarian</span>
                     <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">About Raghav Shukla</h2>
                     <div class="w-16 h-1 bg-amber-500 mx-auto rounded-full"></div>
                 </div>
@@ -333,7 +372,7 @@
                             <div class="absolute -top-12 -left-12 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
                             
                             <!-- Avatar / Crest Symbol -->
-                            <div class="relative w-28 h-28 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-700 p-1 shadow-xl shadow-amber-500/20">
+                            <div class="relative w-28 h-28 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-amber-500 via-amber-600 to-red-700 p-1 shadow-xl shadow-amber-500/20">
                                 <div class="w-full h-full rounded-[14px] bg-slate-950 flex flex-col items-center justify-center text-amber-400">
                                     <span class="font-devanagari text-4xl font-bold">रा</span>
                                     <span class="text-[10px] tracking-widest text-amber-300 uppercase font-sans mt-0.5">Raghav</span>
@@ -341,7 +380,7 @@
                             </div>
 
                             <h3 class="text-2xl font-serif font-bold text-white">Raghav Shukla</h3>
-                            <p class="text-xs text-amber-400 font-medium tracking-widest uppercase mt-1">Founder, Taxtron • Author & Scholar</p>
+                            <p class="text-xs text-amber-400 font-medium tracking-widest uppercase mt-1">Founder of Taxtron • Author & Filmmaker</p>
                             
                             <div class="w-full h-px bg-slate-800 my-6"></div>
 
@@ -353,7 +392,7 @@
                                     </div>
                                     <div>
                                         <div class="font-semibold text-white">B.Tech Computer Science & Eng.</div>
-                                        <div class="text-slate-400 text-[11px]">IIT Bhilai, Bhilai</div>
+                                        <div class="text-slate-400 text-[11px]">IIT, Bhilai</div>
                                     </div>
                                 </div>
 
@@ -362,8 +401,18 @@
                                         <i class="fa-solid fa-database"></i>
                                     </div>
                                     <div>
-                                        <div class="font-semibold text-white">B.S. Data Science & Applications</div>
+                                        <div class="font-semibold text-white">BS Data Science & Applications</div>
                                         <div class="text-slate-400 text-[11px]">IIT Madras</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center space-x-3 text-xs text-slate-300 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                                    <div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 shrink-0">
+                                        <i class="fa-solid fa-film"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-white">Documentarian & Director</div>
+                                        <div class="text-slate-400 text-[11px]">Digital Media & Sacred Heritage Preservation</div>
                                     </div>
                                 </div>
 
@@ -379,7 +428,7 @@
                             </div>
 
                             <a href="https://taxtron.in" target="_blank" rel="noopener noreferrer" class="mt-6 inline-flex items-center justify-center w-full py-2.5 rounded-xl border border-amber-500/30 text-amber-300 hover:bg-amber-500/10 text-xs font-semibold tracking-wider transition-all">
-                                Discover Taxtron Platform <i class="fa-solid fa-arrow-right ml-2 text-[10px]"></i>
+                                Visit Taxtron Platform <i class="fa-solid fa-arrow-right ml-2 text-[10px]"></i>
                             </a>
                         </div>
                     </div>
@@ -389,23 +438,23 @@
                         <div class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-800 space-y-4">
                             <h4 class="text-xl font-serif font-bold text-amber-300 flex items-center gap-2">
                                 <i class="fa-solid fa-feather-pointed text-amber-400"></i> 
-                                Classical Heritage Meets Computational Rigor
+                                Bridging Sacred Indian Heritage & Modern Technology
                             </h4>
                             
                             <p>
-                                At 18 years old, <strong class="text-white">Raghav Shukla</strong> represents a rare synthesis of modern technological acumen and deep reverence for ancient Indian literature. Currently pursuing his <strong class="text-white">B.Tech in Computer Science and Engineering (CSE) at IIT Bhilai (Bhilai)</strong> alongside his degree studies in <strong class="text-white">Data Science at IIT Madras</strong>, Raghav approaches classical text preservation with mathematical exactitude.
+                                At 18 years old, <strong class="text-white">Raghav Shukla</strong> is an author, documentarian/filmmaker, and technology researcher. He is currently pursuing his <strong class="text-white">B.Tech in Computer Science and Engineering (CSE) at IIT (Bhilai)</strong> alongside his degree studies in <strong class="text-white">Data Science & Applications at IIT Madras</strong>.
                             </p>
 
                             <p>
-                                As the founder of <a href="https://taxtron.in" target="_blank" class="text-amber-400 underline underline-offset-4 hover:text-amber-300">Taxtron</a> (founded in 2024), documentary creator, and researcher, he has focused his efforts on computational typesetting, digitizing rare Sanskrit treatises, and providing clean, metrically precise trilingual formats for global readers and spiritual seekers.
+                                As the founder of <a href="https://taxtron.in" target="_blank" class="text-amber-400 underline underline-offset-4 hover:text-amber-300 font-medium">Taxtron</a> (founded in 2024), Raghav fuses computational typesetting, digital archival techniques, and cinematic storytelling to restore and publish classical Sanskrit texts with absolute metric and phonetic clarity.
                             </p>
 
                             <blockquote class="p-4 rounded-xl bg-amber-500/5 border-l-4 border-amber-500 italic text-amber-100/90 font-serif text-sm">
-                                "Preserving sacred Sanskrit literature is not merely about archiving words—it is about applying modern computational typography to ensure absolute phonetic clarity, metric fidelity, and timeless elegance for generations to come."
+                                "Preserving ancient wisdom requires more than static digitizing—it demands high-precision typography, metric accuracy, and accessible multi-script translations to make eternal hymns vibrant for seekers worldwide."
                             </blockquote>
 
                             <p class="text-sm text-slate-400">
-                                <em>Shiva Stotrams of Adi Shankaracharya (Volume 1)</em> is the culmination of painstaking editorial collation, cross-referencing authentic manuscript variants, and typesetting in high-density Devanagari typography along with Roman IAST transliteration and English verse exposition.
+                                <em>Shiva Stotrams of Adi Shankaracharya (Volume 1)</em> reflects his dedication to structural perfection, combining verified Devanagari manuscripts, standard Roman IAST transliteration, and lucid English translations.
                             </p>
                         </div>
                     </div>
@@ -418,9 +467,9 @@
         <section id="the-book" class="py-20 px-4 sm:px-6 lg:px-8 relative border-t border-amber-500/10">
             <div class="max-w-6xl mx-auto">
                 <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
-                    <span class="text-xs font-semibold uppercase tracking-widest text-amber-400">Detailed Volume Guide</span>
+                    <span class="text-xs font-semibold uppercase tracking-widest text-amber-400">Comprehensive Compiler Edition</span>
                     <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">Inside Volume 1</h2>
-                    <p class="text-slate-400 text-sm sm:text-base">A meticulously curated compiler edition designed for daily chanting, study, and academic reference.</p>
+                    <p class="text-slate-400 text-sm sm:text-base">Meticulously curated for daily chanting, meditation, academic reference, and spiritual study.</p>
                     <div class="w-16 h-1 bg-amber-500 mx-auto rounded-full"></div>
                 </div>
 
@@ -432,7 +481,7 @@
                         </div>
                         <div class="text-3xl font-serif font-bold text-white mb-1">18</div>
                         <div class="text-xs font-semibold uppercase tracking-wider text-amber-400">Classical Hymns</div>
-                        <p class="text-slate-400 text-xs mt-2">Complete collection of major Shivite stotrams composed by Jagadguru Adi Shankaracharya.</p>
+                        <p class="text-slate-400 text-xs mt-2">Complete collection of core Shivite stotrams composed by Jagadguru Adi Shankaracharya.</p>
                     </div>
 
                     <div class="glass-card p-6 rounded-2xl text-center hover:-translate-y-1 transition-transform">
@@ -441,7 +490,7 @@
                         </div>
                         <div class="text-3xl font-serif font-bold text-white mb-1">289</div>
                         <div class="text-xs font-semibold uppercase tracking-wider text-amber-400">Sacred Verses</div>
-                        <p class="text-slate-400 text-xs mt-2">Every verse accompanied by metrical division and word-by-word structural layout.</p>
+                        <p class="text-slate-400 text-xs mt-2">Each verse structured with metric divisions, phonetic clarity, and line-by-line meanings.</p>
                     </div>
 
                     <div class="glass-card p-6 rounded-2xl text-center hover:-translate-y-1 transition-transform">
@@ -450,7 +499,7 @@
                         </div>
                         <div class="text-3xl font-serif font-bold text-white mb-1">3</div>
                         <div class="text-xs font-semibold uppercase tracking-wider text-amber-400">Parallel Scripts</div>
-                        <p class="text-slate-400 text-xs mt-2">Devanagari, standard international IAST transliteration, and lucid English translation.</p>
+                        <p class="text-slate-400 text-xs mt-2">Devanagari, standard international IAST transliteration, and fluent English translation.</p>
                     </div>
 
                     <div class="glass-card p-6 rounded-2xl text-center hover:-translate-y-1 transition-transform">
@@ -459,14 +508,14 @@
                         </div>
                         <div class="text-3xl font-serif font-bold text-white mb-1">LaTeX</div>
                         <div class="text-xs font-semibold uppercase tracking-wider text-amber-400">Digital Typesetting</div>
-                        <p class="text-slate-400 text-xs mt-2">Engineered using custom LaTeX Devanagari computational macros for crisp typography.</p>
+                        <p class="text-slate-400 text-xs mt-2">Engineered using custom Devanagari computational macros for crystal-clear readability.</p>
                     </div>
                 </div>
 
                 <!-- Detailed Included Hymns Highlight List -->
                 <div class="glass-card p-8 rounded-3xl border border-slate-800">
                     <h3 class="text-xl font-serif font-bold text-white mb-6 flex items-center gap-2">
-                        <i class="fa-solid fa-book-open text-amber-400"></i> Featured Stotrams in Volume 1 Include:
+                        <i class="fa-solid fa-book-open text-amber-400"></i> Selected Stotrams Featured in Volume 1:
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-slate-300">
                         <div class="flex items-center space-x-3 p-3 rounded-xl bg-slate-900/50 border border-slate-800/80">
@@ -520,9 +569,9 @@
         <section id="sample-verses" class="py-20 px-4 sm:px-6 lg:px-8 relative border-t border-amber-500/10 bg-slate-950/60">
             <div class="max-w-5xl mx-auto">
                 <div class="text-center max-w-3xl mx-auto mb-12 space-y-3">
-                    <span class="text-xs font-semibold uppercase tracking-widest text-amber-400">Interactive Reader</span>
+                    <span class="text-xs font-semibold uppercase tracking-widest text-amber-400">Interactive Verse Reader</span>
                     <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">Explore Sample Verses</h2>
-                    <p class="text-slate-400 text-sm">Experience the clean trilingual layout as formatted inside the book.</p>
+                    <p class="text-slate-400 text-sm">Experience the clean trilingual layout exactly as formatted inside the book.</p>
                     <div class="w-16 h-1 bg-amber-500 mx-auto rounded-full"></div>
                 </div>
 
@@ -574,9 +623,9 @@
         <section id="purchase" class="py-20 px-4 sm:px-6 lg:px-8 relative border-t border-amber-500/10">
             <div class="max-w-6xl mx-auto">
                 <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
-                    <span class="text-xs font-semibold uppercase tracking-widest text-amber-400">Available Worldwide</span>
-                    <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">Get Your Copy</h2>
-                    <p class="text-slate-400 text-sm sm:text-base">Instant Kindle delivery worldwide & high-quality Paperback edition available across Amazon stores.</p>
+                    <span class="text-xs font-semibold uppercase tracking-widest text-amber-400">Available Worldwide via Amazon</span>
+                    <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white">Editions & Store Links</h2>
+                    <p class="text-slate-400 text-sm sm:text-base">Choose between the instant Kindle digital edition or the paperback volume with global shipping.</p>
                     <div class="w-16 h-1 bg-amber-500 mx-auto rounded-full"></div>
                 </div>
 
@@ -585,74 +634,130 @@
                     
                     <!-- Kindle Card -->
                     <div class="glass-card p-8 rounded-3xl border border-amber-500/30 flex flex-col justify-between relative group hover:border-amber-400/60 transition-all">
-                        <div class="space-y-4">
+                        <div class="space-y-5">
                             <div class="flex items-center justify-between">
                                 <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 uppercase tracking-wider">Digital eBook</span>
-                                <i class="fa-solid fa-tablet-screen-button text-2xl text-amber-400"></i>
+                                <span class="text-lg font-bold text-amber-300">$3.00 USD</span>
                             </div>
-                            <h3 class="text-2xl font-serif font-bold text-white">Kindle Edition</h3>
+
+                            <div>
+                                <h3 class="text-2xl font-serif font-bold text-white">Kindle Edition</h3>
+                                <p class="text-xs text-amber-400/80 font-mono mt-1">ASIN: B0HSK1F8BG</p>
+                            </div>
+
                             <p class="text-slate-300 text-sm leading-relaxed">
-                                Formatted specifically for Kindle e-readers, tablets, and smartphones with high-resolution Devanagari glyph embedding and interactive table of contents.
+                                Formatted for Kindle e-readers, tablets, and smartphones with high-density Devanagari font rendering, searchable IAST transliteration, and interactive navigation.
                             </p>
+
                             <ul class="text-xs text-slate-400 space-y-2 pt-2">
-                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> Instant Global Download (Worldwide KDP)</li>
-                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> Compatible with all Kindle apps & devices</li>
-                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> Full Searchable Trilingual Text</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-amber-400"></i> Instant global wireless delivery</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-amber-400"></i> Free sample available on Amazon</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-amber-400"></i> Searchable trilingual layout</li>
                             </ul>
                         </div>
                         
-                        <div class="pt-8">
-                            <a href="https://www.amazon.com/dp/B0HSK1F8BG" target="_blank" rel="noopener noreferrer" class="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 font-bold text-sm tracking-wide shadow-lg shadow-amber-500/20 hover:brightness-110 transition-all flex items-center justify-center gap-2">
-                                <i class="fa-brands fa-amazon text-lg"></i> Buy Kindle Edition
+                        <!-- Kindle Direct Purchase Buttons -->
+                        <div class="pt-8 space-y-3">
+                            <a href="https://www.amazon.com/dp/B0HSK1F8BG" target="_blank" rel="noopener noreferrer" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 font-bold text-xs sm:text-sm tracking-wide shadow-lg shadow-amber-500/20 hover:brightness-110 transition-all flex items-center justify-center gap-2">
+                                <i class="fa-brands fa-amazon text-lg"></i> Amazon.com (Global / US)
+                            </a>
+                            <a href="https://www.amazon.in/dp/B0HSK1F8BG" target="_blank" rel="noopener noreferrer" class="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-semibold text-xs sm:text-sm border border-amber-500/30 transition-all flex items-center justify-center gap-2">
+                                <i class="fa-brands fa-amazon text-lg text-amber-400"></i> Amazon.in (India Store)
                             </a>
                         </div>
                     </div>
 
                     <!-- Paperback Card -->
                     <div class="glass-card p-8 rounded-3xl border border-amber-500/30 flex flex-col justify-between relative group hover:border-amber-400/60 transition-all">
-                        <div class="space-y-4">
+                        <div class="space-y-5">
                             <div class="flex items-center justify-between">
                                 <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 uppercase tracking-wider">Print Edition</span>
-                                <i class="fa-solid fa-book text-2xl text-amber-400"></i>
+                                <span class="text-lg font-bold text-amber-300">$16.00 USD</span>
                             </div>
-                            <h3 class="text-2xl font-serif font-bold text-white">Paperback Edition</h3>
+
+                            <div>
+                                <h3 class="text-2xl font-serif font-bold text-white">Paperback Edition</h3>
+                                <p class="text-xs text-amber-400/80 font-mono mt-1">ASIN: B0HSL2YVNC</p>
+                            </div>
+
                             <p class="text-slate-300 text-sm leading-relaxed">
-                                Premium print volume crafted for spiritual daily chanting, meditation study, home altars, and institutional library archiving.
+                                Premium print volume crafted for spiritual daily chanting, meditation study, home altars, and institutional library archiving with high contrast typography.
                             </p>
-                            <ul class="text-xs text-slate-400 space-y-2 pt-2">
-                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> High-contrast typesetting for effortless reading</li>
-                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> Durable binding & cream-white archival paper</li>
-                                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> Ships in India & Globally via KDP Print</li>
+
+                            <!-- Interactive Marketplace Switcher -->
+                            <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-amber-500/20 space-y-2">
+                                <label for="countryMarketplace" class="block text-xs font-medium text-amber-300 flex items-center justify-between">
+                                    <span><i class="fa-solid fa-globe mr-1.5 text-amber-400"></i> Select Regional Amazon Marketplace:</span>
+                                </label>
+                                <select id="countryMarketplace" onchange="updatePaperbackCountryLink()" class="w-full bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-xl p-2.5 focus:outline-none focus:border-amber-500">
+                                    <option value="amazon.com" selected>🇺🇸 United States (amazon.com)</option>
+                                    <option value="amazon.co.uk">🇬🇧 United Kingdom (amazon.co.uk)</option>
+                                    <option value="amazon.de">🇩🇪 Germany (amazon.de)</option>
+                                    <option value="amazon.fr">🇫🇷 France (amazon.fr)</option>
+                                    <option value="amazon.es">🇪🇸 Spain (amazon.es)</option>
+                                    <option value="amazon.it">🇮🇹 Italy (amazon.it)</option>
+                                    <option value="amazon.nl">🇳🇱 Netherlands (amazon.nl)</option>
+                                    <option value="amazon.pl">🇵🇱 Poland (amazon.pl)</option>
+                                    <option value="amazon.se">🇸🇪 Sweden (amazon.se)</option>
+                                    <option value="amazon.com.be">🇧🇪 Belgium (amazon.com.be)</option>
+                                    <option value="amazon.co.jp">🇯🇵 Japan (amazon.co.jp)</option>
+                                    <option value="amazon.ca">🇨🇦 Canada (amazon.ca)</option>
+                                    <option value="amazon.com.au">🇦🇺 Australia (amazon.com.au)</option>
+                                </select>
+                            </div>
+
+                            <ul class="text-xs text-slate-400 space-y-2 pt-1">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-amber-400"></i> Archival quality paper & binding</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-amber-400"></i> Ships directly to 100+ countries</li>
                             </ul>
                         </div>
                         
-                        <div class="pt-8">
-                            <a href="https://www.amazon.com/dp/B0HSK1F8BG" target="_blank" rel="noopener noreferrer" class="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-slate-950 font-bold text-sm tracking-wide shadow-lg shadow-amber-500/20 hover:brightness-110 transition-all flex items-center justify-center gap-2">
-                                <i class="fa-brands fa-amazon text-lg"></i> Order Paperback Print
+                        <!-- Paperback Purchase Buttons -->
+                        <div class="pt-6 space-y-3">
+                            <a id="paperbackPrimaryBtn" href="https://www.amazon.com/dp/B0HSL2YVNC" target="_blank" rel="noopener noreferrer" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-slate-950 font-bold text-xs sm:text-sm tracking-wide shadow-lg shadow-amber-500/20 hover:brightness-110 transition-all flex items-center justify-center gap-2">
+                                <i class="fa-brands fa-amazon text-lg"></i> Buy on Selected Store
+                            </a>
+                            <a href="https://www.amazon.com/dp/B0HSL2YVNC" target="_blank" rel="noopener noreferrer" class="w-full py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 font-semibold text-xs sm:text-sm border border-amber-500/30 transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-plane-departure text-amber-400"></i> US Store (Ships to Your Country)
                             </a>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Store Switcher & Quick ASIN Copy Box -->
+                <!-- Quick ASIN Copy & Search Box -->
                 <div class="glass-card p-6 sm:p-8 rounded-3xl border border-slate-800 text-center space-y-6">
                     <div>
-                        <h4 class="text-lg font-serif font-bold text-white">Amazon Direct Identifier & International Stores</h4>
-                        <p class="text-xs text-slate-400 mt-1">ASIN: <code class="bg-slate-900 text-amber-300 px-2 py-0.5 rounded font-mono">B0HSK1F8BG</code> — Works on all Amazon regional stores worldwide.</p>
+                        <h4 class="text-lg font-serif font-bold text-white">Direct ASIN Identifiers for Fast Amazon Searching</h4>
+                        <p class="text-xs text-slate-400 mt-1 max-w-xl mx-auto">
+                            Copy standard Amazon Standard Identification Numbers (ASIN) to search directly in any regional Amazon app or website.
+                        </p>
                     </div>
 
-                    <div class="flex flex-wrap items-center justify-center gap-3">
-                        <button onclick="copyLink('https://www.amazon.com/dp/B0HSK1F8BG')" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs text-slate-200 border border-slate-700 flex items-center gap-2 transition-all">
-                            <i class="fa-regular fa-copy text-amber-400"></i> Copy Direct Amazon URL
-                        </button>
-                        <button onclick="copyLink('B0HSK1F8BG')" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs text-slate-200 border border-slate-700 flex items-center gap-2 transition-all">
-                            <i class="fa-solid fa-barcode text-amber-400"></i> Copy ASIN Code
-                        </button>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                        <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                            <div class="text-left">
+                                <div class="text-[11px] text-slate-400 font-semibold uppercase">Kindle eBook ASIN</div>
+                                <code class="text-amber-300 font-mono font-bold text-sm">B0HSK1F8BG</code>
+                            </div>
+                            <button onclick="copyLink('B0HSK1F8BG')" class="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-medium border border-amber-500/30 transition-all flex items-center gap-1.5">
+                                <i class="fa-regular fa-copy"></i> Copy ASIN
+                            </button>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                            <div class="text-left">
+                                <div class="text-[11px] text-slate-400 font-semibold uppercase">Paperback Print ASIN</div>
+                                <code class="text-amber-300 font-mono font-bold text-sm">B0HSL2YVNC</code>
+                            </div>
+                            <button onclick="copyLink('B0HSL2YVNC')" class="px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-medium border border-amber-500/30 transition-all flex items-center gap-1.5">
+                                <i class="fa-regular fa-copy"></i> Copy ASIN
+                            </button>
+                        </div>
                     </div>
 
                     <div class="text-xs text-slate-500 pt-2 border-t border-slate-800/80 max-w-xl mx-auto">
-                        Whether ordering from 🇮🇳 India (Amazon.in), 🇺🇸 USA (Amazon.com), 🇬🇧 UK, or Europe, searching for <strong>B0HSK1F8BG</strong> brings up the official listing instantly.
+                        For Indian readers ordering the Paperback: Amazon US provides worldwide international delivery directly to addresses across India.
                     </div>
                 </div>
 
@@ -665,7 +770,7 @@
         <div class="max-w-6xl mx-auto space-y-6">
             
             <div class="flex justify-center items-center space-x-3">
-                <div class="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center font-serif text-slate-950 font-bold text-base">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-red-700 flex items-center justify-center font-serif text-slate-950 font-bold text-base">
                     T
                 </div>
                 <span class="font-serif font-bold text-white text-lg tracking-wider">TAXTRON BOOKS</span>
@@ -680,7 +785,7 @@
                 <span>•</span>
                 <a href="#the-book" class="hover:text-amber-400 transition-colors">Shiva Stotrams Vol 1</a>
                 <span>•</span>
-                <a href="https://www.amazon.com/dp/B0HSK1F8BG" target="_blank" rel="noopener noreferrer" class="hover:text-amber-400 transition-colors">Amazon Storefront</a>
+                <a href="#purchase" class="hover:text-amber-400 transition-colors">Amazon Storefront</a>
             </div>
 
             <div class="w-full h-px bg-slate-800/60 max-w-md mx-auto"></div>
@@ -695,7 +800,7 @@
     <!-- Toast Feedback Notification -->
     <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 pointer-events-none glass-panel border border-amber-500/40 text-amber-300 px-5 py-3 rounded-2xl text-xs font-semibold flex items-center space-x-3 shadow-2xl">
         <i class="fa-solid fa-circle-check text-amber-400 text-lg"></i>
-        <span id="toastMsg">Link copied to clipboard!</span>
+        <span id="toastMsg">Copied to clipboard!</span>
     </div>
 
     <!-- JAVASCRIPT LOGIC -->
@@ -756,7 +861,7 @@
         // Initialize Particles
         for (let i = 0; i < 35; i++) {
             const p = new Particle();
-            p.y = Math.random() * height; // distribute initial height
+            p.y = Math.random() * height;
             particles.push(p);
         }
 
@@ -771,6 +876,7 @@
 
         window.onload = function() {
             animateCanvas();
+            updatePaperbackCountryLink();
         };
 
         // Scroll Progress Bar
@@ -781,7 +887,7 @@
             document.getElementById('progressBar').style.width = scrolled + '%';
         });
 
-        // 3D Tilt Hover Physics on Book Mockup
+        // 3D Tilt Hover Physics on Book Cover Mockup
         const bookCard = document.getElementById('bookCard');
 
         if (bookCard) {
@@ -802,6 +908,14 @@
             
             // Set initial perspective rotation
             bookCard.style.transform = `rotateY(-10deg)`;
+        }
+
+        // Paperback Country Switcher Handler
+        function updatePaperbackCountryLink() {
+            const domain = document.getElementById('countryMarketplace').value;
+            const primaryBtn = document.getElementById('paperbackPrimaryBtn');
+            const targetUrl = `https://www.${domain}/dp/B0HSL2YVNC`;
+            primaryBtn.href = targetUrl;
         }
 
         // Sample Verses Data
@@ -891,11 +1005,11 @@
         // Initialize first verse view
         selectVerse(0);
 
-        // Copy Link to Clipboard with Fallback
+        // Copy Link / Text to Clipboard with Fallback
         function copyLink(text) {
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(text).then(() => {
-                    showToast("Copied to clipboard!");
+                    showToast(`Copied ${text} to clipboard!`);
                 }).catch(() => {
                     fallbackCopy(text);
                 });
@@ -914,9 +1028,9 @@
             textArea.select();
             try {
                 document.execCommand('copy');
-                showToast("Copied to clipboard!");
+                showToast(`Copied ${text} to clipboard!`);
             } catch (err) {
-                showToast("Direct copy unavailable. ASIN is B0HSK1F8BG");
+                showToast(`ASIN: ${text}`);
             }
             document.body.removeChild(textArea);
         }
